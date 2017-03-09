@@ -1,5 +1,16 @@
-﻿@{
+﻿@model IEnumerable<ContentItem>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 Welcome to Kentico Cloud .NET MVC boilerplate
+
+You're connected to project with project ID: xxx
+
+and items:
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>@item.System.Name</li>
+    }
+</ul>
