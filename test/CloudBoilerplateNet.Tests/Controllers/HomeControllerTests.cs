@@ -1,16 +1,15 @@
 ﻿using CloudBoilerplateNet.Controllers;
 using KenticoCloud.Delivery;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace CloudBoilerplateNet.Tests
 {
-    [TestFixture]
     public class HomeControllerTests
     {
-        [Test]
+        [Fact]
         public void IndexTests()
         {
             var options = Options.Create(new ProjectOptions()
@@ -21,7 +20,7 @@ namespace CloudBoilerplateNet.Tests
             var controller = new HomeController(options);
             var result = Task.Run(() => controller.Index()).Result;
             
-            Assert.AreEqual(typeof(ReadOnlyCollection<ContentItem>), result.Model.GetType());
+            Assert.Equal(typeof(ReadOnlyCollection<ContentItem>), result.Model.GetType());
         }
     }
 }
