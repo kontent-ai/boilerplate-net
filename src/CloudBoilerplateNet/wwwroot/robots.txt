@@ -1,0 +1,4 @@
+User-agent: *
+
+User-agent: AdsBot-Google
+Sitemap: <TODO-add-domain>/sitemap.xml
