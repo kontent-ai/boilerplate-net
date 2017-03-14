@@ -1,0 +1,19 @@
+﻿@model Article
+
+@{
+    Layout = null;
+}
+
+<div style="border-top: 1px solid #e4e4e4;">
+    <h3>@Model.Title</h3>
+    <p><img src="@Model.TeaserImage.First().Url" style="max-width:100px"></p>
+    <div>@Model.Summary</div>
+
+    @if (Model.RelatedArticles != null && Model.RelatedArticles.Any())
+    {
+        <h4>Related articles</h4>
+        <ul>
+            <li>@Model.RelatedArticles.First().System.Name</li>
+        </ul>
+    }
+</div>

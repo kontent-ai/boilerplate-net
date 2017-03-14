@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -53,6 +54,12 @@ namespace CloudBoilerplateNet
                 // non-success case (status code is >= 400 and < 600)
                 app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
+            
+            // Add IIS URL Rewrite list
+            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
+            app.UseRewriter(new RewriteOptions()
+                .AddIISUrlRewrite(env.ContentRootFileProvider, "IISUrlRewrite.xml")
+            );
 
             // Enables anything under wwwroot to be served directly (without any permission check).
             app.UseStaticFiles();

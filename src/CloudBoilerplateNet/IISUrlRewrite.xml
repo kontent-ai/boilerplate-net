@@ -1,0 +1,17 @@
+<rewrite>
+  <rules>
+    <!-- Example of 301 - Permanent redirect with Regex patter -->
+    <rule name="Regex pattern" stopProcessing="true">
+      <match url="^rewrite/(.*)" />
+      <action type="Redirect" url="?rewrittenFrom=$1" appendQueryString="false" redirectType="Permanent" />
+    </rule>
+  </rules>
+
+  <rewriteMaps>
+    <!-- TODO: not supported yet -->
+    <!-- Example of 301 - Permanent redirect with old -> new URL mapping -->
+    <rewriteMap name="Static rewrites" defaultValue="">
+      <add key="/old-url" value="/?new-url=1" />
+    </rewriteMap>
+  </rewriteMaps>
+</rewrite>
