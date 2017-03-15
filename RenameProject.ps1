@@ -22,10 +22,10 @@ $files = Get-ChildItem . -Recurse -File
 foreach ($file in $files)
 {
     (Get-Content $file.PSPath) | 
-        Foreach-Object { $_ -replace $oldProjectName, $NewProjectName } | 
+        Foreach-Object { $_ -replace $oldProjectName, $ProjectName } | 
             Set-Content $file.PSPath
 }
 
 # Rename files & directories
 Get-ChildItem . -Recurse -Filter *$oldProjectName* | 
-    Rename-Item -NewName { $_.Name -replace $oldProjectName, $NewProjectName }
+    Rename-Item -NewName { $_.Name -replace $oldProjectName, $ProjectName }
