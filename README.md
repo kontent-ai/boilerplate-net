@@ -9,7 +9,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 - Unit tests ([xUnit](https://xunit.github.io))
 - Error handling (404, 500, ...)
 - 301 URL Rewriting
-- Logging (TODO: add how to change logging provider to Azure or EventLog)
+- Logging
 
 ## Quick start
 
@@ -45,6 +45,7 @@ Error handling is setup by default. Any server exception or error response withi
 The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting) rules from [IISUrlRewrite.xml](/src/CloudBoilerplateNet/IISUrlRewrite.xml) file. Add or modify existing rules to match your expected behavior.
 
 :warning: ASP.NET Core 1.1 currently [doesn't support Rewrite Maps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting#unsupported-features), but there is a simple workaround for `/oldUrl -> /newUrl` mapping (see [IISUrlRewrite.xml](/src/CloudBoilerplateNet/IISUrlRewrite.xml) for example).
+
 
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.

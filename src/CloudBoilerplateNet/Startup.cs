@@ -37,11 +37,13 @@ namespace CloudBoilerplateNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            // Add console logger with a logging scopes from appsettings.json
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
+                loggerFactory.AddDebug();
+
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
