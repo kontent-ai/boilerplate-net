@@ -20,13 +20,11 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## How to's
 
 
-### How to change Project Id and Delivery Preview API key
+### How to change Kentico Cloud Project Id and Delivery Preview API key
 
-Project Id is stored inside `appsettings.json` file. This setting is automatically loaded [using Options and configuration objects](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) (See [HomeController](/src/CloudBoilerplateNet/Controllers/HomeController.cs) for example).
+Kentico Cloud Project Id is stored inside `appsettings.json` file. This setting is automatically loaded [using Options and configuration objects](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration). You can also provide additional environment specific configuration in `appsettings.production.json` and `appsettings.development.json` files.
 
-Delivery Preview API Key shouldn't be stored within project tree for security reasons. Use [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets#security-app-secrets) to store sensitive data. 
-
-TODO: add preview API into the project
+For security reasons, Delivery Preview API key should be stored outside of the project tree. It's recommended to use [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) to store sensitive data.
 
 
 ### How to generate Strongly Typed Models for Content Types

@@ -9,6 +9,8 @@ namespace CloudBoilerplateNet
 {
     public class Startup
     {
+        // This constant must match <UserSecretsId> value in CloudBoilerplateNet.csproj 
+        public const string USER_SECRETS_ID = "CloudBoilerplateNet";
         public IConfigurationRoot Configuration { get; }
 
         public Startup(IHostingEnvironment env)
@@ -16,7 +18,8 @@ namespace CloudBoilerplateNet
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddUserSecrets(USER_SECRETS_ID)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();

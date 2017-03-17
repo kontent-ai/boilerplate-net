@@ -12,7 +12,17 @@ namespace CloudBoilerplateNet.Controllers
 
         public HomeController(IOptions<ProjectOptions> projectOptions)
         {
-            _client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
+            if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
+            {
+                _client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
+            }
+            else
+            {
+                _client = new DeliveryClient(
+                    projectOptions.Value.KenticoCloudProjectId,
+                    projectOptions.Value.KenticoCloudPreviewApiKey
+                );
+            }
         }
 
         public async Task<ViewResult> Index()
