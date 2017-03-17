@@ -11,13 +11,13 @@ Changes project name to the new one by renaming all files, folders and text occu
 
 #>
 Param(
-    [Parameter(Mandatory=$true, HelpMessage=”You must provide a project name”)]
+    [Parameter(Mandatory=$true, HelpMessage="You must provide a project name")]
     [String]$ProjectName
- )
+)
 
- $oldProjectName = "CloudBoilerplateNet"
+$oldProjectName = "CloudBoilerplateNet"
 
-# Replace occurences within a files
+# Replace in files
 $files = Get-ChildItem . -Recurse -File
 foreach ($file in $files)
 {
