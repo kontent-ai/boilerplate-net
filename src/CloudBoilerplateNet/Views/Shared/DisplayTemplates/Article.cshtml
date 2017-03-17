@@ -8,12 +8,4 @@
     <h3>@Model.Title</h3>
     <p><img src="@Model.TeaserImage.First().Url" style="max-width:100px"></p>
     <div>@Model.Summary</div>
-
-    @if (Model.RelatedArticles != null && Model.RelatedArticles.Any())
-    {
-        <h4>Related articles</h4>
-        <ul>
-            <li>@Model.RelatedArticles.First().System.Name</li>
-        </ul>
-    }
 </div>

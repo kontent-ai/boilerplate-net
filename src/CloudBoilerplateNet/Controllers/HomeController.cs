@@ -1,4 +1,5 @@
 ﻿using CloudBoilerplateNet.Interfaces;
+using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -18,7 +19,9 @@ namespace CloudBoilerplateNet.Controllers
         {
             var response = await _client.GetItemsAsync<Article>(
                 new EqualsFilter("system.type", "article"),
-                new LimitParameter(3)
+                new LimitParameter(3),
+                new DepthParameter(0),
+                new OrderParameter("elements.post_date", SortOrder.Ascending)
             );
 
             return View(response.Items);

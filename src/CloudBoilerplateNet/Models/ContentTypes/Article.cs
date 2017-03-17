@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
 
-namespace CloudBoilerplateNet
+namespace CloudBoilerplateNet.Models
 {
     public partial class Article
     {
@@ -18,7 +18,6 @@ namespace CloudBoilerplateNet
         public DateTime? PostDate { get; set; }
         public string Summary { get; set; }
         public string BodyCopy { get; set; }
-        public IEnumerable<object> RelatedArticles { get; set; }
         public string MetaKeywords { get; set; }
         public string MetaDescription { get; set; }
         public ContentItemSystemAttributes System { get; set; }

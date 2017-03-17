@@ -1,4 +1,5 @@
 ﻿using CloudBoilerplateNet.Interfaces;
+using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
 using Microsoft.Extensions.Options;
 
