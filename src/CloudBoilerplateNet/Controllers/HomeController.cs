@@ -1,7 +1,6 @@
-﻿using CloudBoilerplateNet.Models;
+﻿using CloudBoilerplateNet.Interfaces;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace CloudBoilerplateNet.Controllers
@@ -10,19 +9,9 @@ namespace CloudBoilerplateNet.Controllers
     {
         private readonly DeliveryClient _client;
 
-        public HomeController(IOptions<ProjectOptions> projectOptions)
+        public HomeController(IDeliveryClientService deliveryClientService)
         {
-            if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
-            {
-                _client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
-            }
-            else
-            {
-                _client = new DeliveryClient(
-                    projectOptions.Value.KenticoCloudProjectId,
-                    projectOptions.Value.KenticoCloudPreviewApiKey
-                );
-            }
+            _client = deliveryClientService.Client;
         }
 
         public async Task<ViewResult> Index()

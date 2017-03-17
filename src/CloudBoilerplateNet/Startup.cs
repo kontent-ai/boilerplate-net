@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CloudBoilerplateNet.Interfaces;
+using CloudBoilerplateNet.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +37,9 @@ namespace CloudBoilerplateNet
             services.Configure<ProjectOptions>(Configuration);
 
             services.AddMvc();
+
+            // Register application services.
+            services.AddSingleton<IDeliveryClientService, DeliveryClientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
