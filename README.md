@@ -24,7 +24,10 @@ This boilerplate includes a set of features and best practices to kick off your 
 5. Open in Visual Studio 2017/Code and Run
 
 ### Installation from source
-TODO
+
+1. `git clone https://github.com/Kentico/cloud-boilerplate-net.git`
+2. `dotnet build`
+3. `dotnet new -i artifacts/*.nupkg`
 
 ## How to's
 
