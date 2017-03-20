@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CloudBoilerplateNet\CloudBoilerplateNet.csproj" />
+    <ProjectReference Include="..\..\src\content\CloudBoilerplateNet\CloudBoilerplateNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>
