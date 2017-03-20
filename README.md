@@ -13,9 +13,12 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 ## Quick start
 
-1. Download/clone this project into your disk
-2. Run `RenameProject.ps1 <projectName>` in PowerShell console (e.g.: `RenameProject.ps1 ChunkyMonkey`)
-3. Open in Visual Studio 2017/Code and Run
+1. ~~Download/clone this project into your disk~~
+2. ~~Run `RenameProject.ps1 <projectName>` in PowerShell console (e.g.: `RenameProject.ps1 ChunkyMonkey`)~~
+3. ~~Open in Visual Studio 2017/Code and Run~~
+
+`dotnet new --install KenticoCloud.CloudBoilerplateNet::*`
+TODO
 
 ## How to's
 
