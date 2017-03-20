@@ -1,0 +1,11 @@
+{
+  "author": "Kentico Software",
+  "classifications": [ "Boilerplate" ],
+  "name": "ASP.NET Core MVC with Kentico Cloud",
+  "tags": {
+    "language": "C#"
+  },
+  "identity": "KenticoCloud.CloudBoilerplateNet",
+  "shortName": "cloud-boilerplate-net",
+  "sourceName": "CloudBoilerplateNet"
+}
