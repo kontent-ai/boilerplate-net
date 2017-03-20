@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>KenticoCloud.CloudBoilerplateNet</id>
+    <version>1.0.0</version>
+    <authors>Kentico Software</authors>
+    <description>Kentico Cloud .NET MVC Boilerplate</description>
+    <language>en-US</language>
+    <projectUrl>https://github.com/Kentico/cloud-boilerplate-net</projectUrl>
+    <licenseUrl>https://github.com/Kentico/cloud-boilerplate-net/blob/master/LICENSE</licenseUrl>
+	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+    <!-- dependencies>
+      <dependency id="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" version="1.0.0-beta1-*" />
+    </dependencies -->
+  </metadata>
+  <files>
+    <file src="**" exclude="content\Web-CSharp\**\*;**\bin\**\*;**\obj\**\*;**\*.user;**\*.lock.json" />
+  </files>
+</package>
