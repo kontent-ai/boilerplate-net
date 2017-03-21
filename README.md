@@ -1,6 +1,7 @@
 # Kentico Cloud Boilerplate for ASP.NET Core MVC
 [![Build status](https://ci.appveyor.com/api/projects/status/1s02tbk1tml2wdmj/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-boilerplate-net/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/KenticoCloud.CloudBoilerplateNet.svg)](https://www.nuget.org/packages/KenticoCloud.CloudBoilerplateNet/)
+[![Forums](https://img.shields.io/badge/chat-on%20forums-orange.svg)](https://forums.kenticocloud.com)
 
 This boilerplate includes a set of features and best practices to kick off your website development with Kentico Cloud smoothly.
 
