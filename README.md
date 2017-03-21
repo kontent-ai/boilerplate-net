@@ -7,9 +7,9 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## What's included
 
 - Kentico Delivery SDK
-- Setup for Dev and Production environment
+- Configs for Dev and Production environment
 - Unit tests ([xUnit](https://xunit.github.io))
-- Error handling (404, 500, ...)
+- HTTP Status codes handling (404, 500, ...)
 - 301 URL Rewriting
 - Logging
 
