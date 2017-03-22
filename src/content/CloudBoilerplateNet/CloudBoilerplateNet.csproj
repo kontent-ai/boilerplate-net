@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <Content Include="IISUrlRewrite.xml" />
+    <Content Include="wwwroot\css\site.css" />
+    <Content Include="wwwroot\js\site.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,10 +44,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
     <PackageReference Include="KenticoCloud.Delivery" Version="4.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
