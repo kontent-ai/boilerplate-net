@@ -1,5 +1,4 @@
-﻿using CloudBoilerplateNet.Interfaces;
-using CloudBoilerplateNet.Models;
+﻿using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -8,11 +7,11 @@ namespace CloudBoilerplateNet.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DeliveryClient _client;
+        private readonly IDeliveryClient _client;
 
-        public HomeController(IDeliveryClientService deliveryClientService)
+        public HomeController(IDeliveryClient deliveryClient)
         {
-            _client = deliveryClientService.Client;
+            _client = deliveryClient;
         }
 
         public async Task<ViewResult> Index()
@@ -21,7 +20,7 @@ namespace CloudBoilerplateNet.Controllers
                 new EqualsFilter("system.type", "article"),
                 new LimitParameter(3),
                 new DepthParameter(0),
-                new OrderParameter("elements.post_date", SortOrder.Ascending)
+                new OrderParameter("elements.post_date")
             );
 
             return View(response.Items);
