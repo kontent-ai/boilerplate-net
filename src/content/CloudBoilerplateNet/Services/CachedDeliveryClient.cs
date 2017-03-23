@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using KenticoCloud.Delivery;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Options;
-using CloudBoilerplateNet.Models;
-using CloudBoilerplateNet.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace CloudBoilerplateNet.Services
@@ -14,9 +12,7 @@ namespace CloudBoilerplateNet.Services
     public class CachedDeliveryClient : IDeliveryClient
     {
         #region "Fields"
-
-        protected int _cacheTimeoutMinutes;
-        protected int _cacheTimeoutSeconds = -1;
+        
         protected readonly IMemoryCache _cache;
         protected readonly DeliveryClient _client;
 
@@ -24,17 +20,10 @@ namespace CloudBoilerplateNet.Services
 
         #region "Properties"
 
-        protected int CacheExpiryInSeconds
+        public int CacheExpirySeconds
         {
-            get
-            {
-                if (_cacheTimeoutSeconds == -1)
-                {
-                    _cacheTimeoutSeconds = _cacheTimeoutMinutes * 60;
-                }
-
-                return _cacheTimeoutSeconds;
-            }
+            get;
+            set;
         }
 
         public IContentLinkUrlResolver ContentLinkUrlResolver { get => _client.ContentLinkUrlResolver; set => _client.ContentLinkUrlResolver = value; }
@@ -44,7 +33,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, int cacheTimeoutMinutes)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, int cacheTimeoutSeconds)
         {
             if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
             {
@@ -58,9 +47,8 @@ namespace CloudBoilerplateNet.Services
                 );
             }
 
-            _cacheTimeoutMinutes = cacheTimeoutMinutes;
+            CacheExpirySeconds = cacheTimeoutSeconds;
             _cache = memoryCache;
-
         }
 
         #endregion
@@ -71,20 +59,14 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetItemJsonAsync)}|{codename}|{string.Join("|", parameters)}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemJsonAsync(codename, parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemJsonAsync(codename, parameters));
         }
 
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
             string cacheKey = $"{nameof(GetItemsJsonAsync)}|{string.Join("|", parameters)}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemsJsonAsync(parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsJsonAsync(parameters));
         }
 
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, params IQueryParameter[] parameters)
@@ -101,20 +83,14 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetItemAsync)}|{codename}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemAsync(codename, parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync(codename, parameters));
         }
 
         public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
         {
             string cacheKey = $"{nameof(GetItemAsync)}-{typeof(T).FullName}|{codename}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemAsync<T>(codename, parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync<T>(codename, parameters));
         }
 
         public async Task<DeliveryItemListingResponse> GetItemsAsync(params IQueryParameter[] parameters)
@@ -126,10 +102,7 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetItemsAsync)}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemsAsync(parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync(parameters));
         }
 
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(params IQueryParameter[] parameters)
@@ -141,40 +114,28 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetItemsAsync)}-{typeof(T).FullName}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetItemsAsync<T>(parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync<T>(parameters));
         }
 
         public async Task<JObject> GetTypeJsonAsync(string codename)
         {
             string cacheKey = $"{nameof(GetTypeJsonAsync)}|{codename}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetTypeJsonAsync(codename);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetTypeJsonAsync(codename));
         }
 
         public async Task<JObject> GetTypesJsonAsync(params string[] parameters)
         {
             string cacheKey = $"{nameof(GetTypesJsonAsync)}|{string.Join("|", parameters)}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetTypesJsonAsync(parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetTypesJsonAsync(parameters));
         }
 
         public async Task<ContentType> GetTypeAsync(string codename)
         {
             string cacheKey = $"{nameof(GetTypeAsync)}|{codename}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetTypeAsync(codename);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetTypeAsync(codename));
         }
 
         public async Task<DeliveryTypeListingResponse> GetTypesAsync(params IQueryParameter[] parameters)
@@ -186,20 +147,14 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetTypesAsync)}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetTypesAsync(parameters);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetTypesAsync(parameters));
         }
 
         public async Task<ContentElement> GetContentElementAsync(string contentTypeCodename, string contentElementCodename)
         {
             string cacheKey = $"{nameof(GetContentElementAsync)}|{contentTypeCodename}|{contentElementCodename}";
 
-            return await GetOrCreateAsync(cacheKey, () =>
-            {
-                return _client.GetContentElementAsync(contentTypeCodename, contentElementCodename);
-            });
+            return await GetOrCreateAsync(cacheKey, () => _client.GetContentElementAsync(contentTypeCodename, contentElementCodename));
         }
 
         #endregion
@@ -210,7 +165,7 @@ namespace CloudBoilerplateNet.Services
         {
             var result = _cache.GetOrCreateAsync<T>(key, entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(CacheExpiryInSeconds);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(CacheExpirySeconds);
                 return factory.Invoke();
             });
 

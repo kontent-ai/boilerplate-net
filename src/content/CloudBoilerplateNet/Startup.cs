@@ -1,5 +1,6 @@
-﻿using CloudBoilerplateNet.Interfaces;
+﻿using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Services;
+using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CloudBoilerplateNet
 {
@@ -40,8 +42,10 @@ namespace CloudBoilerplateNet
             services.Configure<MemoryCacheOptions>(Configuration);
             services.AddMvc();
 
-            // Register application services.
-            services.AddSingleton<IDeliveryClientService, DeliveryClientService>();
+            services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>(), 5 * 60)
+            {
+                CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,7 +70,7 @@ namespace CloudBoilerplateNet
                 // non-success case (status code is >= 400 and < 600)
                 app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
-            
+
             // Add IIS URL Rewrite list
             // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
             app.UseRewriter(new RewriteOptions()
