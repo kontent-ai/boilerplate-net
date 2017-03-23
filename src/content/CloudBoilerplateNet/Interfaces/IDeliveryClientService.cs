@@ -8,6 +8,6 @@ namespace CloudBoilerplateNet.Interfaces
 {
     public interface IDeliveryClientService
     {
-        DeliveryClient Client { get; }
+        IDeliveryClient Client { get; }
     }
 }

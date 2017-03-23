@@ -8,7 +8,7 @@ namespace CloudBoilerplateNet.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DeliveryClient _client;
+        private readonly IDeliveryClient _client;
 
         public HomeController(IDeliveryClientService deliveryClientService)
         {

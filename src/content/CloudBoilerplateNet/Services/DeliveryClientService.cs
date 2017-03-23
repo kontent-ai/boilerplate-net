@@ -1,27 +1,18 @@
 ﻿using CloudBoilerplateNet.Interfaces;
 using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace CloudBoilerplateNet.Services
 {
     public class DeliveryClientService : IDeliveryClientService
     {
-        public DeliveryClient Client { get; }
+        public IDeliveryClient Client { get; }
 
-        public DeliveryClientService(IOptions<ProjectOptions> projectOptions)
+        public DeliveryClientService(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
         {
-            if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
-            {
-                Client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
-            }
-            else
-            {
-                Client = new DeliveryClient(
-                    projectOptions.Value.KenticoCloudProjectId,
-                    projectOptions.Value.KenticoCloudPreviewApiKey
-                );
-            }
+            Client = new CachedDeliveryClient(projectOptions, memoryCache, 60);
 
             Client.CodeFirstModelProvider.TypeProvider = new CustomTypeProvider();
         }
