@@ -38,8 +38,6 @@ namespace CloudBoilerplateNet
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-
-            services.Configure<MemoryCacheOptions>(Configuration);
             services.AddMvc();
 
             services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>(), 5 * 60)
