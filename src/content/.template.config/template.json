@@ -6,6 +6,6 @@
     "language": "C#"
   },
   "identity": "KenticoCloud.CloudBoilerplateNet",
-  "shortName": "cloud-boilerplate-net",
+  "shortName": "kentico-cloud-mvc",
   "sourceName": "CloudBoilerplateNet"
 }
