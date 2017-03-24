@@ -36,8 +36,6 @@ namespace CloudBoilerplateNet
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-
-            services.Configure<MemoryCacheOptions>(Configuration);
             services.AddMvc();
 
             // Register application services.
