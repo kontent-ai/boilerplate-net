@@ -12,7 +12,7 @@ namespace CloudBoilerplateNet.Services
     public class CachedDeliveryClient : IDeliveryClient
     {
         #region "Fields"
-        
+
         protected readonly IMemoryCache _cache;
         protected readonly DeliveryClient _client;
 
@@ -57,14 +57,14 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
         {
-            string cacheKey = $"{nameof(GetItemJsonAsync)}|{codename}|{string.Join("|", parameters)}";
+            string cacheKey = $"{nameof(GetItemJsonAsync)}|{codename}|{Join(parameters)}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemJsonAsync(codename, parameters));
         }
 
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
-            string cacheKey = $"{nameof(GetItemsJsonAsync)}|{string.Join("|", parameters)}";
+            string cacheKey = $"{nameof(GetItemsJsonAsync)}|{Join(parameters)}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemsJsonAsync(parameters));
         }
@@ -81,14 +81,14 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemAsync)}|{codename}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
+            string cacheKey = $"{nameof(GetItemAsync)}|{codename}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync(codename, parameters));
         }
 
         public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
         {
-            string cacheKey = $"{nameof(GetItemAsync)}-{typeof(T).FullName}|{codename}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
+            string cacheKey = $"{nameof(GetItemAsync)}-{typeof(T).FullName}|{codename}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync<T>(codename, parameters));
         }
@@ -100,7 +100,7 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemsAsync)}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
+            string cacheKey = $"{nameof(GetItemsAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync(parameters));
         }
@@ -112,7 +112,7 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemsAsync)}-{typeof(T).FullName}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
+            string cacheKey = $"{nameof(GetItemsAsync)}-{typeof(T).FullName}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync<T>(parameters));
         }
@@ -126,7 +126,7 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<JObject> GetTypesJsonAsync(params string[] parameters)
         {
-            string cacheKey = $"{nameof(GetTypesJsonAsync)}|{string.Join("|", parameters)}";
+            string cacheKey = $"{nameof(GetTypesJsonAsync)}|{Join(parameters)}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetTypesJsonAsync(parameters));
         }
@@ -145,7 +145,7 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryTypeListingResponse> GetTypesAsync(IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetTypesAsync)}|{string.Join("|", parameters.Select(p => p.GetQueryStringParameter()).ToList())}";
+            string cacheKey = $"{nameof(GetTypesAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetTypesAsync(parameters));
         }
@@ -160,6 +160,11 @@ namespace CloudBoilerplateNet.Services
         #endregion
 
         #region "Helper methods"
+
+        protected string Join(IEnumerable<string> parameters)
+        {
+            return parameters != null ? string.Join("|", parameters) : string.Empty;
+        }
 
         protected async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory)
         {
