@@ -81,6 +81,11 @@ namespace CloudBoilerplateNet
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "sitemap",
+                    defaults: new { controller = "Sitemap", action = "Index" },
+                    template: "sitemap.xml");
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
