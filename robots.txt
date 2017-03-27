@@ -1,0 +1,6 @@
+# Allow for all robots
+User-agent: *
+Allow: /
+
+# Update the sitemap URL below with your domain and uncomment the line
+# Sitemap: http://mywebsite.com/sitemap.xml
