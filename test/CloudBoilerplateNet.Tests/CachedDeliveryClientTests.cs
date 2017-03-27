@@ -14,7 +14,8 @@ namespace CloudBoilerplateNet.Tests
         {
             var projectOptions = Options.Create(new ProjectOptions
             {
-                KenticoCloudProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3"
+                KenticoCloudProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                CacheTimeoutSeconds = 60
             });
 
             var memoryCacheOptions = Options.Create(new MemoryCacheOptions
@@ -24,7 +25,7 @@ namespace CloudBoilerplateNet.Tests
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 
-            var deliveryClient = new CachedDeliveryClient(projectOptions, new MemoryCache(memoryCacheOptions), 60);
+            var deliveryClient = new CachedDeliveryClient(projectOptions, new MemoryCache(memoryCacheOptions));
 
             var result = deliveryClient.GetItemAsync("home");
 
