@@ -33,9 +33,9 @@ namespace CloudBoilerplateNet.Controllers
             return new SitemapProvider().CreateSitemap(new SitemapModel(nodes));
         }
 
-        // TODO: The URL generation logic should be adjusted to match your website
         private static string GetPageUrl(ContentItemSystemAttributes system)
         {
+            // TODO: The URL generation logic should be adjusted to match your website
             var url = string.Empty;
 
             if(system.SitemapLocation.Any())
