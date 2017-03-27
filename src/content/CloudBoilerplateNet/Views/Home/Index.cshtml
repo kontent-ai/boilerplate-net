@@ -2,15 +2,30 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<div class="header clearfix">
+    <nav>
+        <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="/">Home</a></li>
+            <li role="presentation"><a href="https://kenticocloud.com/" target="_blank">Kentico Cloud</a></li>
+            <li role="presentation"><a href="https://app.kenticocloud.com/sign-up" target="_blank">Sign up</a></li>
+        </ul>
+    </nav>
+    <h3 class="text-muted">Kentico Cloud Boilerplate</h3>
+</div>
 
-<h1>Welcome to Kentico Cloud .NET MVC boilerplate.</h1>
+<div class="jumbotron">
+    <h1>Let's Get Started</h1>
+    <p class="lead">This boilerplate includes a set of features and best practices to kick off your website development with Kentico Cloud smoothly. Take a look into the code how this page works.</p>
+    <p><a class="btn btn-lg btn-success" href="https://github.com/getstarted/cloud-boilerplate-net#quick-start" target="_blank" role="button">Read the Quick Start</a></p>
+</div>
 
-<p>Take a look into the code how this page works.</p>
-
-<h2>Latest articles</h2>
-
-@*
-    This MVC helper method ensures that current model is rendered 
-    with suitable view from /Views/Shared/DisplayTemplates
-*@
-@Html.DisplayForModel()
+<div class="row marketing">
+    <h2>Articles from the Dancing Goat Sample Site</h2>
+</div>
+<div class="row marketing">
+    @*
+        This MVC helper method ensures that current model is rendered
+        with suitable view from /Views/Shared/DisplayTemplates
+    *@
+    @Html.DisplayForModel()
+</div>

@@ -4,8 +4,17 @@
     Layout = null;
 }
 
-<div style="border-top: 1px solid #e4e4e4;">
-    <h3>@Model.Title</h3>
-    <p><img src="@Model.TeaserImage.First().Url" style="max-width:100px"></p>
-    <div>@Model.Summary</div>
+<div class="row">
+    <div class="col-xs-12">
+        <h4>@Model.Title</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <img src="@Model.TeaserImage.First().Url" class="img-responsive" alt="@Model.TeaserImage.First().Name"/>
+    </div>
+    <div class="col-sm-8">
+        @Model.Summary
+        <p><a class="btn btn-sm btn-primary" href="#" role="button">Read more</a></p>
+    </div>
 </div>
