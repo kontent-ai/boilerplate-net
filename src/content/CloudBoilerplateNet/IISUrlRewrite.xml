@@ -1,5 +1,22 @@
 <rewrite>
   <rules>
+    <!-- Example of a redirect to a non-www domain in production -->
+    <!-- This example can be easily changed to redirect to a www domain as well -->
+    <rule name="Redirect to non-www domain" stopProcessing="true">
+      <match url="(.*)" />
+      <conditions>
+        <add input="{REQUEST_METHOD}" pattern="^get$|^head$" />
+        <!-- Ignore your local dev host -->
+        <add input="{HTTP_HOST}" negate="true" pattern="localhost" />
+        <!-- Ignore your preview/staging websites -->
+        <add input="{HTTP_HOST}" negate="true" pattern="preview.example.com" />
+        <!-- Make sure to ignore your own domain to prevent a redirect loop -->
+        <add input="{HTTP_HOST}" negate="true" pattern="^example.com" />
+      </conditions>
+      <!-- TODO: Change all occurrences of "example.com" to match your production website -->
+      <action type="Redirect" url="http://example.com" />
+    </rule>
+    
     <!-- Example of 301 permanent redirect using Regex patter -->
     <rule name="Regex pattern" stopProcessing="true">
       <match url="^rewrite/(.*)" />
@@ -12,5 +29,6 @@
       <match url="^oldUrl[/]$" />
       <action type="Redirect" url="/newUrl" appendQueryString="false" redirectType="Permanent" />
     </rule>
+
   </rules>
 </rewrite>
