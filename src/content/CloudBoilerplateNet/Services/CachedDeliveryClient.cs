@@ -33,7 +33,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, int cacheTimeoutSeconds)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
         {
             if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
             {
@@ -47,7 +47,7 @@ namespace CloudBoilerplateNet.Services
                 );
             }
 
-            CacheExpirySeconds = cacheTimeoutSeconds;
+            CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _cache = memoryCache;
         }
 
