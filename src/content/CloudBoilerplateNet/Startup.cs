@@ -40,7 +40,7 @@ namespace CloudBoilerplateNet
             services.Configure<ProjectOptions>(Configuration);
             services.AddMvc();
 
-            services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>(), 5 * 60)
+            services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() }
             });
