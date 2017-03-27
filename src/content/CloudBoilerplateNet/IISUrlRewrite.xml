@@ -6,14 +6,14 @@
       <match url="(.*)" />
       <conditions>
         <add input="{REQUEST_METHOD}" pattern="^get$|^head$" />
-        <!--ignore your local dev host-->
+        <!-- Ignore your local dev host -->
         <add input="{HTTP_HOST}" negate="true" pattern="localhost" />
-        <!--Ignore your preview/staging websites-->
+        <!-- Ignore your preview/staging websites -->
         <add input="{HTTP_HOST}" negate="true" pattern="preview.example.com" />
-        <!--Make sure to ignore your own domain to prevent a redirect loop-->
+        <!-- Make sure to ignore your own domain to prevent a redirect loop -->
         <add input="{HTTP_HOST}" negate="true" pattern="^example.com" />
       </conditions>
-      <!-- TODO: Change the domain name to match your production website -->
+      <!-- TODO: Change all occurrences of "example.com" to match your production website -->
       <action type="Redirect" url="http://example.com" />
     </rule>
     
