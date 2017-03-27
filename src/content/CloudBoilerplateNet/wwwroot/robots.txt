@@ -2,5 +2,5 @@
 User-agent: *
 Allow: /
 
-# Update the sitemap URL below with your domain and uncomment the line
+# TODO: Update the sitemap URL below with your domain and uncomment the line
 # Sitemap: http://example.com/sitemap.xml

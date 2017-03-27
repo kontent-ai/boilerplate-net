@@ -5,18 +5,16 @@ using System.Threading.Tasks;
 
 namespace CloudBoilerplateNet.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly IDeliveryClient _client;
-
-        public HomeController(IDeliveryClient deliveryClient)
+        public HomeController(IDeliveryClient deliveryClient) : base(deliveryClient)
         {
-            _client = deliveryClient;
+            
         }
 
         public async Task<ViewResult> Index()
         {
-            var response = await _client.GetItemsAsync<Article>(
+            var response = await DeliveryClient.GetItemsAsync<Article>(
                 new EqualsFilter("system.type", "article"),
                 new LimitParameter(3),
                 new DepthParameter(0),
