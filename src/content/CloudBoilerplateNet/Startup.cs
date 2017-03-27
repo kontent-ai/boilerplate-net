@@ -1,4 +1,5 @@
 ﻿using CloudBoilerplateNet.Models;
+using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Builder;
@@ -42,7 +43,8 @@ namespace CloudBoilerplateNet
 
             services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>(), 5 * 60)
             {
-                CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() }
+                CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
+                ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
             });
         }
 
