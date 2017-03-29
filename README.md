@@ -5,6 +5,8 @@
 
 This boilerplate includes a set of features and best practices to kick off your website development with Kentico Cloud smoothly.
 
+[![Boilerplate screenshot](/img/template_thumbnail.png)](/img/template.png)
+
 ## What's included
 
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
