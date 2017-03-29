@@ -61,6 +61,7 @@ Rich text elements in Kentico Cloud can contain links to other content items. It
 All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for five minutes. You can change the time by overriding the value of `CacheTimeoutSeconds` (e.g. in appsettings.json).
 
 ### How to adjust the sitemap.xml
+The boilerplate contains a sample implementation of the [`SiteMapController`](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Controllers/SiteMapController.cs). Make sure you specify desired content types in the `Index()` action method. Also, you can adjust the URL resolution logic in the `GetPageUrl()` method.
 
 ### How to handle 404 errors or any other error
 
@@ -78,6 +79,6 @@ The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
 ## Contributions and Thanks
-[Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
-[Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
-[Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
+- [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
+- [Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
+- [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
