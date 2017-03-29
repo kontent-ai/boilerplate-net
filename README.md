@@ -9,7 +9,8 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## What's included
 
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
-- [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)
+  - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)
+  - 
 - [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [301 URL Rewriting](#how-to-handle-301-permanent-redirect)
@@ -68,3 +69,8 @@ The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft
 
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
+
+## Contributions and Thanks
+[Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
+[Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
+[Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
