@@ -14,7 +14,8 @@ This boilerplate includes a set of features and best practices to kick off your 
 - [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [301 URL Rewriting](#how-to-handle-301-permanent-redirect)
-- [Sitemap.xml](#how-to-adjust-the-sitemap.xml) generator
+- [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
+- www -> non-www redirection
 - Configs for Dev and Production environment
 - robots.txt
 - Logging
