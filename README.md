@@ -14,6 +14,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 - [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [301 URL Rewriting](#how-to-handle-301-permanent-redirect)
+- [Sitemap.xml](#how-to-adjust-the-sitemap.xml) generator
 - Configs for Dev and Production environment
 - robots.txt
 - Logging
@@ -57,6 +58,8 @@ Rich text elements in Kentico Cloud can contain links to other content items. It
 ### How to set up fixed-time caching
 
 All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for five minutes. You can change the time by overriding the value of `CacheTimeoutSeconds` (e.g. in appsettings.json).
+
+### How to adjust the sitemap.xml
 
 ### How to handle 404 errors or any other error
 
