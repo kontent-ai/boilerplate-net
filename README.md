@@ -13,9 +13,10 @@ This boilerplate includes a set of features and best practices to kick off your 
   - [Sample link resolver](#how-to-resolve-links)
 - [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
-- [301 URL Rewriting](#how-to-handle-301-permanent-redirect)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
-- www -> non-www redirection
+- URL [Rewriting examples](#how-to-adjust-url-rewriting)
+  - 301 URL Rewriting
+  - www -> non-www redirection
 - Configs for Dev and Production environment
 - robots.txt
 - Logging
@@ -68,9 +69,10 @@ The boilerplate contains a sample implementation of the [`SiteMapController`](ht
 Error handling is setup by default. Any server exception or error response within 400-600 status code range is handled by ErrorController. By default, it's configured to display Not Found error page for 404 error and General Error for anything else. 
 
 
-### How to handle 301 Permanent redirect
+### How to adjust URL rewriting
 
 The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting) rules from [IISUrlRewrite.xml](/src/CloudBoilerplateNet/IISUrlRewrite.xml) file. Add or modify existing rules to match your expected behavior.
+This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 
 :warning: ASP.NET Core 1.1 currently [doesn't support Rewrite Maps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting#unsupported-features), but there is a simple workaround for `/oldUrl -> /newUrl` mapping (see [IISUrlRewrite.xml](/src/CloudBoilerplateNet/IISUrlRewrite.xml) for example).
 
