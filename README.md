@@ -4,8 +4,7 @@
 [![Forums](https://img.shields.io/badge/chat-on%20forums-orange.svg)](https://forums.kenticocloud.com)
 
 This boilerplate includes a set of features and best practices to kick off your website development with Kentico Cloud smoothly.
-
-[![Boilerplate screenshot](/img/template_thumbnail.png)](/img/template.png)
+[<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
 
 ## What's included
 
