@@ -24,6 +24,10 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 ## Quick start
 
+### Prerequisites
+* [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
+* or [Visual Studio Code](https://code.visualstudio.com/)
+
 ### Installation from NuGet
 
 1. You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
