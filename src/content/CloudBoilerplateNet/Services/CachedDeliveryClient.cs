@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace CloudBoilerplateNet.Services
 {
-    public class CachedDeliveryClient : IDeliveryClient
+    public class CachedDeliveryClient : IDeliveryClient, IDisposable
     {
         #region "Fields"
 
@@ -155,6 +155,11 @@ namespace CloudBoilerplateNet.Services
             string cacheKey = $"{nameof(GetContentElementAsync)}|{contentTypeCodename}|{contentElementCodename}";
 
             return await GetOrCreateAsync(cacheKey, () => _client.GetContentElementAsync(contentTypeCodename, contentElementCodename));
+        }
+
+        public void Dispose()
+        {
+            _cache.Dispose();
         }
 
         #endregion
