@@ -24,6 +24,10 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 ## Quick start
 
+### Prerequisites
+* [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
+* or [Visual Studio Code](https://code.visualstudio.com/)
+
 ### Installation from NuGet
 
 1. You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
@@ -60,6 +64,14 @@ Rich text elements in Kentico Cloud can contain links to other content items. It
 ### How to set up fixed-time caching
 
 All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for five minutes. You can change the time by overriding the value of `CacheTimeoutSeconds` (e.g. in appsettings.json).
+
+The [CachedDeliveryClient](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) class is a simple wrapper around the original [https://github.com/Kentico/delivery-sdk-net/blob/master/KenticoCloud.Delivery/DeliveryClient.cs](DeliveryClient). It uses an [https://docs.microsoft.com/en-us/aspnet/core/api/microsoft.extensions.caching.memory.imemorycache](IMemoryCache) caching, currently implemented with the [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache?view=netframework-4.7) object.
+
+The `CachedDeliveryClient` has the same methods as the original `DeliveryClient`. Upon invoking these methods, it stores the results into the in-memory cache, for the aforementioned amount of time.
+
+As an in-memory caching mechanism, it is perfectly fine for non-load-balanced apps, or for apps configured with [sticky sessions](https://forums.asp.net/t/1892952.aspx?What+is+sticky+session+). For other scenarios, a distributed cache should be used instead.
+
+**Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
 
 ### How to adjust the sitemap.xml
 The boilerplate contains a sample implementation of the [`SiteMapController`](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Controllers/SiteMapController.cs). Make sure you specify desired content types in the `Index()` action method. Also, you can adjust the URL resolution logic in the `GetPageUrl()` method.
