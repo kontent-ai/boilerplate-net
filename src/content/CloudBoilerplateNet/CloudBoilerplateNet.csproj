@@ -46,7 +46,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
-    <PackageReference Include="KenticoCloud.Delivery" Version="4.1.0" />
+    <PackageReference Include="KenticoCloud.Delivery" Version="4.2.0" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.0.0" />
   </ItemGroup>
 
