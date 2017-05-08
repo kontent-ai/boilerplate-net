@@ -25,14 +25,17 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## Quick start
 
 ### Prerequisites
+**Required:**
+You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
+
+Optional:
 * [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
 * or [Visual Studio Code](https://code.visualstudio.com/)
 
 ### Installation from NuGet
 
-1. You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
-2. Open Developer Command Prompt for VS 2017
-3. Run `dotnet new --install "KenticoCloud.CloudBoilerplateNet::*"` to install the boilerplate to your machine
+1. Open Developer Command Prompt for VS 2017
+2. Run `dotnet new --install "KenticoCloud.CloudBoilerplateNet::*"` to install the boilerplate to your machine
 3. Wait for the command to finish (it may take a minute or two)
 4. Run `dotnet new kentico-cloud-mvc --name "MyWebsite"  [--output "<path>"]`
 5. Open in Visual Studio 2017/Code and Run
