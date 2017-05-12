@@ -95,7 +95,11 @@ This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
-## Contributions and Thanks
+## Wall of Fame
+We would like to express our thanks to the following people who contributed and made the project possible:
+
 - [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
 - [Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
 - [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
+
+Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-boilerplate-net/issues) and send us a pull request!
