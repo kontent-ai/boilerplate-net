@@ -95,7 +95,7 @@ This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
-## Wall of Fame
+### Wall of Fame
 We would like to express our thanks to the following people who contributed and made the project possible:
 
 - [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
