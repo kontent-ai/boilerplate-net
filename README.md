@@ -25,14 +25,17 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## Quick start
 
 ### Prerequisites
+**Required:**
+You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
+
+Optional:
 * [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
 * or [Visual Studio Code](https://code.visualstudio.com/)
 
 ### Installation from NuGet
 
-1. You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
-2. Open Developer Command Prompt for VS 2017
-3. Run `dotnet new --install "KenticoCloud.CloudBoilerplateNet::*"` to install the boilerplate to your machine
+1. Open Developer Command Prompt for VS 2017
+2. Run `dotnet new --install "KenticoCloud.CloudBoilerplateNet::*"` to install the boilerplate to your machine
 3. Wait for the command to finish (it may take a minute or two)
 4. Run `dotnet new kentico-cloud-mvc --name "MyWebsite"  [--output "<path>"]`
 5. Open in Visual Studio 2017/Code and Run
@@ -92,7 +95,11 @@ This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
-## Contributions and Thanks
+### Wall of Fame
+We would like to express our thanks to the following people who contributed and made the project possible:
+
 - [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
 - [Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
 - [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
+
+Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-boilerplate-net/issues) and send us a pull request!
