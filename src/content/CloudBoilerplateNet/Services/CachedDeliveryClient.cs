@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KenticoCloud.Delivery;
+using KenticoCloud.Delivery.InlineContentItems;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
@@ -29,6 +30,7 @@ namespace CloudBoilerplateNet.Services
 
         public IContentLinkUrlResolver ContentLinkUrlResolver { get => _client.ContentLinkUrlResolver; set => _client.ContentLinkUrlResolver = value; }
         public ICodeFirstModelProvider CodeFirstModelProvider { get => _client.CodeFirstModelProvider; set => _client.CodeFirstModelProvider = value; }
+        public InlineContentItemsProcessor InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
 
         #endregion
 
