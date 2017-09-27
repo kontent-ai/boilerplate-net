@@ -12,21 +12,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="IISUrlRewrite.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="IISUrlRewrite.xml" />
-    <Content Include="wwwroot\css\ie10-viewport-bug-workaround.css" />
-    <Content Include="wwwroot\css\site.css" />
-    <Content Include="wwwroot\favicon.ico" />
-    <Content Include="wwwroot\js\ie10-viewport-bug-workaround.js" />
-    <Content Include="wwwroot\js\site.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="wwwroot\**\*">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    <None Include="IISUrlRewrite.xml">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\css\ie10-viewport-bug-workaround.css">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\css\site.css">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\favicon.ico">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\js\ie10-viewport-bug-workaround.js">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\js\site.js">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
