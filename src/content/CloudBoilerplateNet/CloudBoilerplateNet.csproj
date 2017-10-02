@@ -12,27 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="IISUrlRewrite.xml">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\css\ie10-viewport-bug-workaround.css">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\css\site.css">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\favicon.ico">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\js\ie10-viewport-bug-workaround.js">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\js\site.js">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="1.0.2" />
