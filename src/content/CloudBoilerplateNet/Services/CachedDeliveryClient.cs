@@ -30,7 +30,7 @@ namespace CloudBoilerplateNet.Services
 
         public IContentLinkUrlResolver ContentLinkUrlResolver { get => _client.ContentLinkUrlResolver; set => _client.ContentLinkUrlResolver = value; }
         public ICodeFirstModelProvider CodeFirstModelProvider { get => _client.CodeFirstModelProvider; set => _client.CodeFirstModelProvider = value; }
-        public InlineContentItemsProcessor InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
+        IInlineContentItemsProcessor IDeliveryClient.InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
 
         #endregion
 
@@ -38,15 +38,14 @@ namespace CloudBoilerplateNet.Services
 
         public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
         {
-            if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
+            if (string.IsNullOrEmpty(projectOptions.Value.DeliveryOptions.ProjectId))
             {
-                _client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
+                _client = new DeliveryClient(projectOptions.Value.DeliveryOptions.ProjectId);
             }
             else
             {
                 _client = new DeliveryClient(
-                    projectOptions.Value.KenticoCloudProjectId,
-                    projectOptions.Value.KenticoCloudPreviewApiKey
+                    projectOptions.Value.DeliveryOptions
                 );
             }
 
@@ -295,6 +294,31 @@ namespace CloudBoilerplateNet.Services
             }
 
             _disposed = true;
+        }
+
+        public Task<JObject> GetTaxonomyJsonAsync(string codename)
+        {
+            return _client.GetTaxonomyJsonAsync(codename);
+        }
+
+        public Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
+        {
+            return _client.GetTaxonomiesJsonAsync(parameters);
+        }
+
+        public Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
+        {
+            return _client.GetTaxonomyAsync(codename);
+        }
+
+        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
+        {
+            return _client.GetTaxonomiesAsync(parameters);
+        }
+
+        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            return _client.GetTaxonomiesAsync(parameters);
         }
 
         #endregion

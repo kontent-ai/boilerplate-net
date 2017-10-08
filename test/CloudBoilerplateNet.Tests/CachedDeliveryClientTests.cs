@@ -3,6 +3,7 @@ using CloudBoilerplateNet.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Xunit;
+using KenticoCloud.Delivery;
 
 namespace CloudBoilerplateNet.Tests
 {
@@ -14,8 +15,11 @@ namespace CloudBoilerplateNet.Tests
         {
             var projectOptions = Options.Create(new ProjectOptions
             {
-                KenticoCloudProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
-                CacheTimeoutSeconds = 60
+                CacheTimeoutSeconds = 60,
+                DeliveryOptions = new DeliveryOptions
+                {
+                    ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3"
+                }
             });
 
             var memoryCacheOptions = Options.Create(new MemoryCacheOptions
