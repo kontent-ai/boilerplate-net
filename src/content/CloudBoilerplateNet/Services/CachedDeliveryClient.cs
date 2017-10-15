@@ -30,7 +30,7 @@ namespace CloudBoilerplateNet.Services
 
         public IContentLinkUrlResolver ContentLinkUrlResolver { get => _client.ContentLinkUrlResolver; set => _client.ContentLinkUrlResolver = value; }
         public ICodeFirstModelProvider CodeFirstModelProvider { get => _client.CodeFirstModelProvider; set => _client.CodeFirstModelProvider = value; }
-        public InlineContentItemsProcessor InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
+        IInlineContentItemsProcessor IDeliveryClient.InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
 
         #endregion
 
@@ -38,18 +38,7 @@ namespace CloudBoilerplateNet.Services
 
         public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
         {
-            if (string.IsNullOrEmpty(projectOptions.Value.KenticoCloudPreviewApiKey))
-            {
-                _client = new DeliveryClient(projectOptions.Value.KenticoCloudProjectId);
-            }
-            else
-            {
-                _client = new DeliveryClient(
-                    projectOptions.Value.KenticoCloudProjectId,
-                    projectOptions.Value.KenticoCloudPreviewApiKey
-                );
-            }
-
+            _client = new DeliveryClient(projectOptions.Value.DeliveryOptions);
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _cache = memoryCache;
         }
@@ -264,7 +253,7 @@ namespace CloudBoilerplateNet.Services
 
         #endregion
 
-        #region "Helper methods"
+        #region "Helper methods"    
 
         protected string Join(IEnumerable<string> parameters)
         {
@@ -295,6 +284,35 @@ namespace CloudBoilerplateNet.Services
             }
 
             _disposed = true;
+        }
+
+        public Task<JObject> GetTaxonomyJsonAsync(string codename)
+        {
+            string cacheKey = $"{nameof(GetTaxonomyJsonAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyJsonAsync(codename));
+        }
+
+        public Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
+        {
+            string cacheKey = $"{nameof(GetTaxonomiesJsonAsync)}|{Join(parameters)}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesJsonAsync(parameters));
+        }
+
+        public Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
+        {
+            string cacheKey = $"{nameof(GetTaxonomyAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyAsync(codename));
+        }
+
+        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
+        {
+            return GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            string cacheKey = $"{nameof(GetTaxonomiesAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesAsync(parameters));
         }
 
         #endregion
