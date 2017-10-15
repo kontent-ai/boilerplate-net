@@ -38,17 +38,7 @@ namespace CloudBoilerplateNet.Services
 
         public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
         {
-            if (string.IsNullOrEmpty(projectOptions.Value.DeliveryOptions.ProjectId))
-            {
-                _client = new DeliveryClient(projectOptions.Value.DeliveryOptions.ProjectId);
-            }
-            else
-            {
-                _client = new DeliveryClient(
-                    projectOptions.Value.DeliveryOptions
-                );
-            }
-
+            _client = new DeliveryClient(projectOptions.Value.DeliveryOptions);
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _cache = memoryCache;
         }
@@ -263,7 +253,7 @@ namespace CloudBoilerplateNet.Services
 
         #endregion
 
-        #region "Helper methods"
+        #region "Helper methods"    
 
         protected string Join(IEnumerable<string> parameters)
         {
@@ -298,27 +288,31 @@ namespace CloudBoilerplateNet.Services
 
         public Task<JObject> GetTaxonomyJsonAsync(string codename)
         {
-            return _client.GetTaxonomyJsonAsync(codename);
+            string cacheKey = $"{nameof(GetTaxonomyJsonAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyJsonAsync(codename));
         }
 
         public Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
         {
-            return _client.GetTaxonomiesJsonAsync(parameters);
+            string cacheKey = $"{nameof(GetTaxonomiesJsonAsync)}|{Join(parameters)}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesJsonAsync(parameters));
         }
 
         public Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
         {
-            return _client.GetTaxonomyAsync(codename);
+            string cacheKey = $"{nameof(GetTaxonomyAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyAsync(codename));
         }
 
         public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
         {
-            return _client.GetTaxonomiesAsync(parameters);
+            return GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
         }
 
         public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
         {
-            return _client.GetTaxonomiesAsync(parameters);
+            string cacheKey = $"{nameof(GetTaxonomiesAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesAsync(parameters));
         }
 
         #endregion
