@@ -101,5 +101,7 @@ We would like to express our thanks to the following people who contributed and 
 - [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
 - [Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
 - [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
+- [Charith Sooriyaarachchi](https://github.com/charithsoori) - [99X Technology](http://www.99xtechnology.com/)
+- [Lex Li](https://github.com/lextm)
 
 Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-boilerplate-net/issues) and send us a pull request!
