@@ -6,5 +6,6 @@ namespace CloudBoilerplateNet
     {
         public DeliveryOptions DeliveryOptions { get; set; }
         public int CacheTimeoutSeconds { get; set; }
+        public string WebhookSecret { get; set; }
     }
 }
