@@ -5,7 +5,6 @@
     <rule name="Redirect to non-www domain" stopProcessing="true">
       <match url="(.*)" />
       <conditions>
-        <add input="{REQUEST_METHOD}" pattern="^get$|^head$" />
         <!-- Ignore your local dev host -->
         <add input="{HTTP_HOST}" negate="true" pattern="localhost" />
         <!-- Ignore your preview/staging websites -->

@@ -26,7 +26,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 ### Prerequisites
 **Required:**
-You must have the latest version of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
+You must have the latest version (.net core 2 is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
 
 Optional:
 * [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
