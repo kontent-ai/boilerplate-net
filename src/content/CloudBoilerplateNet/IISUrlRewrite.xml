@@ -20,7 +20,7 @@
     <!-- Example of 301 permanent redirect using Regex patter -->
     <rule name="Regex pattern" stopProcessing="true">
       <match url="^rewrite/(.*)" />
-      <action type="Redirect" url="?rewrittenFrom=$1" appendQueryString="false" redirectType="Permanent" />
+      <action type="Redirect" url="?rewrittenFrom={R:1}" appendQueryString="false" redirectType="Permanent" />
     </rule>
 
     <!-- Example of 301 redirect using transition from old to new url -->
