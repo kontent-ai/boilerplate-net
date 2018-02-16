@@ -8,6 +8,10 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
 
+using CloudBoilerplateNet.Helpers;
+using CloudBoilerplateNet.Models;
+using System.Reflection;
+
 namespace CloudBoilerplateNet.Services
 {
     public class CachedDeliveryClient : IDeliveryClient, IDisposable
@@ -15,12 +19,14 @@ namespace CloudBoilerplateNet.Services
         #region "Fields"
 
         private bool _disposed = false;
-        protected readonly IMemoryCache _cache;
-        protected readonly DeliveryClient _client;
 
         #endregion
 
         #region "Properties"
+
+        protected IMemoryCache Cache { get; }
+        protected ICacheManager CacheManager { get; }
+        protected DeliveryClient DeliveryClient { get; }
 
         public int CacheExpirySeconds
         {
@@ -28,19 +34,20 @@ namespace CloudBoilerplateNet.Services
             set;
         }
 
-        public IContentLinkUrlResolver ContentLinkUrlResolver { get => _client.ContentLinkUrlResolver; set => _client.ContentLinkUrlResolver = value; }
-        public ICodeFirstModelProvider CodeFirstModelProvider { get => _client.CodeFirstModelProvider; set => _client.CodeFirstModelProvider = value; }
-        IInlineContentItemsProcessor IDeliveryClient.InlineContentItemsProcessor => _client.InlineContentItemsProcessor;
+        public IContentLinkUrlResolver ContentLinkUrlResolver { get => DeliveryClient.ContentLinkUrlResolver; set => DeliveryClient.ContentLinkUrlResolver = value; }
+        public ICodeFirstModelProvider CodeFirstModelProvider { get => DeliveryClient.CodeFirstModelProvider; set => DeliveryClient.CodeFirstModelProvider = value; }
+        public IInlineContentItemsProcessor InlineContentItemsProcessor => DeliveryClient.InlineContentItemsProcessor;
 
         #endregion
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager, IMemoryCache memoryCache)
         {
-            _client = new DeliveryClient(projectOptions.Value.DeliveryOptions);
+            DeliveryClient = new DeliveryClient(projectOptions.Value.DeliveryOptions);
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
-            _cache = memoryCache;
+            CacheManager = cacheManager;
+            Cache = memoryCache; // TODO remove
         }
 
         #endregion
@@ -55,9 +62,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="JObject"/> instance that represents the content item with the specified codename.</returns>
         public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
         {
-            string cacheKey = $"{nameof(GetItemJsonAsync)}|{codename}|{Join(parameters)}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
+            identifierTokens.AddRange(parameters);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemJsonAsync(codename, parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetSingleContentItemJsonDependencies);
         }
 
         /// <summary>
@@ -67,9 +75,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="JObject"/> instance that represents the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
-            string cacheKey = $"{nameof(GetItemsJsonAsync)}|{Join(parameters)}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
+            identifierTokens.AddRange(parameters);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsJsonAsync(parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsJsonAsync(parameters), GetContentItemListingJsonDependencies);
         }
 
         /// <summary>
@@ -103,9 +112,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemAsync)}|{codename}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
+            AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync(codename, parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetSingleContentItemDependencies);
         }
 
         /// <summary>
@@ -115,11 +125,12 @@ namespace CloudBoilerplateNet.Services
         /// <param name="codename">The codename of a content item.</param>
         /// <param name="parameters">A collection of query parameters, for example for projection or depth of modular content.</param>
         /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
-        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
+        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemAsync)}-{typeof(T).FullName}|{codename}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
+            AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemAsync<T>(codename, parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetSingleContentItemDependencies);
         }
 
         /// <summary>
@@ -140,9 +151,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemsAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
+            AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync(parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync(parameters), GetContentItemListingDependencies);
         }
 
         /// <summary>
@@ -157,18 +169,12 @@ namespace CloudBoilerplateNet.Services
             return await GetItemsAsync<T>((IEnumerable<IQueryParameter>)parameters);
         }
 
-        /// <summary>
-        /// Searches the content repository for items that match the filter criteria.
-        /// Returns strongly typed content items.
-        /// </summary>
-        /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
-        /// <param name="parameters">A collection of query parameters, for example for filtering, ordering or depth of modular content.</param>
-        /// <returns>The <see cref="DeliveryItemListingResponse{T}"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(IEnumerable<IQueryParameter> parameters)
         {
-            string cacheKey = $"{nameof(GetItemsAsync)}-{typeof(T).FullName}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
+            AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetItemsAsync<T>(parameters));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync<T>(parameters), GetContentItemListingDependencies);
         }
 
         /// <summary>
@@ -180,7 +186,7 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetTypeJsonAsync)}|{codename}";
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetTypeJsonAsync(codename));
+            return await GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTypeJsonAsync(codename));
         }
 
         /// <summary>
@@ -192,7 +198,7 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetTypesJsonAsync)}|{Join(parameters)}";
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetTypesJsonAsync(parameters));
+            return await GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTypesJsonAsync(parameters));
         }
 
         /// <summary>
@@ -204,7 +210,7 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetTypeAsync)}|{codename}";
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetTypeAsync(codename));
+            return await GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTypeAsync(codename));
         }
 
         /// <summary>
@@ -226,7 +232,7 @@ namespace CloudBoilerplateNet.Services
         {
             string cacheKey = $"{nameof(GetTypesAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetTypesAsync(parameters));
+            return await GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTypesAsync(parameters));
         }
 
         /// <summary>
@@ -237,9 +243,159 @@ namespace CloudBoilerplateNet.Services
         /// <returns>A content element with the specified codename that is a part of a content type with the specified codename.</returns>
         public async Task<ContentElement> GetContentElementAsync(string contentTypeCodename, string contentElementCodename)
         {
-            string cacheKey = $"{nameof(GetContentElementAsync)}|{contentTypeCodename}|{contentElementCodename}";
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
 
-            return await GetOrCreateAsync(cacheKey, () => _client.GetContentElementAsync(contentTypeCodename, contentElementCodename));
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependency);
+        }
+
+        public Task<JObject> GetTaxonomyJsonAsync(string codename)
+        {
+            string cacheKey = $"{nameof(GetTaxonomyJsonAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTaxonomyJsonAsync(codename));
+        }
+
+        public Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
+        {
+            string cacheKey = $"{nameof(GetTaxonomiesJsonAsync)}|{Join(parameters)}";
+            return GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTaxonomiesJsonAsync(parameters));
+        }
+
+        public Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
+        {
+            string cacheKey = $"{nameof(GetTaxonomyAsync)}|{codename}";
+            return GetOrCreateAsync(cacheKey, () => DeliveryClient.GetTaxonomyAsync(codename));
+        }
+
+        public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
+        {
+            return await GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
+            identifierTokens.AddRange(parameters.Select(p => p.GetQueryStringParameter()));
+
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesAsync(parameters), GetTaxonomyListingDependencies);
+        }
+
+        public static IEnumerable<IdentifierSet> GetSingleContentItemDependencies<T>(T response)
+        {
+            var dependencies = new List<IdentifierSet>();
+            AddModularContentDependencies(response, dependencies);
+
+            // Create dummy item for the content item itself.
+            var ownDependency = new IdentifierSet
+            {
+                Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                Codename = GetContentItemCodename(response)
+            };
+
+            if (!dependencies.Contains(ownDependency))
+            {
+                dependencies.Add(ownDependency);
+            }
+
+            return dependencies;
+        }
+
+        public static IEnumerable<IdentifierSet> GetContentItemListingDependencies<T>(T response)
+        {
+            var dependencies = new List<IdentifierSet>();
+            AddModularContentDependencies(response, dependencies);
+
+            // Create dummy item for each content item in the listing.
+            foreach (var codename in GetContentItemCodenamesFromListingResponse(response))
+            {
+                var dependency = new IdentifierSet
+                {
+                    Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                    Codename = codename
+                };
+
+                if (!dependencies.Contains(dependency))
+                {
+                    dependencies.Add(dependency);
+                }
+            }
+
+            return dependencies;
+        }
+
+        public static IEnumerable<IdentifierSet> GetSingleContentItemJsonDependencies(JObject response)
+        {
+            var dependencies = new List<IdentifierSet>();
+            AddJsonModularContentDependencies(response, dependencies);
+
+            // Create dummy item for the content item itself.
+            var ownDependency = new IdentifierSet
+            {
+                Type = CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
+                Codename = GetContentItemSingleCodenameFromJson(response)
+            };
+
+            if (!dependencies.Contains(ownDependency))
+            {
+                dependencies.Add(ownDependency);
+            }
+
+            return dependencies;
+        }
+
+        public static IEnumerable<IdentifierSet> GetContentItemListingJsonDependencies(JObject response)
+        {
+            var dependencies = new List<IdentifierSet>();
+            AddJsonModularContentDependencies(response, dependencies);
+
+            foreach (var item in response["items"].Children())
+            {
+                dependencies.Add(new IdentifierSet
+                {
+                    Type = CacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER,
+
+                    // TODO Cast or ToString?
+                    Codename = item["system"].Value<string>("codename").ToString()
+                });
+            }
+
+            return dependencies;
+        }
+
+        public static IEnumerable<IdentifierSet> GetContentElementDependency<T>(T response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (response is ContentElement && response != null)
+            {
+                dependencies.Add(
+                    new IdentifierSet
+                    {
+                        Type = CacheHelper.CONTENT_ELEMENT_IDENTIFIER,
+                        Codename = GetContentElementCodename(response)
+                    });
+            }
+
+            return dependencies;
+        }
+
+        public static IEnumerable<IdentifierSet> GetTaxonomyListingDependencies<T>(T response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (response is DeliveryTaxonomyListingResponse && response != null)
+            {
+                foreach (var taxonomyGroupCodename in GetTaxonomyListingCodenames(response))
+                {
+                    dependencies.Add(
+                        new IdentifierSet
+                        {
+                            Type = CacheHelper.TAXONOMY_GROUP_IDENTIFIER,
+                            Codename = taxonomyGroupCodename
+                        });
+                }
+            }
+
+            return dependencies;
         }
 
         /// <summary>
@@ -253,7 +409,7 @@ namespace CloudBoilerplateNet.Services
 
         #endregion
 
-        #region "Helper methods"    
+        #region "Helper methods"
 
         protected string Join(IEnumerable<string> parameters)
         {
@@ -262,13 +418,134 @@ namespace CloudBoilerplateNet.Services
 
         protected async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory)
         {
-            var result = _cache.GetOrCreateAsync<T>(key, entry =>
+            var result = Cache.GetOrCreateAsync(key, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(CacheExpirySeconds);
                 return factory.Invoke();
             });
 
             return await result;
+        }
+
+        private static string GetContentItemCodename(dynamic response)
+        {
+            if (response.Item?.System?.Codename != null)
+            {
+                try
+                {
+                    return response.Item.System.Codename;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
+
+        private static IEnumerable<string> GetContentItemCodenamesFromListingResponse(dynamic response)
+        {
+            if (response?.Items != null)
+            {
+                var codenames = new List<string>();
+
+                foreach (dynamic item in response.Items)
+                {
+                    try
+                    {
+                        codenames.Add(item.System?.Codename);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+
+                return codenames;
+            }
+
+            return null;
+        }
+
+        private static void AddModularContentDependencies<T>(T response, List<IdentifierSet> dependencies)
+        {
+            foreach (var codename in GetModularContentCodenames(response))
+            {
+                dependencies.Add(new IdentifierSet
+                {
+                    Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                    Codename = codename
+                });
+            }
+        }
+
+        private static IEnumerable<string> GetModularContentCodenames(dynamic response)
+        {
+            if (response.ModularContent != null)
+            {
+                foreach (var mc in response.ModularContent)
+                {
+                    yield return mc.Path;
+                }
+            }
+        }
+
+        private static void AddIdentifiersFromParameters(IEnumerable<IQueryParameter> parameters, List<string> identifierTokens)
+        {
+            if (parameters != null)
+            {
+                identifierTokens.AddRange(parameters?.Select(p => p.GetQueryStringParameter()));
+            }
+        }
+
+        private static void AddJsonModularContentDependencies(JObject response, List<IdentifierSet> dependencies)
+        {
+            const string MODULAR_CONTENT_IDENTIFIER = "modular_content";
+
+            if (response[MODULAR_CONTENT_IDENTIFIER].HasValues)
+            {
+                foreach (var mcToken in response[MODULAR_CONTENT_IDENTIFIER])
+                {
+                    // TODO SelectMany?
+                    foreach (var item in mcToken)
+                    {
+                        dependencies.Add(new IdentifierSet
+                        {
+                            Type = CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
+
+                            // TODO Cast or ToString?
+                            Codename = item["system"].Value<string>("codename").ToString()
+                        });
+                    }
+                }
+            }
+        }
+
+        private static string GetContentItemSingleCodenameFromJson(JObject response)
+        {
+            return response["item"]["system"]["codename"].ToString();
+        }
+
+        private static string GetContentElementCodename(dynamic response)
+        {
+            if (response is ContentElement && response != null)
+            {
+                return string.Join("|", response.Type, response.Codename);
+            }
+
+            return null;
+        }
+
+        private static IEnumerable<string> GetTaxonomyListingCodenames(dynamic response)
+        {
+            if (response.Taxonomies != null)
+            {
+                foreach (dynamic taxonomyGroup in response.Taxonomies)
+                {
+                    yield return taxonomyGroup.System?.Codename;
+                }
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -280,39 +557,10 @@ namespace CloudBoilerplateNet.Services
 
             if (disposing)
             {
-                _cache.Dispose();
+                Cache.Dispose();
             }
 
             _disposed = true;
-        }
-
-        public Task<JObject> GetTaxonomyJsonAsync(string codename)
-        {
-            string cacheKey = $"{nameof(GetTaxonomyJsonAsync)}|{codename}";
-            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyJsonAsync(codename));
-        }
-
-        public Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
-        {
-            string cacheKey = $"{nameof(GetTaxonomiesJsonAsync)}|{Join(parameters)}";
-            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesJsonAsync(parameters));
-        }
-
-        public Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
-        {
-            string cacheKey = $"{nameof(GetTaxonomyAsync)}|{codename}";
-            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomyAsync(codename));
-        }
-
-        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
-        {
-            return GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
-        }
-
-        public Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
-        {
-            string cacheKey = $"{nameof(GetTaxonomiesAsync)}|{Join(parameters?.Select(p => p.GetQueryStringParameter()).ToList())}";
-            return GetOrCreateAsync(cacheKey, () => _client.GetTaxonomiesAsync(parameters));
         }
 
         #endregion
