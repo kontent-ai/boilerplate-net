@@ -17,11 +17,17 @@ using CloudBoilerplateNet.Areas.WebHooks.Models;
 
 namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
 {
+    [Area("WebHooks")]
     public class KenticoCloudController : BaseController
     {
+        protected IWebhookObservableProvider KenticoCloudWebhookObservableProvider { get; }
         protected ICacheManager CacheManager { get; }
 
-        public KenticoCloudController(IDeliveryClient deliveryClient, ICacheManager cacheManager) : base(deliveryClient) => CacheManager = cacheManager;
+        public KenticoCloudController(IDeliveryClient deliveryClient, IWebhookObservableProvider kenticoCloudWebhookObservableProvider, ICacheManager cacheManager) : base(deliveryClient)
+        {
+            KenticoCloudWebhookObservableProvider = kenticoCloudWebhookObservableProvider;
+            CacheManager = cacheManager;
+        }
 
         [HttpPost]
         [ServiceFilter(typeof(KenticoCloudSignatureActionFilter))]
@@ -29,8 +35,8 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
         {
             switch (model.Message.Type)
             {
-                case CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER:
-                case CacheHelper.CONTENT_ITEM_VARIANT_SINGLE_IDENTIFIER:
+                case KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER:
+                case KenticoCloudCacheHelper.CONTENT_ITEM_VARIANT_SINGLE_IDENTIFIER:
                     switch (model.Message.Operation)
                     {
                         case "archive":
@@ -39,11 +45,13 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
                         case "upsert":
                             foreach (var item in model.Data.Items)
                             {
-                                CacheManager.InvalidateEntry(new IdentifierSet
-                                {
-                                    Type = model.Message.Type,
-                                    Codename = item.Codename
-                                });
+                                KenticoCloudWebhookObservableProvider.RaiseWebhookNotification(
+                                    new KenticoCloudCacheHelper(),
+                                    new IdentifierSet
+                                    {
+                                        Type = model.Message.Type,
+                                        Codename = item.Codename
+                                    });
                             }
 
                             break;

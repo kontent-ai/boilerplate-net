@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using CloudBoilerplateNet.Models;
+using System.Collections.Concurrent;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -28,6 +29,7 @@ namespace CloudBoilerplateNet.Services
         /// Invalidates (clears) an entry.
         /// </summary>
         /// <param name="identifiers">Identifiers of the entry</param>
-        void InvalidateEntry(IdentifierSet identifiers);
+        void InvalidateEntry(IRelatedTypesResolver relatedTypesResolver, IdentifierSet identifiers);
+
     }
 }

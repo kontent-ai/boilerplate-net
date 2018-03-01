@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using System.Threading;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services
 {
-    public class CacheManager : ICacheManager
+    public class ReactiveCacheManager : ICacheManager
     {
         #region "Fields"
 
         private bool _disposed = false;
         private readonly IMemoryCache _memoryCache;
+        private readonly IWebhookObservableProvider _webhookObservableProvider;
 
         #endregion
 
@@ -32,7 +33,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public CacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache)
+        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IWebhookObservableProvider webhookObservableProvider)
         {
             if (projectOptions == null)
             {
@@ -41,6 +42,8 @@ namespace CloudBoilerplateNet.Services
 
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            _webhookObservableProvider = webhookObservableProvider ?? throw new ArgumentNullException(nameof(webhookObservableProvider));
+            _webhookObservableProvider.GetObservable().Subscribe((args) => InvalidateEntry(args.RelatedTypesResolver, args.IdentifierSet));
         }
 
         #endregion
@@ -97,31 +100,19 @@ namespace CloudBoilerplateNet.Services
             _memoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
         }
 
-        public void InvalidateEntry(IdentifierSet identifiers, Func<IdentifierSet, IList<string>> dependentTypesExtractor)
+        public void InvalidateEntry(IRelatedTypesResolver relatedTypeResolver, IdentifierSet identifiers)
         {
-            // TODO Move to CacheHelper
-            var typeIdentifiers = new List<string>();
-
-            // Aggregate several types that appear in webhooks into one.
-            if (identifiers.Type.Equals(CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, StringComparison.Ordinal) || identifiers.Type.Equals(CacheHelper.CONTENT_ITEM_VARIANT_SINGLE_IDENTIFIER, StringComparison.Ordinal))
+            if (relatedTypeResolver == null)
             {
-                // TODO Add "_JSON_" here
-                // No point in adding the "_variant" identifier as cache items with these don't get created by CachedDeliveryClient.
-                typeIdentifiers.AddRange(new[] { CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, CacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, CacheHelper.CONTENT_ITEM_SINGLE_RUNTIME_TYPED_IDENTIFIER });
-            }
-            else if (identifiers.Type.Equals(CacheHelper.TAXONOMY_GROUP_IDENTIFIER)
-            {
-
-            }
-            else
-            {
-                typeIdentifiers.Add(identifiers.Type);
+                throw new ArgumentNullException(nameof(relatedTypeResolver));
             }
 
-            var dependentTypes = dependentTypesExtractor(identifiers);
-            dependentTypes.Add(identifiers.Type);
+            if (identifiers == null)
+            {
+                throw new ArgumentNullException(nameof(identifiers));
+            }
 
-            foreach (var typeIdentifier in dependentTypesExtractor(identifiers))
+            foreach (var typeIdentifier in relatedTypeResolver.GetRelatedTypes(identifiers.Type))
             {
                 if (_memoryCache.TryGetValue(StringHelpers.Join("dummy", typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
                 {

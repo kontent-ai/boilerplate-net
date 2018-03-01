@@ -52,4 +52,9 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Models
         public string Codename { get; set; }
     }
 
+    public class Taxonomy
+    {
+        [JsonProperty("codename")]
+        public string Codename { get; set; }
+    }
 }

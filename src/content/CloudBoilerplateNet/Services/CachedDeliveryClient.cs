@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KenticoCloud.Delivery;
-using KenticoCloud.Delivery.InlineContentItems;
-using Newtonsoft.Json.Linq;
+
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
-
+using Newtonsoft.Json.Linq;
+using KenticoCloud.Delivery;
+using KenticoCloud.Delivery.InlineContentItems;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
-using System.Reflection;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -62,10 +61,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="JObject"/> instance that represents the content item with the specified codename.</returns>
         public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
             identifierTokens.AddRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetSingleContentItemJsonDependencies);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetContentItemSingleJsonDependencies);
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="JObject"/> instance that represents the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddRange(parameters);
 
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsJsonAsync(parameters), GetContentItemListingJsonDependencies);
@@ -112,10 +111,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
             AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetSingleContentItemDependencies);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetContentItemSingleDependencies);
         }
 
         /// <summary>
@@ -127,10 +126,10 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
             AddIdentifiersFromParameters(parameters, identifierTokens);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetSingleContentItemDependencies);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetContentItemSingleDependencies);
         }
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
             AddIdentifiersFromParameters(parameters, identifierTokens);
 
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync(parameters), GetContentItemListingDependencies);
@@ -171,7 +170,7 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(IEnumerable<IQueryParameter> parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
             AddIdentifiersFromParameters(parameters, identifierTokens);
 
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync<T>(parameters), GetContentItemListingDependencies);
@@ -243,7 +242,7 @@ namespace CloudBoilerplateNet.Services
         /// <returns>A content element with the specified codename that is a part of a content type with the specified codename.</returns>
         public async Task<ContentElement> GetContentElementAsync(string contentTypeCodename, string contentElementCodename)
         {
-            var identifierTokens = new List<string> { CacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
 
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependency);
         }
@@ -273,13 +272,15 @@ namespace CloudBoilerplateNet.Services
 
         public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
         {
-            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
+            var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
             identifierTokens.AddRange(parameters.Select(p => p.GetQueryStringParameter()));
 
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesAsync(parameters), GetTaxonomyListingDependencies);
         }
 
-        public static IEnumerable<IdentifierSet> GetSingleContentItemDependencies<T>(T response)
+        #region "Dependency resolvers"
+
+        public static IEnumerable<IdentifierSet> GetContentItemSingleDependencies<T>(T response)
         {
             var dependencies = new List<IdentifierSet>();
             AddModularContentDependencies(response, dependencies);
@@ -287,7 +288,7 @@ namespace CloudBoilerplateNet.Services
             // Create dummy item for the content item itself.
             var ownDependency = new IdentifierSet
             {
-                Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
                 Codename = GetContentItemCodename(response)
             };
 
@@ -309,7 +310,7 @@ namespace CloudBoilerplateNet.Services
             {
                 var dependency = new IdentifierSet
                 {
-                    Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                    Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
                     Codename = codename
                 };
 
@@ -322,7 +323,7 @@ namespace CloudBoilerplateNet.Services
             return dependencies;
         }
 
-        public static IEnumerable<IdentifierSet> GetSingleContentItemJsonDependencies(JObject response)
+        public static IEnumerable<IdentifierSet> GetContentItemSingleJsonDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
             AddJsonModularContentDependencies(response, dependencies);
@@ -330,7 +331,7 @@ namespace CloudBoilerplateNet.Services
             // Create dummy item for the content item itself.
             var ownDependency = new IdentifierSet
             {
-                Type = CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
+                Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
                 Codename = GetContentItemSingleCodenameFromJson(response)
             };
 
@@ -351,7 +352,7 @@ namespace CloudBoilerplateNet.Services
             {
                 dependencies.Add(new IdentifierSet
                 {
-                    Type = CacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER,
+                    Type = KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER,
 
                     // TODO Cast or ToString?
                     Codename = item["system"].Value<string>("codename").ToString()
@@ -370,7 +371,7 @@ namespace CloudBoilerplateNet.Services
                 dependencies.Add(
                     new IdentifierSet
                     {
-                        Type = CacheHelper.CONTENT_ELEMENT_IDENTIFIER,
+                        Type = KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER,
                         Codename = GetContentElementCodename(response)
                     });
             }
@@ -389,7 +390,7 @@ namespace CloudBoilerplateNet.Services
                     dependencies.Add(
                         new IdentifierSet
                         {
-                            Type = CacheHelper.TAXONOMY_GROUP_IDENTIFIER,
+                            Type = KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER,
                             Codename = taxonomyGroupCodename
                         });
                 }
@@ -397,6 +398,8 @@ namespace CloudBoilerplateNet.Services
 
             return dependencies;
         }
+
+        #endregion
 
         /// <summary>
         /// The <see cref="IDisposable.Dispose"/> implementation.
@@ -474,7 +477,7 @@ namespace CloudBoilerplateNet.Services
             {
                 dependencies.Add(new IdentifierSet
                 {
-                    Type = CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                    Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
                     Codename = codename
                 });
             }
@@ -512,7 +515,7 @@ namespace CloudBoilerplateNet.Services
                     {
                         dependencies.Add(new IdentifierSet
                         {
-                            Type = CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
+                            Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
 
                             // TODO Cast or ToString?
                             Codename = item["system"].Value<string>("codename").ToString()

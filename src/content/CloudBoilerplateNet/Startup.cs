@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq.Expressions;
+using System.Reactive.Linq;
+using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
@@ -30,9 +34,11 @@ namespace CloudBoilerplateNet
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
+            services.AddSingleton<IWebhookObservableProvider>(sp => new WebhookObservableProvider());
+            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<IMemoryCache>(), sp.GetRequiredService<IWebhookObservableProvider>()));
             services.AddMvc();
 
-            services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>())
+            services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<ICacheManager>(), sp.GetRequiredService<IMemoryCache>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
@@ -67,6 +73,10 @@ namespace CloudBoilerplateNet
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
                 routes.MapRoute(
                     name: "sitemap",
                     defaults: new { controller = "Sitemap", action = "Index" },
