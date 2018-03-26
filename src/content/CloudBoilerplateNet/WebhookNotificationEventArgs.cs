@@ -9,13 +9,10 @@ namespace CloudBoilerplateNet
 {
     public class WebhookNotificationEventArgs : EventArgs
     {
-        public IRelatedTypesResolver RelatedTypesResolver { get; }
-
         public IdentifierSet IdentifierSet { get; }
 
-        public WebhookNotificationEventArgs(IRelatedTypesResolver relatedTypesResolver, IdentifierSet identifierSet)
+        public WebhookNotificationEventArgs(IdentifierSet identifierSet)
         {
-            RelatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
             IdentifierSet = identifierSet ?? throw new ArgumentNullException(nameof(identifierSet));
         }
     }

@@ -7,7 +7,7 @@ namespace CloudBoilerplateNet.Services
     {
         event EventHandler<WebhookNotificationEventArgs> WebhookNotification;
 
-        void RaiseWebhookNotification(IRelatedTypesResolver relatedTypesResolver, IdentifierSet identifierSet);
+        void RaiseWebhookNotification(IdentifierSet identifierSet);
 
         IObservable<WebhookNotificationEventArgs> GetObservable();
     }

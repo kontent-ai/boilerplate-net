@@ -18,6 +18,7 @@ namespace CloudBoilerplateNet.Services
         private bool _disposed = false;
         private readonly IMemoryCache _memoryCache;
         private readonly IWebhookObservableProvider _webhookObservableProvider;
+        private readonly IRelatedTypesResolver _relatedTypesResolver;
 
         #endregion
 
@@ -33,7 +34,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IWebhookObservableProvider webhookObservableProvider)
+        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IWebhookObservableProvider webhookObservableProvider, IRelatedTypesResolver relatedTypesResolver)
         {
             if (projectOptions == null)
             {
@@ -43,7 +44,9 @@ namespace CloudBoilerplateNet.Services
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _webhookObservableProvider = webhookObservableProvider ?? throw new ArgumentNullException(nameof(webhookObservableProvider));
-            _webhookObservableProvider.GetObservable().Subscribe((args) => InvalidateEntry(args.RelatedTypesResolver, args.IdentifierSet));
+            _webhookObservableProvider.GetObservable().Subscribe((args) => InvalidateEntry(args.IdentifierSet));
+            _relatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
+
         }
 
         #endregion
@@ -69,6 +72,9 @@ namespace CloudBoilerplateNet.Services
 
         public void CreateEntry<T>(IEnumerable<string> identifierTokens, T value, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
         {
+            // TODO: Add identifiers via postRetrieval... (add pagination values to identifiers, so that responses don't get overwritten mistakenly).
+            // IPostRetrievalIdentifierDecorator postRetrievalIdentifierDecorator
+
             var dependencies = dependencyListFactory(value);
 
             // Restart entries' expiration period each time they're requested.
@@ -100,11 +106,11 @@ namespace CloudBoilerplateNet.Services
             _memoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
         }
 
-        public void InvalidateEntry(IRelatedTypesResolver relatedTypeResolver, IdentifierSet identifiers)
+        public void InvalidateEntry(IdentifierSet identifiers)
         {
-            if (relatedTypeResolver == null)
+            if (_relatedTypesResolver == null)
             {
-                throw new ArgumentNullException(nameof(relatedTypeResolver));
+                throw new ArgumentNullException(nameof(_relatedTypesResolver));
             }
 
             if (identifiers == null)
@@ -112,7 +118,7 @@ namespace CloudBoilerplateNet.Services
                 throw new ArgumentNullException(nameof(identifiers));
             }
 
-            foreach (var typeIdentifier in relatedTypeResolver.GetRelatedTypes(identifiers.Type))
+            foreach (var typeIdentifier in _relatedTypesResolver.GetRelatedTypes(identifiers.Type))
             {
                 if (_memoryCache.TryGetValue(StringHelpers.Join("dummy", typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
                 {

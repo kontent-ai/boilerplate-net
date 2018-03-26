@@ -13,13 +13,19 @@ using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Services;
 using CloudBoilerplateNet.Areas.WebHooks.Models;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
 {
     [Area("WebHooks")]
     public class KenticoCloudController : BaseController
     {
+        protected List<string> PurgingOperations => new List<string>()
+        {
+            "archive",
+            "publish",
+            "unpublish",
+            "upsert"
+        };
+
         protected IWebhookObservableProvider KenticoCloudWebhookObservableProvider { get; }
         protected ICacheManager CacheManager { get; }
 
@@ -30,40 +36,43 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(KenticoCloudSignatureActionFilter))]
+        // TODO: Uncomment [ServiceFilter(typeof(KenticoCloudSignatureActionFilter))]
         public IActionResult Index([FromBody] KenticoCloudWebhookModel model)
         {
             switch (model.Message.Type)
             {
                 case KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER:
                 case KenticoCloudCacheHelper.CONTENT_ITEM_VARIANT_SINGLE_IDENTIFIER:
-                    switch (model.Message.Operation)
-                    {
-                        case "archive":
-                        case "publish":
-                        case "unpublish":
-                        case "upsert":
-                            foreach (var item in model.Data.Items)
-                            {
-                                KenticoCloudWebhookObservableProvider.RaiseWebhookNotification(
-                                    new KenticoCloudCacheHelper(),
-                                    new IdentifierSet
-                                    {
-                                        Type = model.Message.Type,
-                                        Codename = item.Codename
-                                    });
-                            }
-
-                            break;
-                        default:
-                            return Ok();
-                    }
-
-                    // For all other operations, return OK to avoid webhook re-submissions.
-                    return Ok();
+                case KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER:
+                    return RaiseNotificationForSupportedOperations(model.Message.Operation, model.Message.Type, model.Data.Items);
+                case KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER:
+                    return RaiseNotificationForSupportedOperations(model.Message.Operation, model.Message.Type, model.Data.Taxonomies);
                 default:
-                    // For all other types of artifacts, return OK, for the same reason as above.
+                    // For all other types of artifacts, return OK to avoid webhook re-submissions.
                     return Ok();
+            }
+        }
+
+        private IActionResult RaiseNotificationForSupportedOperations(string operation, string type, IEnumerable<ICodenamedData> data)
+        {
+            if (PurgingOperations.Any(o => o.Equals(operation, StringComparison.Ordinal)))
+            {
+                foreach (var item in data)
+                {
+                    KenticoCloudWebhookObservableProvider.RaiseWebhookNotification(
+                        new IdentifierSet
+                        {
+                            Type = type,
+                            Codename = item.Codename
+                        });
+                }
+
+                return Ok();
+            }
+            else
+            {
+                // For all other operations, return OK to avoid webhook re-submissions.
+                return Ok();
             }
         }
     }

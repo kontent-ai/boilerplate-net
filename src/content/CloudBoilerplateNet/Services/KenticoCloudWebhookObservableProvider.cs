@@ -6,15 +6,15 @@ using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services
 {
-    public class WebhookObservableProvider : IWebhookObservableProvider
+    public class KenticoCloudWebhookObservableProvider : IWebhookObservableProvider
     {
         public event EventHandler<WebhookNotificationEventArgs> WebhookNotification;
 
-        public void RaiseWebhookNotification(IRelatedTypesResolver relatedTypesResolver, IdentifierSet identifierSet)
+        public void RaiseWebhookNotification(IdentifierSet identifierSet)
         {
-            if (WebhookNotification != null && relatedTypesResolver != null && identifierSet != null)
+            if (WebhookNotification != null && identifierSet != null)
             {
-                WebhookNotification.Invoke(this, new WebhookNotificationEventArgs(relatedTypesResolver, identifierSet));
+                WebhookNotification.Invoke(this, new WebhookNotificationEventArgs(identifierSet));
             }
         }
 

@@ -38,9 +38,12 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Models
     {
         [JsonProperty("items")]
         public Item[] Items { get; set; }
+
+        [JsonProperty("taxonomies")]
+        public Taxonomy[] Taxonomies { get; set; }
     }
 
-    public class Item
+    public class Item : ICodenamedData
     {
         [JsonProperty("language")]
         public string Language { get; set; }
@@ -52,9 +55,14 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Models
         public string Codename { get; set; }
     }
 
-    public class Taxonomy
+    public class Taxonomy : ICodenamedData
     {
         [JsonProperty("codename")]
         public string Codename { get; set; }
+    }
+
+    public interface ICodenamedData
+    {
+        string Codename { get; set; }
     }
 }
