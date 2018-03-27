@@ -22,6 +22,7 @@ namespace CloudBoilerplateNet.Services
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry</param>
         /// <param name="valueFactory">Method to create the entry</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon</param>
+        /// <param name="postRetrievalTokenDecorator">Method to decorate the <paramref name="identifierTokens"/> with additional tokens, based on the value retrieved from <paramref name="valueFactory"/>.</param>
         /// <returns>The value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
         Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory);
         

@@ -35,8 +35,8 @@ namespace CloudBoilerplateNet
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
             services.AddSingleton<IWebhookObservableProvider>(sp => new KenticoCloudWebhookObservableProvider());
-            services.AddSingleton<IRelatedTypesResolver>(sp => new KenticoCloudCacheHelper());
-            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<IMemoryCache>(), sp.GetRequiredService<IWebhookObservableProvider>(), sp.GetRequiredService<IRelatedTypesResolver>()));
+            services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudCacheHelper());
+            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<IMemoryCache>(), sp.GetRequiredService<IWebhookObservableProvider>(), sp.GetRequiredService<IDependentTypesResolver>()));
             services.AddMvc();
 
             services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<ICacheManager>(), sp.GetRequiredService<IMemoryCache>())

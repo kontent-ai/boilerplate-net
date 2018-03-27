@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace CloudBoilerplateNet.Services
 {
-    public interface IRelatedTypesResolver
+    public interface IDependentTypesResolver
     {
-        IEnumerable<string> GetRelatedTypes(string typeCodeName);
+        IEnumerable<string> GetDependentTypes(string typeCodeName);
     }
 }
