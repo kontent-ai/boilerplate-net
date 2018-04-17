@@ -54,7 +54,7 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
             }
         }
 
-        private IActionResult RaiseNotificationForSupportedOperations(string operation, string type, IEnumerable<ICodenamedData> data)
+        private IActionResult RaiseNotificationForSupportedOperations(string operation, string artefactType, IEnumerable<ICodenamedData> data)
         {
             if (SupportedOperations.Any(o => o.Equals(operation, StringComparison.Ordinal)))
             {
@@ -64,7 +64,7 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
                         this,
                         new IdentifierSet
                         {
-                            Type = type,
+                            Type = artefactType,
                             Codename = item.Codename
                         });
                 }
