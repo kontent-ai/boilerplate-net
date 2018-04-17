@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-using Microsoft.Extensions.Caching.Memory;
 using KenticoCloud.Delivery;
 using CloudBoilerplateNet.Controllers;
 using CloudBoilerplateNet.Filters;
@@ -18,21 +17,23 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
     [Area("WebHooks")]
     public class KenticoCloudController : BaseController
     {
-        protected List<string> PurgingOperations => new List<string>()
+        protected List<string> SupportedOperations => new List<string>()
         {
-            "archive",
+            "upsert",
             "publish",
+            "restore_publish",
             "unpublish",
-            "upsert"
+            "archive",
+            "restore"
         };
 
-        protected IWebhookObservableProvider KenticoCloudWebhookObservableProvider { get; }
         protected ICacheManager CacheManager { get; }
+        protected IKenticoCloudWebhookListener KenticoCloudWebhookListener { get; }
 
-        public KenticoCloudController(IDeliveryClient deliveryClient, IWebhookObservableProvider kenticoCloudWebhookObservableProvider, ICacheManager cacheManager) : base(deliveryClient)
+        public KenticoCloudController(IDeliveryClient deliveryClient, ICacheManager cacheManager, IKenticoCloudWebhookListener kenticoCloudWebhookListener) : base(deliveryClient)
         {
-            KenticoCloudWebhookObservableProvider = kenticoCloudWebhookObservableProvider;
-            CacheManager = cacheManager;
+            CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
+            KenticoCloudWebhookListener = kenticoCloudWebhookListener ?? throw new ArgumentNullException(nameof(kenticoCloudWebhookListener));
         }
 
         [HttpPost]
@@ -55,11 +56,12 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
 
         private IActionResult RaiseNotificationForSupportedOperations(string operation, string type, IEnumerable<ICodenamedData> data)
         {
-            if (PurgingOperations.Any(o => o.Equals(operation, StringComparison.Ordinal)))
+            if (SupportedOperations.Any(o => o.Equals(operation, StringComparison.Ordinal)))
             {
                 foreach (var item in data)
                 {
-                    KenticoCloudWebhookObservableProvider.RaiseWebhookNotification(
+                    KenticoCloudWebhookListener.RaiseWebhookNotification(
+                        this,
                         new IdentifierSet
                         {
                             Type = type,

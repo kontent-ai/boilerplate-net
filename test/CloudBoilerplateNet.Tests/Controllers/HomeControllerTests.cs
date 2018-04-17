@@ -29,7 +29,6 @@ namespace CloudBoilerplateNet.Tests
             var memoryCacheOptions = Options.Create(new MemoryCacheOptions
             {
                 Clock = new TestClock(),
-                CompactOnMemoryPressure = true,
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using KenticoCloud.Delivery;
 using KenticoCloud.Delivery.InlineContentItems;
@@ -15,34 +14,32 @@ namespace CloudBoilerplateNet.Services
 {
     public class CachedDeliveryClient : IDeliveryClient
     {
-
-        #region "Constants"
-
-
-
-        #endregion
-
-        #region "Fields"
-
-        #endregion
-
         #region "Properties"
 
         protected ICacheManager CacheManager { get; }
         protected DeliveryClient DeliveryClient { get; }
-        public int CacheExpirySeconds { get; set; }
-        public IContentLinkUrlResolver ContentLinkUrlResolver { get => DeliveryClient.ContentLinkUrlResolver; set => DeliveryClient.ContentLinkUrlResolver = value; }
-        public ICodeFirstModelProvider CodeFirstModelProvider { get => DeliveryClient.CodeFirstModelProvider; set => DeliveryClient.CodeFirstModelProvider = value; }
+
+        public IContentLinkUrlResolver ContentLinkUrlResolver
+        {
+            get => DeliveryClient.ContentLinkUrlResolver;
+            set => DeliveryClient.ContentLinkUrlResolver = value;
+        }
+
+        public ICodeFirstModelProvider CodeFirstModelProvider
+        {
+            get => DeliveryClient.CodeFirstModelProvider;
+            set => DeliveryClient.CodeFirstModelProvider = value;
+        }
+
         public IInlineContentItemsProcessor InlineContentItemsProcessor => DeliveryClient.InlineContentItemsProcessor;
 
         #endregion
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager, IMemoryCache memoryCache)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager)
         {
             DeliveryClient = new DeliveryClient(projectOptions.Value.DeliveryOptions);
-            CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             CacheManager = cacheManager;
         }
 
@@ -461,12 +458,6 @@ namespace CloudBoilerplateNet.Services
         {
             return response?[KenticoCloudCacheHelper.TYPES_IDENTIFIER]?.SelectMany(t => GetTypeSingleJsonDependencies(t.ToObject<JObject>()));
         }
-
-        #endregion
-
-        #region "Helper methods"
-
-
 
         #endregion
 

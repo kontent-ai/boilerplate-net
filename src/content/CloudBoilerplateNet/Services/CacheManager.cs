@@ -16,10 +16,9 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Fields"
 
-        private bool _disposed = false;
         private readonly IMemoryCache _memoryCache;
-        private readonly IWebhookObservableProvider _webhookObservableProvider;
         private readonly IDependentTypesResolver _relatedTypesResolver;
+        private bool _disposed;
 
         #endregion
 
@@ -35,7 +34,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IWebhookObservableProvider webhookObservableProvider, IDependentTypesResolver relatedTypesResolver)
+        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IKenticoCloudWebhookListener kenticoCloudWebhookListener)
         {
             if (projectOptions == null)
             {
@@ -44,9 +43,11 @@ namespace CloudBoilerplateNet.Services
 
             CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _webhookObservableProvider = webhookObservableProvider ?? throw new ArgumentNullException(nameof(webhookObservableProvider));
-            _webhookObservableProvider.GetObservable().Subscribe((args) => InvalidateEntry(args.IdentifierSet));
             _relatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
+
+            KenticoCloudWebhookObservableFactory
+                .GetObservable(kenticoCloudWebhookListener, nameof(kenticoCloudWebhookListener.WebhookNotification))
+                .Subscribe((args) => InvalidateEntry(args.IdentifierSet));
         }
 
         #endregion

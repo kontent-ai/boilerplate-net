@@ -3,12 +3,10 @@ using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services
 {
-    public interface IWebhookObservableProvider
+    public interface IKenticoCloudWebhookListener
     {
         event EventHandler<WebhookNotificationEventArgs> WebhookNotification;
 
-        void RaiseWebhookNotification(IdentifierSet identifierSet);
-
-        IObservable<WebhookNotificationEventArgs> GetObservable();
+        void RaiseWebhookNotification(object sender, IdentifierSet identifierSet);
     }
 }
