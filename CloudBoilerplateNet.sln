@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F01F5C1A-8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudBoilerplateNet", "src\content\CloudBoilerplateNet\CloudBoilerplateNet.csproj", "{9E34703A-016B-4879-85F7-A3F2D3E30C6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudBoilerplateNet.Tests", "test\CloudBoilerplateNet.Tests\CloudBoilerplateNet.Tests.csproj", "{0CD94DDF-E146-4A53-B1E9-3DEDB9671D88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudBoilerplateNet.Tests", "test\CloudBoilerplateNet.Tests\CloudBoilerplateNet.Tests.csproj", "{0CD94DDF-E146-4A53-B1E9-3DEDB9671D88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,5 +37,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9E34703A-016B-4879-85F7-A3F2D3E30C6E} = {D77E4880-962A-453F-8F1E-81A772DE5EEF}
 		{0CD94DDF-E146-4A53-B1E9-3DEDB9671D88} = {F01F5C1A-88F6-4317-BEEC-B36CE7CBF326}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {159A7772-7933-4F5C-8894-EFE7C1DF3932}
 	EndGlobalSection
 EndGlobal

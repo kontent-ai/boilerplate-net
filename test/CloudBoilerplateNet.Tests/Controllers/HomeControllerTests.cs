@@ -1,30 +1,61 @@
-﻿using CloudBoilerplateNet.Controllers;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
+
+using CloudBoilerplateNet.Controllers;
+using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
+using CloudBoilerplateNet.Services;
+using KenticoCloud.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using CloudBoilerplateNet.Services;
+using RichardSzalay.MockHttp;
 using Xunit;
-using KenticoCloud.Delivery;
 
 namespace CloudBoilerplateNet.Tests
 {
     public class HomeControllerTests
     {
-        [Fact]
-        public void IndexTests()
+        readonly string guid = string.Empty;
+        readonly string baseUrl = string.Empty;
+        readonly MockHttpMessageHandler mockHttp;
+
+        public HomeControllerTests()
         {
+            guid = Guid.NewGuid().ToString();
+            baseUrl = $"https://deliver.kenticocloud.com/{guid}";
+            mockHttp = new MockHttpMessageHandler();
+        }
+
+        [Fact]
+        public void IndexReturnsArticle()
+        {
+            var cachedDeliveryClient = GetCachedDeliveryClient();
+
+            var controller = new HomeController(cachedDeliveryClient);
+            var result = Task.Run(() => controller.Index()).Result;
+
+            Assert.Equal(typeof(ReadOnlyCollection<Article>), result.Model.GetType());
+        }
+
+        private IDeliveryClient GetCachedDeliveryClient()
+        {
+            mockHttp.When($"{baseUrl}/items")
+                .WithQueryString(new[] { new KeyValuePair<string, string>("system.type", Article.Codename), new KeyValuePair<string, string>("limit", "3"), new KeyValuePair<string, string>("depth", "0"), new KeyValuePair<string, string>("order", "elements.post_date[asc]") })
+                .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\articles.json")));
+
+            var httpClient = mockHttp.ToHttpClient();
+
             var projectOptions = Options.Create(new ProjectOptions
             {
                 CacheTimeoutSeconds = 60,
                 DeliveryOptions = new DeliveryOptions
                 {
-                    ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3"
+                    ProjectId = guid
                 }
             });
-
 
             var memoryCacheOptions = Options.Create(new MemoryCacheOptions
             {
@@ -32,11 +63,13 @@ namespace CloudBoilerplateNet.Tests
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 
-            var deliveryClient = new CachedDeliveryClient(projectOptions, new MemoryCache(memoryCacheOptions));
-            var controller = new HomeController(deliveryClient);
-            var result = Task.Run(() => controller.Index()).Result;
+            var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentTypesResolver(), new KenticoCloudWebhookListener());
 
-            Assert.Equal(typeof(ReadOnlyCollection<Article>), result.Model.GetType());
+            return new CachedDeliveryClient(projectOptions, cacheManager)
+            {
+                CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() },
+                HttpClient = httpClient
+            };
         }
     }
 }

@@ -8,12 +8,12 @@ using Newtonsoft.Json.Linq;
 
 namespace CloudBoilerplateNet.Helpers
 {
-    public class KenticoCloudCacheHelper : IDependentTypesResolver
+    public static class KenticoCloudCacheHelper
     {
-        protected const string LISTING_SUFFIX = "_listing";
-        protected const string JSON_SUFFIX = "_json";
-        protected const string TYPED_SUFFIX = "_typed";
-        protected const string RUNTIME_TYPED_SUFFIX = "_runtime_typed";
+        private const string LISTING_SUFFIX = "_listing";
+        private const string JSON_SUFFIX = "_json";
+        private const string TYPED_SUFFIX = "_typed";
+        private const string RUNTIME_TYPED_SUFFIX = "_runtime_typed";
 
         public const string CONTENT_ITEM_SINGLE_IDENTIFIER = "content_item";
         public const string CONTENT_ITEM_SINGLE_JSON_IDENTIFIER = CONTENT_ITEM_SINGLE_IDENTIFIER + JSON_SUFFIX;
@@ -44,7 +44,7 @@ namespace CloudBoilerplateNet.Helpers
         public const string TYPES_IDENTIFIER = "types";
         public const string TAXONOMIES_IDENTIFIER = "taxonomies";
         public const string ELEMENTS_IDENTIFIER = "elements";
-        private const string TAXONOMY_GROUP_IDENTIFIER = "taxonomy_group";
+        public const string TAXONOMY_GROUP_IDENTIFIER = "taxonomy_group";
 
         public static IEnumerable<string> ContentItemSingleRelatedTypes
         {
@@ -135,42 +135,6 @@ namespace CloudBoilerplateNet.Helpers
             }
         }
 
-        public IEnumerable<string> GetDependentTypes(string typeCodeName)
-        {
-            if (ContentItemSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return ContentItemSingleRelatedTypes;
-            }
-            else if (ContentItemListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return ContentItemListingRelatedTypes;
-            }
-            else if (ContentTypeSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return ContentTypeSingleRelatedTypes;
-            }
-            else if (ContentTypeListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return ContentTypeListingRelatedTypes;
-            }
-            else if (typeCodeName.Equals(CONTENT_ELEMENT_IDENTIFIER, StringComparison.Ordinal))
-            {
-                return ContentElementRelatedTypes;
-            }
-            else if (TaxonomyGroupSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return TaxonomyGroupSingleRelatedTypes;
-            }
-            else if (TaxonomyGroupListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
-            {
-                return TaxonomyGroupListingRelatedTypes;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         public static IEnumerable<string> GetContentItemCodenamesFromListingResponse(dynamic response)
         {
             if (IsDeliveryListingResponse(response))
@@ -209,7 +173,6 @@ namespace CloudBoilerplateNet.Helpers
             return null;
         }
 
-        // TODO: Unit tests
         public static IEnumerable<IdentifierSet> GetJsonModularContentDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -244,10 +207,8 @@ namespace CloudBoilerplateNet.Helpers
             });
         }
 
-        // TODO: Unit tests
         public static IEnumerable<string> GetModularContentCodenames(dynamic response)
         {
-            // if (response.ModularContent != null && response.ModularContent is System.Collections.IEnumerable) is not completely safe
             if (IsDeliveryResponse(response))
             {
                 foreach (var mc in response.ModularContent)

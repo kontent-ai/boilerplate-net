@@ -16,7 +16,6 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Fields"
 
-        private readonly IMemoryCache _memoryCache;
         private readonly IDependentTypesResolver _relatedTypesResolver;
         private bool _disposed;
 
@@ -30,19 +29,16 @@ namespace CloudBoilerplateNet.Services
             set;
         }
 
+        public IMemoryCache MemoryCache { get; }
+
         #endregion
 
         #region "Constructors"
 
         public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IKenticoCloudWebhookListener kenticoCloudWebhookListener)
         {
-            if (projectOptions == null)
-            {
-                throw new ArgumentNullException(nameof(projectOptions));
-            }
-
-            CacheExpirySeconds = projectOptions.Value.CacheTimeoutSeconds;
-            _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+            CacheExpirySeconds = projectOptions?.Value?.CacheTimeoutSeconds ?? throw new ArgumentNullException(nameof(projectOptions));
+            MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _relatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
 
             KenticoCloudWebhookObservableFactory
@@ -57,7 +53,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
         {
             // Check existence of the cache entry.
-            if (!_memoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
+            if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
             {
                 // If it doesn't exist, get it via valueFactory.
                 T response = await valueFactory();
@@ -89,9 +85,9 @@ namespace CloudBoilerplateNet.Services
                 // Dummy entries hold just the CancellationTokenSource, nothing else.
                 CancellationTokenSource dummyEntry;
 
-                if (!_memoryCache.TryGetValue(dummyKey, out dummyEntry) || _memoryCache.TryGetValue(dummyKey, out dummyEntry) && dummyEntry.IsCancellationRequested)
+                if (!MemoryCache.TryGetValue(dummyKey, out dummyEntry) || MemoryCache.TryGetValue(dummyKey, out dummyEntry) && dummyEntry.IsCancellationRequested)
                 {
-                    dummyEntry = _memoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
+                    dummyEntry = MemoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
                 }
 
                 if (dummyEntry != null)
@@ -101,7 +97,7 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            _memoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
+            MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
         }
 
         public void InvalidateEntry(IdentifierSet identifiers)
@@ -118,7 +114,7 @@ namespace CloudBoilerplateNet.Services
 
             foreach (var typeIdentifier in _relatedTypesResolver.GetDependentTypes(identifiers.Type))
             {
-                if (_memoryCache.TryGetValue(StringHelpers.Join("dummy", typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
+                if (MemoryCache.TryGetValue(StringHelpers.Join("dummy", typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
                 {
                     // Mark all subscribers to the CancellationTokenSource as invalid.
                     dummyEntry.Cancel();
@@ -148,7 +144,7 @@ namespace CloudBoilerplateNet.Services
 
             if (disposing)
             {
-                _memoryCache.Dispose();
+                MemoryCache.Dispose();
             }
 
             _disposed = true;

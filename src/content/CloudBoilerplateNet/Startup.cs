@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
-using CloudBoilerplateNet.Helpers;
+
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
@@ -34,16 +34,24 @@ namespace CloudBoilerplateNet
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-            services.AddSingleton<IKenticoCloudWebhookListener>(sp => new KenticoCloudWebhookListener());
-            services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudCacheHelper());
-            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<IMemoryCache>(), sp.GetRequiredService<IDependentTypesResolver>(), sp.GetRequiredService<IKenticoCloudWebhookListener>()));
-            services.AddMvc();
 
-            services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(sp.GetRequiredService<IOptions<ProjectOptions>>(), sp.GetRequiredService<ICacheManager>())
+            services.AddSingleton<IKenticoCloudWebhookListener>(sp => new KenticoCloudWebhookListener());
+            services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudDependentTypesResolver());
+            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
+                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
+                sp.GetRequiredService<IMemoryCache>(), 
+                sp.GetRequiredService<IDependentTypesResolver>(), 
+                sp.GetRequiredService<IKenticoCloudWebhookListener>()));
+
+            services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
+                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
+                sp.GetRequiredService<ICacheManager>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
             });
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

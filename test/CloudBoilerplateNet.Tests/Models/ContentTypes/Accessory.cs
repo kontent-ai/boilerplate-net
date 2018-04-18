@@ -8,35 +8,27 @@ using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
 
-namespace CloudBoilerplateNet.Models
+namespace CloudBoilerplateNet.Tests.Models
 {
-    public partial class Coffee
+    public partial class Accessory
     {
-        public const string Codename = "coffee";
+        public const string Codename = "accessory";
         public const string ProductNameCodename = "product_name";
         public const string PriceCodename = "price";
         public const string ImageCodename = "image";
+        public const string ManufacturerCodename = "manufacturer";
+        public const string ProductStatusCodename = "product_status";
         public const string ShortDescriptionCodename = "short_description";
         public const string LongDescriptionCodename = "long_description";
-        public const string ProductStatusCodename = "product_status";
-        public const string FarmCodename = "farm";
-        public const string CountryCodename = "country";
-        public const string VarietyCodename = "variety";
-        public const string ProcessingCodename = "processing";
-        public const string AltitudeCodename = "altitude";
         public const string UrlPatternCodename = "url_pattern";
 
         public string ProductName { get; set; }
         public decimal? Price { get; set; }
         public IEnumerable<Asset> Image { get; set; }
+        public string Manufacturer { get; set; }
+        public IEnumerable<TaxonomyTerm> ProductStatus { get; set; }
         public string ShortDescription { get; set; }
         public string LongDescription { get; set; }
-        public IEnumerable<TaxonomyTerm> ProductStatus { get; set; }
-        public string Farm { get; set; }
-        public string Country { get; set; }
-        public string Variety { get; set; }
-        public IEnumerable<MultipleChoiceOption> Processing { get; set; }
-        public string Altitude { get; set; }
         public string UrlPattern { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }

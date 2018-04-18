@@ -9,6 +9,7 @@ using KenticoCloud.Delivery;
 using KenticoCloud.Delivery.InlineContentItems;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
+using System.Net.Http;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -29,6 +30,12 @@ namespace CloudBoilerplateNet.Services
         {
             get => DeliveryClient.CodeFirstModelProvider;
             set => DeliveryClient.CodeFirstModelProvider = value;
+        }
+
+        public HttpClient HttpClient
+        {
+            get => DeliveryClient.HttpClient;
+            set => DeliveryClient.HttpClient = value;
         }
 
         public IInlineContentItemsProcessor InlineContentItemsProcessor => DeliveryClient.InlineContentItemsProcessor;

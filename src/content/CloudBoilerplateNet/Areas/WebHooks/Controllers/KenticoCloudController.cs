@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
-using KenticoCloud.Delivery;
-using CloudBoilerplateNet.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using CloudBoilerplateNet.Filters;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
@@ -15,7 +13,7 @@ using CloudBoilerplateNet.Areas.WebHooks.Models;
 namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
 {
     [Area("WebHooks")]
-    public class KenticoCloudController : BaseController
+    public class KenticoCloudController : Controller
     {
         protected List<string> SupportedOperations => new List<string>()
         {
@@ -27,17 +25,15 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
             "restore"
         };
 
-        protected ICacheManager CacheManager { get; }
         protected IKenticoCloudWebhookListener KenticoCloudWebhookListener { get; }
 
-        public KenticoCloudController(IDeliveryClient deliveryClient, ICacheManager cacheManager, IKenticoCloudWebhookListener kenticoCloudWebhookListener) : base(deliveryClient)
+        public KenticoCloudController(IKenticoCloudWebhookListener kenticoCloudWebhookListener)
         {
-            CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
             KenticoCloudWebhookListener = kenticoCloudWebhookListener ?? throw new ArgumentNullException(nameof(kenticoCloudWebhookListener));
         }
 
         [HttpPost]
-        // TODO: Uncomment [ServiceFilter(typeof(KenticoCloudSignatureActionFilter))]
+        [ServiceFilter(typeof(KenticoCloudSignatureActionFilter))]
         public IActionResult Index([FromBody] KenticoCloudWebhookModel model)
         {
             switch (model.Message.Type)

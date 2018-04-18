@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
 
-namespace CloudBoilerplateNet.Models
+namespace CloudBoilerplateNet.Tests.Models
 {
     public partial class Home
     {

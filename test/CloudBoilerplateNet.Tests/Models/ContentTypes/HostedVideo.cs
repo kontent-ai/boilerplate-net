@@ -8,16 +8,16 @@ using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
 
-namespace CloudBoilerplateNet.Models
+namespace CloudBoilerplateNet.Tests.Models
 {
-    public partial class AboutUs
+    public partial class HostedVideo
     {
-        public const string Codename = "about_us";
-        public const string FactsCodename = "facts";
-        public const string UrlPatternCodename = "url_pattern";
+        public const string Codename = "hosted_video";
+        public const string VideoIdCodename = "video_id";
+        public const string VideoHostCodename = "video_host";
 
-        public IEnumerable<object> Facts { get; set; }
-        public string UrlPattern { get; set; }
+        public string VideoId { get; set; }
+        public IEnumerable<MultipleChoiceOption> VideoHost { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
 }
