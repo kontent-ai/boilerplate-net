@@ -9,7 +9,7 @@ namespace CloudBoilerplateNet.Services
 {
     public class KenticoCloudDependentTypesResolver : IDependentTypesResolver
     {
-        public IEnumerable<string> GetDependentTypes(string typeCodeName)
+        public IEnumerable<string> GetDependentTypeNames(string typeCodeName)
         {
             if (KenticoCloudCacheHelper.ContentItemSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {

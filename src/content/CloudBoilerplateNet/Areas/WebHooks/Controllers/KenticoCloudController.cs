@@ -25,9 +25,9 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
             "restore"
         };
 
-        protected IKenticoCloudWebhookListener KenticoCloudWebhookListener { get; }
+        protected IWebhookListener KenticoCloudWebhookListener { get; }
 
-        public KenticoCloudController(IKenticoCloudWebhookListener kenticoCloudWebhookListener)
+        public KenticoCloudController(IWebhookListener kenticoCloudWebhookListener)
         {
             KenticoCloudWebhookListener = kenticoCloudWebhookListener ?? throw new ArgumentNullException(nameof(kenticoCloudWebhookListener));
         }

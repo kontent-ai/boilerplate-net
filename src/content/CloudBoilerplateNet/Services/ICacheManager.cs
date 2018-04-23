@@ -1,10 +1,9 @@
-﻿using KenticoCloud.Delivery;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using CloudBoilerplateNet.Models;
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -25,7 +24,10 @@ namespace CloudBoilerplateNet.Services
         /// <param name="postRetrievalTokenDecorator">Method to decorate the <paramref name="identifierTokens"/> with additional tokens, based on the value retrieved from <paramref name="valueFactory"/>.</param>
         /// <returns>The value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
         Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory);
-        
+
+        bool TryGetValue<T>(IEnumerable<string> identifierTokens, out T value)
+            where T : class;
+
         /// <summary>
         /// Invalidates (clears) an entry.
         /// </summary>

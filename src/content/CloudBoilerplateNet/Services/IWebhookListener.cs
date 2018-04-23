@@ -3,7 +3,7 @@ using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services
 {
-    public interface IKenticoCloudWebhookListener
+    public interface IWebhookListener
     {
         event EventHandler<WebhookNotificationEventArgs> WebhookNotification;
 

@@ -35,17 +35,18 @@ namespace CloudBoilerplateNet
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
 
-            services.AddSingleton<IKenticoCloudWebhookListener>(sp => new KenticoCloudWebhookListener());
+            services.AddSingleton<IWebhookListener>(sp => new KenticoCloudWebhookListener());
             services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudDependentTypesResolver());
             services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
                 sp.GetRequiredService<IOptions<ProjectOptions>>(), 
                 sp.GetRequiredService<IMemoryCache>(), 
                 sp.GetRequiredService<IDependentTypesResolver>(), 
-                sp.GetRequiredService<IKenticoCloudWebhookListener>()));
+                sp.GetRequiredService<IWebhookListener>()));
 
             services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
                 sp.GetRequiredService<IOptions<ProjectOptions>>(), 
-                sp.GetRequiredService<ICacheManager>())
+                sp.GetRequiredService<ICacheManager>(),
+                sp.GetRequiredService<IDependentTypesResolver>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()

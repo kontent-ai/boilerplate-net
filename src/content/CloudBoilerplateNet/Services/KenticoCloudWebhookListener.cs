@@ -7,7 +7,7 @@ using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services
 {
-    public class KenticoCloudWebhookListener : IKenticoCloudWebhookListener
+    public class KenticoCloudWebhookListener : IWebhookListener
     {
         public event EventHandler<WebhookNotificationEventArgs> WebhookNotification = delegate { };
 

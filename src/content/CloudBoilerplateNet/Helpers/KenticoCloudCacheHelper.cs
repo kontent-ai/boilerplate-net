@@ -25,7 +25,7 @@ namespace CloudBoilerplateNet.Helpers
         public const string CONTENT_ITEM_LISTING_TYPED_IDENTIFIER = CONTENT_ITEM_LISTING_IDENTIFIER + TYPED_SUFFIX;
         public const string CONTENT_ITEM_LISTING_RUNTIME_TYPED_IDENTIFIER = CONTENT_ITEM_LISTING_IDENTIFIER + RUNTIME_TYPED_SUFFIX;
         public const string CONTENT_TYPE_SINGLE_IDENTIFIER = "content_type";
-        public const string CONTENT_TYPE_JSON_IDENTIFIER = CONTENT_TYPE_SINGLE_IDENTIFIER + JSON_SUFFIX;
+        public const string CONTENT_TYPE_SINGLE_JSON_IDENTIFIER = CONTENT_TYPE_SINGLE_IDENTIFIER + JSON_SUFFIX;
         public const string CONTENT_TYPE_LISTING_IDENTIFIER = CONTENT_TYPE_SINGLE_IDENTIFIER + LISTING_SUFFIX;
         public const string CONTENT_TYPE_LISTING_JSON_IDENTIFIER = CONTENT_TYPE_LISTING_IDENTIFIER + JSON_SUFFIX;
         public const string CONTENT_ELEMENT_IDENTIFIER = "content_element";
@@ -35,6 +35,7 @@ namespace CloudBoilerplateNet.Helpers
         public const string TAXONOMY_GROUP_LISTING_IDENTIFIER = TAXONOMY_GROUP_SINGLE_IDENTIFIER + LISTING_SUFFIX;
         public const string TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER = TAXONOMY_GROUP_LISTING_IDENTIFIER + JSON_SUFFIX;
 
+        public const string DUMMY_IDENTIFIER = "dummy";
         public const string CODENAME_IDENTIFIER = "codename";
         public const string SYSTEM_IDENTIFIER = "system";
         public const string MODULAR_CONTENT_IDENTIFIER = "modular_content";
@@ -82,7 +83,7 @@ namespace CloudBoilerplateNet.Helpers
                 return new List<string>
                 {
                     CONTENT_TYPE_SINGLE_IDENTIFIER,
-                    CONTENT_TYPE_JSON_IDENTIFIER
+                    CONTENT_TYPE_SINGLE_JSON_IDENTIFIER
                 };
             }
         }
@@ -195,10 +196,22 @@ namespace CloudBoilerplateNet.Helpers
             return dependencies;
         }
 
+        public static IEnumerable<IdentifierSet> GetContentItemTaxonomyDependencies(dynamic contentItem)
+        {
+            if (contentItem is ContentItem && contentItem?.Elements != null)
+            {
+                return GetContentItemJsonTaxonomyDependencies((JObject)contentItem.Elements);
+            }
+
+            return new List<IdentifierSet>();
+        }
+
         public static IEnumerable<IdentifierSet> GetContentItemJsonTaxonomyDependencies(JObject responseFragment)
         {
             var taxonomyElements = responseFragment?[ELEMENTS_IDENTIFIER]?.SelectMany(t => t.Children())?
-                                .Where(e => e[TYPE_IDENTIFIER] != null && e[TYPE_IDENTIFIER].ToString().Equals(TAXONOMY_GROUP_SINGLE_IDENTIFIER, StringComparison.Ordinal) && e[TAXONOMY_GROUP_IDENTIFIER] != null && !string.IsNullOrEmpty(e[TAXONOMY_GROUP_IDENTIFIER].ToString()));
+                                .Where(
+                                    e => e[TYPE_IDENTIFIER] != null && e[TYPE_IDENTIFIER].ToString().Equals(TAXONOMY_GROUP_SINGLE_IDENTIFIER, StringComparison.Ordinal) && 
+                                    e[TAXONOMY_GROUP_IDENTIFIER] != null && !string.IsNullOrEmpty(e[TAXONOMY_GROUP_IDENTIFIER].ToString()));
 
             return taxonomyElements.Select(e => new IdentifierSet
             {

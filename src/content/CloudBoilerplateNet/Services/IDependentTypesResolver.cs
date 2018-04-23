@@ -7,6 +7,6 @@ namespace CloudBoilerplateNet.Services
 {
     public interface IDependentTypesResolver
     {
-        IEnumerable<string> GetDependentTypes(string typeCodeName);
+        IEnumerable<string> GetDependentTypeNames(string typeCodeName);
     }
 }

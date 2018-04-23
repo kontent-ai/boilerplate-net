@@ -35,7 +35,7 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IKenticoCloudWebhookListener kenticoCloudWebhookListener)
+        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IWebhookListener kenticoCloudWebhookListener)
         {
             CacheExpirySeconds = projectOptions?.Value?.CacheTimeoutSeconds ?? throw new ArgumentNullException(nameof(projectOptions));
             MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
@@ -79,7 +79,7 @@ namespace CloudBoilerplateNet.Services
 
             foreach (var dependency in dependencies)
             {
-                var dummyIdentifierTokens = new List<string> { "dummy", dependency.Type, dependency.Codename };
+                var dummyIdentifierTokens = new List<string> { KenticoCloudCacheHelper.DUMMY_IDENTIFIER, dependency.Type, dependency.Codename };
                 var dummyKey = StringHelpers.Join(dummyIdentifierTokens);
 
                 // Dummy entries hold just the CancellationTokenSource, nothing else.
@@ -100,6 +100,23 @@ namespace CloudBoilerplateNet.Services
             MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
         }
 
+        public bool TryGetValue<T>(IEnumerable<string> identifierTokens, out T value)
+            where T : class
+        {
+            if (MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
+            {
+                value = entry;
+
+                return true;
+            }
+            else
+            {
+                value = null;
+
+                return false;
+            }
+        }
+
         public void InvalidateEntry(IdentifierSet identifiers)
         {
             if (_relatedTypesResolver == null)
@@ -112,9 +129,9 @@ namespace CloudBoilerplateNet.Services
                 throw new ArgumentNullException(nameof(identifiers));
             }
 
-            foreach (var typeIdentifier in _relatedTypesResolver.GetDependentTypes(identifiers.Type))
+            foreach (var typeIdentifier in _relatedTypesResolver.GetDependentTypeNames(identifiers.Type))
             {
-                if (MemoryCache.TryGetValue(StringHelpers.Join("dummy", typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
+                if (MemoryCache.TryGetValue(StringHelpers.Join(KenticoCloudCacheHelper.DUMMY_IDENTIFIER, typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
                 {
                     // Mark all subscribers to the CancellationTokenSource as invalid.
                     dummyEntry.Cancel();
