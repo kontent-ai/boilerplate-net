@@ -63,9 +63,9 @@ namespace CloudBoilerplateNet.Tests
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 
-            var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentTypesResolver(), new KenticoCloudWebhookListener());
+            var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentFormatResolver(), new KenticoCloudWebhookListener());
 
-            return new CachedDeliveryClient(projectOptions, cacheManager)
+            return new CachedDeliveryClient(projectOptions, cacheManager, new KenticoCloudDependentFormatResolver())
             {
                 CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() },
                 HttpClient = httpClient

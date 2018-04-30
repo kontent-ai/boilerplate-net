@@ -36,7 +36,7 @@ namespace CloudBoilerplateNet
             services.Configure<ProjectOptions>(Configuration);
 
             services.AddSingleton<IWebhookListener>(sp => new KenticoCloudWebhookListener());
-            services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudDependentTypesResolver());
+            services.AddSingleton<IDependentTypesResolver>(sp => new KenticoCloudDependentFormatResolver());
             services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
                 sp.GetRequiredService<IOptions<ProjectOptions>>(), 
                 sp.GetRequiredService<IMemoryCache>(), 

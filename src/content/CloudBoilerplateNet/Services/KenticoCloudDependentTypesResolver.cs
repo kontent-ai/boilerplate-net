@@ -7,37 +7,37 @@ using CloudBoilerplateNet.Helpers;
 
 namespace CloudBoilerplateNet.Services
 {
-    public class KenticoCloudDependentTypesResolver : IDependentTypesResolver
+    public class KenticoCloudDependentFormatResolver : IDependentTypesResolver
     {
         public IEnumerable<string> GetDependentTypeNames(string typeCodeName)
         {
-            if (KenticoCloudCacheHelper.ContentItemSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            if (KenticoCloudCacheHelper.ContentItemSingleRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.ContentItemSingleRelatedTypes;
+                return KenticoCloudCacheHelper.ContentItemSingleRelatedFormats;
             }
-            else if (KenticoCloudCacheHelper.ContentItemListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            else if (KenticoCloudCacheHelper.ContentItemListingRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.ContentItemListingRelatedTypes;
+                return KenticoCloudCacheHelper.ContentItemListingRelatedFormats;
             }
-            else if (KenticoCloudCacheHelper.ContentTypeSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            else if (KenticoCloudCacheHelper.ContentTypeSingleRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.ContentTypeSingleRelatedTypes;
+                return KenticoCloudCacheHelper.ContentTypeSingleRelatedFormats;
             }
-            else if (KenticoCloudCacheHelper.ContentTypeListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            else if (KenticoCloudCacheHelper.ContentTypeListingRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.ContentTypeListingRelatedTypes;
+                return KenticoCloudCacheHelper.ContentTypeListingRelatedFormats;
             }
             else if (typeCodeName.Equals(KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, StringComparison.Ordinal))
             {
-                return KenticoCloudCacheHelper.ContentElementRelatedTypes;
+                return KenticoCloudCacheHelper.ContentElementRelatedFormats;
             }
-            else if (KenticoCloudCacheHelper.TaxonomyGroupSingleRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            else if (KenticoCloudCacheHelper.TaxonomyGroupSingleRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.TaxonomyGroupSingleRelatedTypes;
+                return KenticoCloudCacheHelper.TaxonomyGroupSingleRelatedFormats;
             }
-            else if (KenticoCloudCacheHelper.TaxonomyGroupListingRelatedTypes.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
+            else if (KenticoCloudCacheHelper.TaxonomyGroupListingRelatedFormats.Any(rt => typeCodeName.Equals(rt, StringComparison.Ordinal)))
             {
-                return KenticoCloudCacheHelper.TaxonomyGroupListingRelatedTypes;
+                return KenticoCloudCacheHelper.TaxonomyGroupListingRelatedFormats;
             }
             else
             {

@@ -62,14 +62,13 @@ namespace CloudBoilerplateNet.Tests.Services
             Assert.Null(cacheManager.MemoryCache.Get<string>(identifiers.First()));
         }
 
-        [Theory]
-        [InlineData("TestItem", "TestItemValue", 0)]
-        [InlineData("TestVariant", "TestVariantValue", 1)]
-        public void InvalidatesDependentTypes(string identifier, string value, int dependencyIndex)
+        [Fact]
+        public void InvalidatesDependentTypes()
         {
             var cacheManager = BuildCacheManager();
-            cacheManager.CreateEntry(new List<string> { identifier }, value, ItemVariantDependencyFactory);
-            cacheManager.InvalidateEntry(ItemVariantDependencyFactory(value).ElementAt(dependencyIndex));
+            cacheManager.CreateEntry(new List<string> { "TestItem" }, "TestItemValue", ItemVariantDependencyFactory);
+            cacheManager.CreateEntry(new List<string> { "TestVariant" }, "TestVariantValue", ItemVariantDependencyFactory);
+            cacheManager.InvalidateEntry(ItemVariantDependencyFactory("TestVariantValue").ElementAt(1));
 
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestItem"));
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestVariant"));
@@ -122,7 +121,7 @@ namespace CloudBoilerplateNet.Tests.Services
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 
-            return new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentTypesResolver(), new KenticoCloudWebhookListener());
+            return new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentFormatResolver(), new KenticoCloudWebhookListener());
         }
     }
 }
