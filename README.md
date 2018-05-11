@@ -51,6 +51,16 @@ Optional:
 
 ## How Tos
 
+### How to debug the app
+
+In Windows, there are basically two ways to run the app:
+
+* via IIS
+* as a standalone command-line app
+
+We recommend choosing the **second option - as a standalone app**. In Visual Studio, you can switch to it in the toolbar:
+
+![Debugging mode](https://i.imgur.com/PoxRBus.png)
 
 ### How to change Kentico Cloud Project ID and Delivery Preview API key
 
