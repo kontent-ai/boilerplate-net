@@ -25,8 +25,11 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## Quick start
 
 ### Prerequisites
+
+The most seamless way to get all prerequisities is to install [Visual Studio 2017](https://www.visualstudio.com/vs/) with the ".NET Core cross-platform development" workload.
+
 **Required:**
-You must have the latest version (.net core 2 is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
+You must have the latest version ([.NET Core 2](https://www.microsoft.com/net/download/core) is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 (15.3 or higher), or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
 
 Optional:
 * [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
@@ -37,7 +40,7 @@ Optional:
 1. Open Developer Command Prompt for VS 2017
 2. Run `dotnet new --install "KenticoCloud.CloudBoilerplateNet::*"` to install the boilerplate to your machine
 3. Wait for the command to finish (it may take a minute or two)
-4. Run `dotnet new kentico-cloud-mvc --name "MyWebsite"  [--output "<path>"]`
+4. Run `dotnet new kentico-cloud-mvc --name "MyWebsite"  [--output "<path>"]`. (**Note:** the `--output` parameter is optional.)
 5. Open in Visual Studio 2017/Code and Run
 
 ### Installation from source
@@ -83,14 +86,10 @@ The boilerplate contains a sample implementation of the [`SiteMapController`](ht
 
 Error handling is setup by default. Any server exception or error response within 400-600 status code range is handled by ErrorController. By default, it's configured to display Not Found error page for 404 error and General Error for anything else. 
 
-
 ### How to adjust URL rewriting
 
 The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting) rules from [IISUrlRewrite.xml](/src/content/CloudBoilerplateNet/IISUrlRewrite.xml) file. Add or modify existing rules to match your expected behavior.
 This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
-
-:warning: ASP.NET Core 1.1 currently [doesn't support Rewrite Maps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting#unsupported-features), but there is a simple workaround for `/oldUrl -> /newUrl` mapping (see [IISUrlRewrite.xml](/src/content/CloudBoilerplateNet/IISUrlRewrite.xml) for example).
-
 
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
