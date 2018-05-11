@@ -58,6 +58,8 @@ In Windows, there are basically two ways to run the app:
 * via IIS
 * as a standalone command-line app
 
+You can read more about the differences on [Rick Strahl's blog](https://weblog.west-wind.com/posts/2016/Jun/06/Publishing-and-Running-ASPNET-Core-Applications-with-IIS).
+
 We recommend choosing the **second option - as a standalone app**. In Visual Studio, you can switch to it in the toolbar:
 
 ![Debugging mode](https://i.imgur.com/PoxRBus.png)
