@@ -52,7 +52,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     CONTENT_ITEM_SINGLE_IDENTIFIER,
                     CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
@@ -67,7 +67,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     CONTENT_ITEM_LISTING_IDENTIFIER,
                     CONTENT_ITEM_LISTING_JSON_IDENTIFIER,
@@ -81,7 +81,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     CONTENT_TYPE_SINGLE_IDENTIFIER,
                     CONTENT_TYPE_SINGLE_JSON_IDENTIFIER
@@ -93,7 +93,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     CONTENT_TYPE_LISTING_IDENTIFIER,
                     CONTENT_TYPE_LISTING_JSON_IDENTIFIER
@@ -105,7 +105,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     CONTENT_ELEMENT_IDENTIFIER,
                     CONTENT_ELEMENT_JSON_IDENTIFIER
@@ -117,7 +117,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     TAXONOMY_GROUP_SINGLE_IDENTIFIER,
                     TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER
@@ -129,7 +129,7 @@ namespace CloudBoilerplateNet.Helpers
         {
             get
             {
-                return new List<string>
+                return new[]
                 {
                     TAXONOMY_GROUP_LISTING_IDENTIFIER,
                     TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER
@@ -234,7 +234,7 @@ namespace CloudBoilerplateNet.Helpers
                 //var properties = elementsToken?.GetType().GetTypeInfo().GetProperties();
                 foreach (var property in properties)
                 {
-                    if (property.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) && property.PropertyType.GenericTypeArguments[0] == typeof(TaxonomyTerm))
+                    if (property.PropertyType.GenericTypeArguments.Length > 0 && property.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) && property.PropertyType.GenericTypeArguments[0] == typeof(TaxonomyTerm))
                     {
                         var codenameProperty = item.GetType().GetField($"{property.Name}Codename");
                         codenames.Add(codenameProperty.GetValue(item) as string);
@@ -337,15 +337,20 @@ namespace CloudBoilerplateNet.Helpers
             extractedItemCodename = null;
             extractedTypeCodename = null;
 
-            if ((item is ContentItem || !(item is JObject)) && item?.System != null)
+            if ((item is ContentItem || !(item is JProperty) && !(item is JObject)) && item?.System != null)
             {
                 extractedItemCodename = item.System.Codename?.ToString();
                 extractedTypeCodename = item.System.Type?.ToString();
             }
+            else if (item is JProperty && item?.Value?[SYSTEM_IDENTIFIER] != null)
+            {
+                extractedItemCodename = item.Value[SYSTEM_IDENTIFIER][CODENAME_IDENTIFIER]?.ToString();
+                extractedTypeCodename = item.Value[SYSTEM_IDENTIFIER][TYPE_IDENTIFIER]?.ToString();
+            }
             else if (item is JObject && item[SYSTEM_IDENTIFIER] != null)
             {
-                extractedItemCodename = item[SYSTEM_IDENTIFIER][CODENAME_IDENTIFIER]?.ToString();
-                extractedTypeCodename = item[SYSTEM_IDENTIFIER][TYPE_IDENTIFIER]?.ToString();
+                extractedItemCodename = item?[SYSTEM_IDENTIFIER][CODENAME_IDENTIFIER]?.ToString();
+                extractedTypeCodename = item?[SYSTEM_IDENTIFIER][TYPE_IDENTIFIER]?.ToString();
             }
         }
     }

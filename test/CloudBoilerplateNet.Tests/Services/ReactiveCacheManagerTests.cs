@@ -41,7 +41,7 @@ namespace CloudBoilerplateNet.Tests.Services
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            var cacheItem = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemVariantDependencyFactory);
+            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemVariantDependencyFactory);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(
@@ -68,7 +68,7 @@ namespace CloudBoilerplateNet.Tests.Services
             var cacheManager = BuildCacheManager();
             cacheManager.CreateEntry(new List<string> { "TestItem" }, "TestItemValue", ItemVariantDependencyFactory);
             cacheManager.CreateEntry(new List<string> { "TestVariant" }, "TestVariantValue", ItemVariantDependencyFactory);
-            cacheManager.InvalidateEntry(ItemVariantDependencyFactory("TestVariantValue").ElementAt(1));
+            cacheManager.InvalidateEntry(ItemVariantDependencyFactory(null).ElementAt(0));
 
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestItem"));
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestVariant"));
@@ -89,19 +89,13 @@ namespace CloudBoilerplateNet.Tests.Services
         private List<IdentifierSet> ItemVariantDependencyFactory(string value)
         {
             return new List<IdentifierSet>
+            {
+                new IdentifierSet
                 {
-                    new IdentifierSet
-                    {
-                        Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
-                        Codename = value
-                    },
-
-                    new IdentifierSet
-                    {
-                        Type = KenticoCloudCacheHelper.CONTENT_ITEM_VARIANT_SINGLE_IDENTIFIER,
-                        Codename = value
-                    }
-                };
+                    Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
+                    Codename = "TestItem"
+                }
+            };
         }
 
         private ReactiveCacheManager BuildCacheManager()
@@ -121,7 +115,7 @@ namespace CloudBoilerplateNet.Tests.Services
                 ExpirationScanFrequency = new TimeSpan(0, 0, 5)
             });
 
-            return new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new KenticoCloudDependentFormatResolver(), new KenticoCloudWebhookListener());
+            return new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new DependentFormatResolver(), new WebhookListener());
         }
     }
 }

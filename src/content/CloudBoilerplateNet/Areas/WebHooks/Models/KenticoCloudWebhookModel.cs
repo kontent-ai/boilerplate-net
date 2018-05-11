@@ -60,9 +60,4 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Models
         [JsonProperty("codename")]
         public string Codename { get; set; }
     }
-
-    public interface ICodenamedData
-    {
-        string Codename { get; set; }
-    }
 }

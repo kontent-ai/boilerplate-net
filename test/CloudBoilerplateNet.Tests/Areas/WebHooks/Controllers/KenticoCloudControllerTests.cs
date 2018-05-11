@@ -56,7 +56,7 @@ namespace CloudBoilerplateNet.Tests.Areas.WebHooks.Controllers
                 Message = new Message { Type = artefactType, Operation = operation }
             };
             
-            var controller = new KenticoCloudController(new KenticoCloudWebhookListener());
+            var controller = new KenticoCloudController(new WebhookListener());
             var result = (StatusCodeResult)Task.Run(() => controller.Index(model)).Result;
 
             Assert.InRange(result.StatusCode, 200, 299);

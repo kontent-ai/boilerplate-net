@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
+using System.Reactive.Linq;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -31,18 +32,31 @@ namespace CloudBoilerplateNet.Services
 
         public IMemoryCache MemoryCache { get; }
 
+        protected List<string> InvalidatingOperations => new List<string>
+        {
+            "upsert",
+            "publish",
+            "restore_publish",
+            "unpublish",
+            "archive",
+            "restore"
+        };
+
         #endregion
 
         #region "Constructors"
 
-        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IWebhookListener kenticoCloudWebhookListener)
+        public ReactiveCacheManager(IOptions<ProjectOptions> projectOptions, IMemoryCache memoryCache, IDependentTypesResolver relatedTypesResolver, IWebhookListener webhookListener)
         {
             CacheExpirySeconds = projectOptions?.Value?.CacheTimeoutSeconds ?? throw new ArgumentNullException(nameof(projectOptions));
             MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _relatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
 
-            KenticoCloudWebhookObservableFactory
-                .GetObservable(kenticoCloudWebhookListener, nameof(kenticoCloudWebhookListener.WebhookNotification))
+            WebhookObservableFactory
+                .GetObservable(webhookListener, nameof(webhookListener.WebhookNotification))
+                .Where(args => InvalidatingOperations.Any(operation => operation.Equals(args.Operation, StringComparison.Ordinal)))
+                .Throttle(TimeSpan.FromSeconds(1))
+                .DistinctUntilChanged()
                 .Subscribe((args) => InvalidateEntry(args.IdentifierSet));
         }
 
@@ -58,7 +72,8 @@ namespace CloudBoilerplateNet.Services
                 // If it doesn't exist, get it via valueFactory.
                 T response = await valueFactory();
 
-                // Create it. (Could be off-loaded to a background thread.)
+                // Create it in a background thread.
+                //var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory)).ConfigureAwait(false);
                 CreateEntry(identifierTokens, response, dependencyListFactory);
 
                 return response;

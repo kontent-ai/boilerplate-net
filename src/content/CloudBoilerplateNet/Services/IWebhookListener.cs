@@ -7,6 +7,6 @@ namespace CloudBoilerplateNet.Services
     {
         event EventHandler<WebhookNotificationEventArgs> WebhookNotification;
 
-        void RaiseWebhookNotification(object sender, IdentifierSet identifierSet);
+        void RaiseWebhookNotification(object sender, string operation, IdentifierSet identifierSet);
     }
 }

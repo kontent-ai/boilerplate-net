@@ -33,8 +33,8 @@ namespace CloudBoilerplateNet.Tests.Services
                 };
             }
 
-            var listener = new KenticoCloudWebhookListener();
-            Assert.Throws<ArgumentNullException>(() => listener.RaiseWebhookNotification(sender, identifierSet));
+            var listener = new WebhookListener();
+            Assert.Throws<ArgumentNullException>(() => listener.RaiseWebhookNotification(sender, "upsert", identifierSet));
         }
     }
 }

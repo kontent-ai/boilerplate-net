@@ -15,21 +15,11 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
     [Area("WebHooks")]
     public class KenticoCloudController : Controller
     {
-        protected List<string> SupportedOperations => new List<string>()
-        {
-            "upsert",
-            "publish",
-            "restore_publish",
-            "unpublish",
-            "archive",
-            "restore"
-        };
-
-        protected IWebhookListener KenticoCloudWebhookListener { get; }
+        protected IWebhookListener WebhookListener { get; }
 
         public KenticoCloudController(IWebhookListener kenticoCloudWebhookListener)
         {
-            KenticoCloudWebhookListener = kenticoCloudWebhookListener ?? throw new ArgumentNullException(nameof(kenticoCloudWebhookListener));
+            WebhookListener = kenticoCloudWebhookListener ?? throw new ArgumentNullException(nameof(kenticoCloudWebhookListener));
         }
 
         [HttpPost]
@@ -52,26 +42,19 @@ namespace CloudBoilerplateNet.Areas.WebHooks.Controllers
 
         private IActionResult RaiseNotificationForSupportedOperations(string operation, string artefactType, IEnumerable<ICodenamedData> data)
         {
-            if (SupportedOperations.Any(o => o.Equals(operation, StringComparison.Ordinal)))
+            foreach (var item in data)
             {
-                foreach (var item in data)
-                {
-                    KenticoCloudWebhookListener.RaiseWebhookNotification(
-                        this,
-                        new IdentifierSet
-                        {
-                            Type = artefactType,
-                            Codename = item.Codename
-                        });
-                }
+                WebhookListener.RaiseWebhookNotification(
+                    this,
+                    operation,
+                    new IdentifierSet
+                    {
+                        Type = artefactType,
+                        Codename = item.Codename
+                    });
+            }
 
-                return Ok();
-            }
-            else
-            {
-                // For all other operations, return OK to avoid webhook re-submissions.
-                return Ok();
-            }
+            return Ok();
         }
     }
 }
