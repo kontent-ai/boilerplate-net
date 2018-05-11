@@ -29,7 +29,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 The most seamless way to get all prerequisities is to install [Visual Studio 2017](https://www.visualstudio.com/vs/) with the ".NET Core cross-platform development" workload.
 
 **Required:**
-You must have the latest version ([.NET Core 2](https://www.microsoft.com/net/download/core) is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 (15.3 or higher), or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core).
+You must have the latest version ([.NET Core 2](https://www.microsoft.com/net/download/core) is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 (15.3 or higher), or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core). You can check your .NET Core version via `dotnet --version`.
 
 Optional:
 * [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
