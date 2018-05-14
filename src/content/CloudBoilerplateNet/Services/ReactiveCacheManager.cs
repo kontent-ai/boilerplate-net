@@ -17,7 +17,7 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Fields"
 
-        private readonly IDependentTypesResolver _relatedTypesResolver;
+        private readonly IDependentTypesResolver _dependentTypesResolver;
         private bool _disposed;
 
         #endregion
@@ -50,7 +50,7 @@ namespace CloudBoilerplateNet.Services
         {
             CacheExpirySeconds = projectOptions?.Value?.CacheTimeoutSeconds ?? throw new ArgumentNullException(nameof(projectOptions));
             MemoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _relatedTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
+            _dependentTypesResolver = relatedTypesResolver ?? throw new ArgumentNullException(nameof(relatedTypesResolver));
 
             WebhookObservableFactory
                 .GetObservable(webhookListener, nameof(webhookListener.WebhookNotification))
@@ -64,6 +64,14 @@ namespace CloudBoilerplateNet.Services
 
         #region "Public methods"
 
+        /// <summary>
+        /// Gets an existing cache entry or creates one using the supplied <paramref name="valueFactory"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the cache entry value.</typeparam>
+        /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
+        /// <param name="valueFactory">Method to create the entry.</param>
+        /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
+        /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
         public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
         {
             // Check existence of the cache entry.
@@ -82,6 +90,13 @@ namespace CloudBoilerplateNet.Services
             return entry;
         }
 
+        /// <summary>
+        /// Creates a new cache entry.
+        /// </summary>
+        /// <typeparam name="T">Type of the cache entry value.</typeparam>
+        /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
+        /// <param name="value">Value of the entry.</param>
+        /// <param name="dependencyListFactory">Method to get a collection of identifier of entries that the current entry depends upon.</param>
         public void CreateEntry<T>(IEnumerable<string> identifierTokens, T value, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
         {
             var dependencies = dependencyListFactory(value) ?? new List<IdentifierSet>();
@@ -115,6 +130,13 @@ namespace CloudBoilerplateNet.Services
             MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
         }
 
+        /// <summary>
+        /// Tries to get a cache entry.
+        /// </summary>
+        /// <typeparam name="T">Type of the entry.</typeparam>
+        /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
+        /// <param name="value">The cache entry value, if it exists.</param>
+        /// <returns>True if the entry exists, otherwise false.</returns>
         public bool TryGetValue<T>(IEnumerable<string> identifierTokens, out T value)
             where T : class
         {
@@ -132,11 +154,15 @@ namespace CloudBoilerplateNet.Services
             }
         }
 
+        /// <summary>
+        /// Invalidates (clears) a cache entry.
+        /// </summary>
+        /// <param name="identifiers">Identifiers of the entry.</param>
         public void InvalidateEntry(IdentifierSet identifiers)
         {
-            if (_relatedTypesResolver == null)
+            if (_dependentTypesResolver == null)
             {
-                throw new ArgumentNullException(nameof(_relatedTypesResolver));
+                throw new ArgumentNullException(nameof(_dependentTypesResolver));
             }
 
             if (identifiers == null)
@@ -144,7 +170,7 @@ namespace CloudBoilerplateNet.Services
                 throw new ArgumentNullException(nameof(identifiers));
             }
 
-            foreach (var typeIdentifier in _relatedTypesResolver.GetDependentTypeNames(identifiers.Type))
+            foreach (var typeIdentifier in _dependentTypesResolver.GetDependentTypeNames(identifiers.Type))
             {
                 if (MemoryCache.TryGetValue(StringHelpers.Join(KenticoCloudCacheHelper.DUMMY_IDENTIFIER, typeIdentifier, identifiers.Codename), out CancellationTokenSource dummyEntry))
                 {
@@ -152,6 +178,49 @@ namespace CloudBoilerplateNet.Services
                     dummyEntry.Cancel();
                 }
             }
+        }
+
+        /// <summary>
+        /// Looks up the cache for an entry and passes it to a method to extract dependencies.
+        /// </summary>
+        /// <typeparam name="T">Type of the cache entry.</typeparam>
+        /// <param name="typeIdentifier">Type used to look up the cache entry.</param>
+        /// <param name="codename">The code name used to look up the cache entry.</param>
+        /// <param name="dependencyListFactory">The method that takes the entry and extracts dependencies from it.</param>
+        /// <returns>Identifiers of the dependencies.</returns>
+        public IEnumerable<IdentifierSet> GetDependenciesFromCacheContents<T>(string typeIdentifier, string codename, Func<T, IEnumerable<IdentifierSet>> dependencyFactory)
+            where T : class
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (TryGetValue(new[] { typeIdentifier, codename }, out T cacheEntry))
+            {
+                return dependencyFactory(cacheEntry);
+            }
+
+            return dependencies;
+        }
+
+        /// <summary>
+        /// Creates identifier sets for all alternative types (formats) of the cache entry.
+        /// </summary>
+        /// <param name="originalTypeIdentifier">The original type of the cache entry.</param>
+        /// <param name="codename">The code name of the cache entry.</param>
+        /// <param name="dependencyListFactory">The method that takes each of the type identifiers and the code name, and, extracts dependencies from it.</param>
+        /// <returns>Identifiers of the dependencies.</returns>
+        public IEnumerable<IdentifierSet> GetDependenciesForAllDependentTypes(string originalTypeIdentifier, string codename, Func<string, string, IEnumerable<IdentifierSet>> dependencyFactory)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (!string.IsNullOrEmpty(codename) && !string.IsNullOrEmpty(originalTypeIdentifier) && dependencyFactory != null)
+            {
+                foreach (var typeIdentifier in _dependentTypesResolver.GetDependentTypeNames(originalTypeIdentifier))
+                {
+                    dependencies.AddRange(dependencyFactory(codename, typeIdentifier));
+                }
+            }
+
+            return dependencies;
         }
 
         /// <summary>

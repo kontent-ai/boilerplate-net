@@ -19,7 +19,6 @@ namespace CloudBoilerplateNet.Services
 
         protected DeliveryClient DeliveryClient { get; }
         protected ICacheManager CacheManager { get; }
-        protected IDependentTypesResolver DependentTypesResolver { get; }
 
         public IContentLinkUrlResolver ContentLinkUrlResolver
         {
@@ -45,11 +44,10 @@ namespace CloudBoilerplateNet.Services
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager, IDependentTypesResolver dependentTypesResolver)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager)
         {
             DeliveryClient = new DeliveryClient(projectOptions.Value.DeliveryOptions);
             CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
-            DependentTypesResolver = dependentTypesResolver ?? throw new ArgumentNullException(nameof(dependentTypesResolver));
         }
 
         #endregion
@@ -252,6 +250,11 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependencies);
         }
 
+        /// <summary>
+        /// Returns a taxonomy group as JSON data.
+        /// </summary>
+        /// <param name="codename">The codename of a taxonomy group.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the taxonomy group with the specified codename.</returns>
         public async Task<JObject> GetTaxonomyJsonAsync(string codename)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER, codename };
@@ -259,6 +262,11 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyJsonAsync(codename), GetTaxonomySingleJsonDependency);
         }
 
+        /// <summary>
+        /// Returns taxonomy groups as JSON data.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
         public async Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER };
@@ -267,6 +275,11 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesJsonAsync(parameters), GetTaxonomyListingJsonDependencies);
         }
 
+        /// <summary>
+        /// Returns a taxonomy group.
+        /// </summary>
+        /// <param name="codename">The codename of a taxonomy group.</param>
+        /// <returns>The taxonomy group with the specified codename.</returns>
         public async Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, codename };
@@ -274,11 +287,21 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyAsync(codename), GetTaxonomySingleDependency);
         }
 
+        /// <summary>
+        /// Returns taxonomy groups.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="DeliveryTaxonomyListingResponse"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
         public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
         {
             return await GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
         }
 
+        /// <summary>
+        /// Returns taxonomy groups.
+        /// </summary>
+        /// <param name="parameters">A collection of query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="DeliveryTaxonomyListingResponse"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
         public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
@@ -289,6 +312,11 @@ namespace CloudBoilerplateNet.Services
 
         #region "Dependency resolvers"
 
+        /// <summary>
+        /// Extracts identifier sets from a single-item response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryItemResponse"/> or <see cref="DeliveryItemResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
+        /// <returns>Identifiers of all formats of the item, its modular content items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemSingleDependencies(dynamic response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -306,6 +334,11 @@ namespace CloudBoilerplateNet.Services
             return dependencies.Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a single-item JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> response.</param>
+        /// <returns>Identifiers of all formats of the item, its modular content items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemSingleJsonDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -320,31 +353,14 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            //dependencies.AddRange(KenticoCloudCacheHelper.GetJsonModularContentDependencies(response));
-
-            //var ownDependency = new IdentifierSet
-            //{
-            //    Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER,
-            //    Codename = KenticoCloudCacheHelper.GetContentItemSingleCodenameFromJson(response)
-            //};
-
-            //if (response?[KenticoCloudCacheHelper.ITEM_IDENTIFIER] != null)
-            //{
-            //    dependencies.AddRange(KenticoCloudCacheHelper.GetContentItemJsonTaxonomyDependencies(response[KenticoCloudCacheHelper.ITEM_IDENTIFIER]));
-            //}
-
-            //dependencies.AddRange(KenticoCloudCacheHelper.GetJsonModularContentDependencies(response));
-
-            //if (!dependencies.Contains(ownDependency))
-            //{
-            //    dependencies.Add(ownDependency);
-            //}
-
-            //dependencies.AddRange(GetContentItemJsonTypeDependencies(response?[KenticoCloudCacheHelper.ITEM_IDENTIFIER]));
-
             return dependencies.Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from an item listing response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryItemListingResponse"/> or <see cref="DeliveryItemListingResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
+        /// <returns>Identifiers of all formats of the items, their modular content items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemListingDependencies(dynamic response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -362,11 +378,14 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            //dependencies.AddRange(KenticoCloudCacheHelper.GetModularContentDependencies(response));
-
             return dependencies.Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a item listing JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> item listing response.</param>
+        /// <returns>Identifiers of all formats of the items, their modular content items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemListingJsonDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -384,141 +403,98 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            //foreach (var mc in KenticoCloudCacheHelper.GetJsonModularContentDependencies(response))
-            //{
-            //    yield return mc;
-            //}
-
-            //foreach (var item in response[KenticoCloudCacheHelper.ITEMS_IDENTIFIER].Children())
-            //{
-            //    yield return new IdentifierSet
-            //    {
-            //        Type = KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER,
-            //        Codename = item[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER].ToString()
-            //    };
-
-            //    foreach (var typeDependency in GetContentItemJsonTypeDependencies(item))
-            //    {
-            //        yield return typeDependency;
-            //    }
-            //}
-
             return dependencies.Distinct();
         }
 
-        //public IEnumerable<IdentifierSet> GetContentElementDependency(ContentElement response)
-        //{
-        //    //return GetContentElementDependencyInternal(response, KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER);
-        //    return (response != null) ? new List<IdentifierSet>
-        //    {
-        //        new IdentifierSet
-        //        {
-        //            Type = KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER,
-        //            Codename = string.Join("|", response.Type, response.Codename)
-        //        }
-        //    } : null;
-        //}
-
-        //protected IEnumerable<IdentifierSet> GetContentElementDependencyInternal(ContentElement contentElement, string typeIdentifier)
-        //{
-        //}
-
+        /// <summary>
+        /// Extracts identifier sets from a content element response.
+        /// </summary>
+        /// <param name="response">The <see cref="ContentElement"/> response.</param>
+        /// <returns>Identifiers of all formats of the element.</returns>
         public IEnumerable<IdentifierSet> GetContentElementDependencies(ContentElement response)
         {
             return GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, response).Distinct();
         }
 
-
+        /// <summary>
+        /// Extracts identifier sets from a singnle taxonomy group response.
+        /// </summary>
+        /// <param name="response">The <see cref="TaxonomyGroup"/> response.</param>
+        /// <returns>Identifiers of all formats of the taxonomy.</returns>
         public IEnumerable<IdentifierSet> GetTaxonomySingleDependency(TaxonomyGroup response)
         {
             return GetTaxonomyDependencies(KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, response?.System?.Codename).Distinct();
-            //return response != null ? new List<IdentifierSet>
-            //{
-            //    new IdentifierSet
-            //    {
-            //        Type = KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER,
-            //        Codename = response.System?.Codename
-            //    }
-            //} : null;
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a single taxonomy group JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> taxonomy response.</param>
+        /// <returns>Identifiers of all formats of the taxonomy.</returns>
         public IEnumerable<IdentifierSet> GetTaxonomySingleJsonDependency(JObject response)
         {
             return GetTaxonomyDependencies(
                 KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER,
                 response?[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER]?.ToString()).Distinct();
-            //return response != null ? new List<IdentifierSet>
-            //{
-            //    new IdentifierSet
-            //    {
-            //        Type = KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER,
-            //        Codename = response[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER]?.ToString()
-            //    }
-            //} : null;
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a listing taxonomy group response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryTaxonomyListingResponse"/> response.</param>
+        /// <returns>Identifiers of all formats of all the taxonomies.</returns>
         public IEnumerable<IdentifierSet> GetTaxonomyListingDependencies(DeliveryTaxonomyListingResponse response)
         {
             return response?.Taxonomies?.SelectMany(t => GetTaxonomySingleDependency(t)).Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a listing taxonomy group JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> response.</param>
+        /// <returns>Identifiers of all formats of all the taxonomies.</returns>
         public IEnumerable<IdentifierSet> GetTaxonomyListingJsonDependencies(JObject response)
         {
             return response?[KenticoCloudCacheHelper.TAXONOMIES_IDENTIFIER]?.SelectMany(t => GetTaxonomySingleJsonDependency(t.ToObject<JObject>())).Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a content type response.
+        /// </summary>
+        /// <param name="response">The <see cref="ContentType"/> response.</param>
+        /// <returns>Identifiers of all formats of the content type and its elements.</returns>
         public IEnumerable<IdentifierSet> GetTypeSingleDependencies(ContentType response)
         {
             return GetContentTypeDependencies(KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, response?.System?.Codename, response).Distinct();
-            //return GetTypeSingleDependenciesInternal(response, KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER);
         }
 
-        //protected IEnumerable<IdentifierSet> GetTypeSingleDependenciesInternal(ContentType contentType, string typeIdentifier)
-        //{
-        //    foreach (var element in contentType?.Elements.SelectMany(e => GetContentElementDependencies(e.Value)))
-        //    {
-        //        yield return element;
-        //    }
-
-        //    if (!string.IsNullOrEmpty(typeIdentifier))
-        //    {
-        //        yield return new IdentifierSet
-        //        {
-        //            Type = typeIdentifier,
-        //            Codename = contentType.System?.Codename
-        //        };
-        //    }
-        //}
-
+        /// <summary>
+        /// Extracts identifier sets from a content type response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> content type response.</param>
+        /// <returns>Identifiers of all formats of the content type and its elements.</returns>
         public IEnumerable<IdentifierSet> GetTypeSingleJsonDependencies(JObject response)
         {
             return GetContentTypeDependencies(
                 KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER,
                 response?[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER]?.ToString(), response).Distinct();
-            //foreach (var element in response?[KenticoCloudCacheHelper.ELEMENTS_IDENTIFIER])
-            //{
-            //    if (!string.IsNullOrEmpty((element as JProperty)?.Name))
-            //    {
-            //        yield return new IdentifierSet
-            //        {
-            //            Type = KenticoCloudCacheHelper.CONTENT_ELEMENT_JSON_IDENTIFIER,
-            //            Codename = (element as JProperty)?.Name
-            //        };
-            //    }
-            //}
-
-            //yield return new IdentifierSet
-            //{
-            //    Type = KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER,
-            //    Codename = response[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER]?.ToString()
-            //};
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a content type listing response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryTypeListingResponse"/> response.</param>
+        /// <returns>Identifiers of all formats of all the content types and their elements.</returns>
         public IEnumerable<IdentifierSet> GetTypeListingDependencies(DeliveryTypeListingResponse response)
         {
             return response?.Types?.SelectMany(t => GetTypeSingleDependencies(t)).Distinct();
         }
 
+        /// <summary>
+        /// Extracts identifier sets from a content type listing JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> content type listing response.</param>
+        /// <returns>Identifiers of all formats of all the content types and their elements.</returns>
         public IEnumerable<IdentifierSet> GetTypeListingJsonDependencies(JObject response)
         {
             return response?[KenticoCloudCacheHelper.TYPES_IDENTIFIER]?.SelectMany(t => GetTypeSingleJsonDependencies(t.ToObject<JObject>())).Distinct();
@@ -538,16 +514,9 @@ namespace CloudBoilerplateNet.Services
 
             if (!string.IsNullOrEmpty(extractedItemCodename))
             {
-                //// Dependency on the item itself.
-                //dependencies.Add(new IdentifierSet
-                //{
-                //    Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER,
-                //    Codename = extractedItemCodename
-                //});
-
                 // Dependency on all formats of the item.
                 dependencies.AddRange(
-                    GetDependenciesForAllDependentFormats(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, (itemCodename, formatIdentifier) =>
+                    CacheManager.GetDependenciesForAllDependentTypes(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, (itemCodename, formatIdentifier) =>
                         new List<IdentifierSet>
                         {
                             new IdentifierSet
@@ -558,15 +527,7 @@ namespace CloudBoilerplateNet.Services
                         }
                     ));
 
-                // Dependency on elements of item's type.
-                //dependencies.AddRange(
-                //    GetDependenciesForAllDependentFormats(
-                //        extractedTypeCodename, KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, (typeCodename, formatIdentifier) =>
-                //        {
-                //            return GetDependenciesByCacheContents<ContentType>(formatIdentifier, typeCodename, (cachedContentType, identifier) =>
-                //                GetTypeSingleDependenciesInternal(cachedContentType, identifier));
-                //        }
-                //));
+                // Dependency on elements of item's type (if possible).
                 dependencies.AddRange(GetContentTypeDependencies(KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, extractedTypeCodename));
 
                 // Dependency on item's taxonomy elements.
@@ -574,13 +535,6 @@ namespace CloudBoilerplateNet.Services
                 {
                     dependencies.AddRange(
                         GetTaxonomyDependencies(KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, taxonomyElementCodename)
-                    //GetDependenciesForAllDependentFormats(
-                    //    taxonomyElementCodename, KenticoCloudCacheHelper.TAXONOMY_GROUP_IDENTIFIER, (taxonomyCodename, formatIdentifier) =>
-                    //    {
-                    //        return GetDependenciesByCacheContents<TaxonomyGroup>(formatIdentifier, taxonomyCodename, (cachedTaxonomyGroup, identifier) =>
-                    //            new List<IdentifierSet> { new IdentifierSet { Type = identifier, Codename = cachedTaxonomyGroup.System.Codename } });
-                    //    }
-                    //)
                     );
                 }
             }
@@ -590,13 +544,9 @@ namespace CloudBoilerplateNet.Services
 
         protected IEnumerable<IdentifierSet> GetTaxonomyDependencies(string originalFormatIdentifier, string taxonomyCodename)
         {
-            return GetDependenciesForAllDependentFormats(
+            return CacheManager.GetDependenciesForAllDependentTypes(
                 originalFormatIdentifier, taxonomyCodename, (codename, formatIdentifier) =>
                     new List<IdentifierSet> { new IdentifierSet { Type = formatIdentifier, Codename = codename } }
-            //{
-            //    return GetDependenciesByCacheContents<TaxonomyGroup>(formatIdentifier, codename, (cachedTaxonomyGroup, identifier) =>
-            //        new List<IdentifierSet> { new IdentifierSet { Type = identifier, Codename = cachedTaxonomyGroup.System.Codename } });
-            //}
             );
         }
 
@@ -605,7 +555,7 @@ namespace CloudBoilerplateNet.Services
             var dependencies = new List<IdentifierSet>();
 
             dependencies.AddRange(
-                GetDependenciesForAllDependentFormats(originalFormatIdentifier, contentTypeCodeName, (typeCodename, formatIdentifier) =>
+                CacheManager.GetDependenciesForAllDependentTypes(originalFormatIdentifier, contentTypeCodeName, (typeCodename, formatIdentifier) =>
                     new List<IdentifierSet>
                     {
                         new IdentifierSet
@@ -616,15 +566,11 @@ namespace CloudBoilerplateNet.Services
                     }
                 ));
 
-            //dependencies.Add(new IdentifierSet { Type = originalFormatIdentifier, Codename = contentTypeCodeName });
-
             // Try to get element codenames from the response.
             if (response != null)
             {
                 if (response is ContentType && response?.Elements != null)
                 {
-
-                    //response.Elements.Select(e => dependencies.AddRange(GetContentElementDependencies(e.Value)));
                     foreach (var element in response.Elements)
                     {
                         dependencies.AddRange(GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, element.Value));
@@ -647,14 +593,14 @@ namespace CloudBoilerplateNet.Services
             else
             {
                 dependencies.AddRange(
-                    GetDependenciesForAllDependentFormats(
+                    CacheManager.GetDependenciesForAllDependentTypes(
                         originalFormatIdentifier, contentTypeCodeName, (typeCodename, formatIdentifier) =>
                         {
-                            return GetDependenciesByCacheContents<ContentType>(formatIdentifier, typeCodename, (cachedContentType, identifier) =>
+                            return CacheManager.GetDependenciesFromCacheContents<ContentType>(formatIdentifier, typeCodename, cachedContentType =>
                             {
                                 var dependenciesPerCacheEntry = new List<IdentifierSet>();
 
-                                foreach (var element in cachedContentType?.Elements.SelectMany(e => GetContentElementDependencies(e.Value)))
+                                foreach (var element in cachedContentType?.Elements?.SelectMany(e => GetContentElementDependencies(e.Value)))
                                 {
                                     dependenciesPerCacheEntry.Add(element);
                                 }
@@ -670,7 +616,6 @@ namespace CloudBoilerplateNet.Services
 
                                 return dependenciesPerCacheEntry;
                             });
-                            //GetTypeSingleDependenciesInternal(cachedContentType, identifier));
                         }
                 ));
             }
@@ -698,7 +643,7 @@ namespace CloudBoilerplateNet.Services
             if (!string.IsNullOrEmpty(elementType) && !string.IsNullOrEmpty(elementCodename))
             {
                 dependencies.AddRange(
-                    GetDependenciesForAllDependentFormats(
+                    CacheManager.GetDependenciesForAllDependentTypes(
                         originalFormatIdentifier, elementCodename, (codename, formatIdentifier) =>
                             new List<IdentifierSet>
                             {
@@ -713,81 +658,6 @@ namespace CloudBoilerplateNet.Services
 
             return dependencies;
         }
-
-        protected IEnumerable<IdentifierSet> GetDependenciesByCacheContents<T>(string formatIdentifier, string codename, Func<T, string, IEnumerable<IdentifierSet>> dependencyFactory)
-            where T : class
-        {
-            var dependencies = new List<IdentifierSet>();
-
-            if (CacheManager.TryGetValue(new[] { formatIdentifier, codename }, out T cacheEntry))
-            {
-                return dependencyFactory(cacheEntry, formatIdentifier);
-            }
-
-            return dependencies;
-        }
-
-        protected IEnumerable<IdentifierSet> GetDependenciesForAllDependentFormats(string originalFormatIdentifier, string codename, Func<string, string, IEnumerable<IdentifierSet>> dependencyFactory)
-        {
-            var dependencies = new List<IdentifierSet>();
-
-            if (!string.IsNullOrEmpty(codename) && !string.IsNullOrEmpty(originalFormatIdentifier) && dependencyFactory != null)
-            {
-                foreach (var formatIdentifier in DependentTypesResolver.GetDependentTypeNames(originalFormatIdentifier))
-                {
-                    dependencies.AddRange(dependencyFactory(codename, formatIdentifier));
-                }
-            }
-
-            return dependencies;
-        }
-
-        //protected IEnumerable<IdentifierSet> GetContentItemTypeDependencies(dynamic item)
-        //{
-        //    string contentTypeCodename = item?.System?.Type?.ToString();
-
-        //    return GetContentItemTypeDependenciesInternal(contentTypeCodename, KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER);
-        //}
-
-        //private IEnumerable<IdentifierSet> GetContentItemTypeDependenciesInternal(string contentTypeCodename, string originalFormatIdentifier)
-        //{
-        //    if (!string.IsNullOrEmpty(contentTypeCodename) && !string.IsNullOrEmpty(originalFormatIdentifier))
-        //    {
-        //        foreach (var formatIdentifier in DependentTypesResolver.GetDependentTypeNames(originalFormatIdentifier))
-        //        {
-        //            if (CacheManager.TryGetValue(new[] { KenticoCloudCacheHelper.DUMMY_IDENTIFIER, formatIdentifier, contentTypeCodename }, out ContentType contentType))
-        //            {
-        //                return GetTypeSingleDependenciesInternal(contentType, formatIdentifier);
-        //            }
-        //        }
-        //    }
-
-        //    return new List<IdentifierSet>();
-        //}
-
-        //protected IEnumerable<IdentifierSet> GetContentItemJsonFormatDependencies(JToken itemToken)
-        //{
-        //    var itemCodename = itemToken[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.CODENAME_IDENTIFIER]?.ToString();
-
-        //    if (!string.IsNullOrEmpty(itemCodename))
-        //    {
-        //        foreach (var formatIdentifier in DependentTypesResolver.GetDependentTypeNames(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER))
-        //        {
-        //            yield return new IdentifierSet
-        //            {
-        //                Type = formatIdentifier,
-        //                Codename = itemCodename
-        //            };
-        //        }
-        //    }
-        //}
-
-        //protected IEnumerable<IdentifierSet> GetContentItemJsonTypeDependencies(JToken itemToken)
-        //{
-        //    var contentTypeCodename = itemToken?[KenticoCloudCacheHelper.SYSTEM_IDENTIFIER][KenticoCloudCacheHelper.TYPE_IDENTIFIER]?.ToString();
-
-        //    return GetContentItemTypeDependenciesInternal(contentTypeCodename, KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER);
-        //}
 
         #endregion
     }

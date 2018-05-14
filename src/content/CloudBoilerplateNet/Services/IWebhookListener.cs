@@ -1,4 +1,5 @@
 ﻿using System;
+
 using CloudBoilerplateNet.Models;
 
 namespace CloudBoilerplateNet.Services

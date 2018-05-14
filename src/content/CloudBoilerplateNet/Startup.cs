@@ -45,8 +45,7 @@ namespace CloudBoilerplateNet
 
             services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
                 sp.GetRequiredService<IOptions<ProjectOptions>>(), 
-                sp.GetRequiredService<ICacheManager>(),
-                sp.GetRequiredService<IDependentTypesResolver>())
+                sp.GetRequiredService<ICacheManager>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()

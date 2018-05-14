@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Net.Http;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Services;
@@ -30,9 +30,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsContentItemSingleDependencies()
         {
-            var client = GetCachedDeliveryClient(MockItem);
+            var client = GetDeliveryClient(MockItem);
+            var cachedClient = GetCachedDeliveryClient(MockItem);
             var response = await client.GetItemAsync("coffee_beverages_explained", new LanguageParameter("es-ES"));
-            var dependencies = client.GetContentItemSingleDependencies(response);
+            var dependencies = cachedClient.GetContentItemSingleDependencies(response);
 
             AssertItemSingleDependencies(dependencies);
         }
@@ -40,9 +41,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsContentItemSingleJsonDependencies()
         {
-            var client = GetCachedDeliveryClient(MockItem);
+            var client = GetDeliveryClient(MockItem);
+            var cachedClient = GetCachedDeliveryClient(MockItem);
             var response = await client.GetItemJsonAsync("coffee_beverages_explained", "language=es-ES");
-            var dependencies = client.GetContentItemSingleJsonDependencies(response);
+            var dependencies = cachedClient.GetContentItemSingleJsonDependencies(response);
 
             AssertItemSingleDependencies(dependencies);
         }
@@ -50,9 +52,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsContentItemListingDependencies()
         {
-            var client = GetCachedDeliveryClient(MockItems);
+            var client = GetDeliveryClient(MockItems);
+            var cachedClient = GetCachedDeliveryClient(MockItems);
             var response = await client.GetItemsAsync(new LimitParameter(2), new SkipParameter(1));
-            var dependencies = client.GetContentItemListingDependencies(response);
+            var dependencies = cachedClient.GetContentItemListingDependencies(response);
             AssertItemListingDependencies(dependencies);
         }
 
@@ -60,18 +63,20 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsContentItemListingJsonDependencies()
         {
-            var client = GetCachedDeliveryClient(MockItems);
+            var client = GetDeliveryClient(MockItems);
+            var cachedClient = GetCachedDeliveryClient(MockItems);
             var response = await client.GetItemsJsonAsync("limit=2", "skip=1");
-            var dependencies = client.GetContentItemListingJsonDependencies(response);
+            var dependencies = cachedClient.GetContentItemListingJsonDependencies(response);
             AssertItemListingDependencies(dependencies);
         }
 
         [Fact]
         public async void GetsContentElementDependency()
         {
-            var client = GetCachedDeliveryClient(MockElement);
+            var client = GetDeliveryClient(MockElement);
+            var cachedClient = GetCachedDeliveryClient(MockElement);
             var response = await client.GetContentElementAsync(Models.Article.Codename, Models.Article.TitleCodename);
-            var dependencies = client.GetContentElementDependencies(response);
+            var dependencies = cachedClient.GetContentElementDependencies(response);
 
             Assert.Equal(2, dependencies.Count());
             Assert.All(dependencies, d => d.Codename.Equals("text|title", StringComparison.Ordinal));
@@ -82,9 +87,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTaxonomySingleDependency()
         {
-            var client = GetCachedDeliveryClient(MockTaxonomy);
+            var client = GetDeliveryClient(MockTaxonomy);
+            var cachedClient = GetCachedDeliveryClient(MockTaxonomy);
             var response = await client.GetTaxonomyAsync("personas");
-            var dependencies = client.GetTaxonomySingleDependency(response);
+            var dependencies = cachedClient.GetTaxonomySingleDependency(response);
 
             AssertTaxonomySingleDependencies(dependencies);
         }
@@ -92,9 +98,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTaxonomySingleJsonDependency()
         {
-            var client = GetCachedDeliveryClient(MockTaxonomy);
+            var client = GetDeliveryClient(MockTaxonomy);
+            var cachedClient = GetCachedDeliveryClient(MockTaxonomy);
             var response = await client.GetTaxonomyJsonAsync("personas");
-            var dependencies = client.GetTaxonomySingleJsonDependency(response);
+            var dependencies = cachedClient.GetTaxonomySingleJsonDependency(response);
 
             AssertTaxonomySingleDependencies(dependencies);
         }
@@ -102,9 +109,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTaxonomyListingDependencies()
         {
-            var client = GetCachedDeliveryClient(MockTaxonomies);
+            var client = GetDeliveryClient(MockTaxonomies);
+            var cachedClient = GetCachedDeliveryClient(MockTaxonomies);
             var response = await client.GetTaxonomiesAsync(new SkipParameter(1));
-            var dependencies = client.GetTaxonomyListingDependencies(response);
+            var dependencies = cachedClient.GetTaxonomyListingDependencies(response);
 
             AssertTaxonomyListingDependencies(dependencies);
         }
@@ -112,9 +120,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTaxonomyListingJsonDependencies()
         {
-            var client = GetCachedDeliveryClient(MockTaxonomies);
+            var client = GetDeliveryClient(MockTaxonomies);
+            var cachedClient = GetCachedDeliveryClient(MockTaxonomies);
             var response = await client.GetTaxonomiesJsonAsync("skip=1");
-            var dependencies = client.GetTaxonomyListingJsonDependencies(response);
+            var dependencies = cachedClient.GetTaxonomyListingJsonDependencies(response);
 
             AssertTaxonomyListingDependencies(dependencies);
         }
@@ -122,9 +131,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTypeSingleDependencies()
         {
-            var client = GetCachedDeliveryClient(MockType);
+            var client = GetDeliveryClient(MockType);
+            var cachedClient = GetCachedDeliveryClient(MockType);
             var response = await client.GetTypeAsync(Models.Article.Codename);
-            var dependencies = client.GetTypeSingleDependencies(response);
+            var dependencies = cachedClient.GetTypeSingleDependencies(response);
 
             AssertTypeSingleDependencies(dependencies);
         }
@@ -132,9 +142,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTypeSingleJsonDependencies()
         {
-            var client = GetCachedDeliveryClient(MockType);
+            var client = GetDeliveryClient(MockType);
+            var cachedClient = GetCachedDeliveryClient(MockType);
             var response = await client.GetTypeJsonAsync(Models.Article.Codename);
-            var dependencies = client.GetTypeSingleJsonDependencies(response);
+            var dependencies = cachedClient.GetTypeSingleJsonDependencies(response);
 
             AssertTypeSingleDependencies(dependencies);
         }
@@ -142,9 +153,10 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTypeListingDependencies()
         {
-            var client = GetCachedDeliveryClient(MockTypes);
+            var client = GetDeliveryClient(MockTypes);
+            var cachedClient = GetCachedDeliveryClient(MockTypes);
             var response = await client.GetTypesAsync(new SkipParameter(2));
-            var dependencies = client.GetTypeListingDependencies(response);
+            var dependencies = cachedClient.GetTypeListingDependencies(response);
 
             AssertTypeListingDependencies(dependencies);
         }
@@ -152,25 +164,33 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void GetsTypeListingJsonDependencies()
         {
-            var client = GetCachedDeliveryClient(MockTypes);
+            var client = GetDeliveryClient(MockTypes);
+            var cachedClient = GetCachedDeliveryClient(MockTypes);
             var response = await client.GetTypesJsonAsync("skip=2");
-            var dependencies = client.GetTypeListingJsonDependencies(response);
+            var dependencies = cachedClient.GetTypeListingJsonDependencies(response);
 
             AssertTypeListingDependencies(dependencies);
         }
 
+        private DeliveryClient GetDeliveryClient(Action mockAction)
+        {
+            InitClientPrerequisites(mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions);
+
+            return new DeliveryClient(deliveryOptions)
+            {
+                CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() },
+                HttpClient = httpClient
+            };
+        }
+
         private CachedDeliveryClient GetCachedDeliveryClient(Action mockAction)
         {
-            mockAction();
-            var httpClient = mockHttp.ToHttpClient();
+            InitClientPrerequisites(mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions);
 
             var projectOptions = Options.Create(new ProjectOptions
             {
                 CacheTimeoutSeconds = 60,
-                DeliveryOptions = new DeliveryOptions
-                {
-                    ProjectId = guid
-                }
+                DeliveryOptions = deliveryOptions
             });
 
             var memoryCacheOptions = Options.Create(new MemoryCacheOptions
@@ -181,10 +201,21 @@ namespace CloudBoilerplateNet.Tests
 
             var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new DependentFormatResolver(), new WebhookListener());
 
-            return new CachedDeliveryClient(projectOptions, cacheManager, new DependentFormatResolver())
+            return new CachedDeliveryClient(projectOptions, cacheManager)
             {
                 CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() },
                 HttpClient = httpClient
+            };
+        }
+
+        private void InitClientPrerequisites(Action mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions)
+        {
+            mockAction();
+            httpClient = mockHttp.ToHttpClient();
+
+            deliveryOptions = new DeliveryOptions
+            {
+                ProjectId = guid
             };
         }
 
@@ -242,13 +273,13 @@ namespace CloudBoilerplateNet.Tests
             Assert.Contains(new IdentifierSet { Codename = "americano", Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER }, dependencies);
             Assert.Contains(new IdentifierSet { Codename = "how_to_make_a_cappuccino", Type = KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER }, dependencies);
             Assert.Contains(new IdentifierSet { Codename = "personas", Type = KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER }, dependencies);
-            Assert.Equal(17, dependencies.Count());
+            Assert.Equal(23, dependencies.Count());
         }
 
         private static void AssertItemListingDependencies(IEnumerable<IdentifierSet> dependencies)
         {
             Assert.All(dependencies, (d) => new[] { "about_us", "aeropress", "how_we_source_our_coffees", "how_we_roast_our_coffees", "our_philosophy", "manufacturer", "product_status" }.Contains(d.Codename));
-            Assert.Equal(29, dependencies.Count());
+            Assert.Equal(39, dependencies.Count());
         }
 
         private static void AssertTaxonomySingleDependencies(IEnumerable<IdentifierSet> dependencies)
@@ -267,10 +298,12 @@ namespace CloudBoilerplateNet.Tests
 
         private static void AssertTypeSingleDependencies(IEnumerable<IdentifierSet> dependencies)
         {
-            Assert.Equal(20, dependencies.Count());
+            Assert.Equal(22, dependencies.Count());
             Assert.Equal(2, dependencies.Where(d => d.Codename.Equals("taxonomy|personas", StringComparison.Ordinal)).Count());
             Assert.Contains(dependencies.Where(d => d.Codename.Equals("taxonomy|personas", StringComparison.Ordinal)).Select(d => d.Type), i => i.Equals("content_element", StringComparison.Ordinal));
             Assert.Contains(dependencies.Where(d => d.Codename.Equals("taxonomy|personas", StringComparison.Ordinal)).Select(d => d.Type), i => i.Equals("content_element_json", StringComparison.Ordinal));
+            Assert.Equal(10, dependencies.Where(d => d.Type.Equals("content_element")).Count());
+            Assert.Equal(10, dependencies.Where(d => d.Type.Equals("content_element_json")).Count());
         }
 
         private static void AssertTypeListingDependencies(IEnumerable<IdentifierSet> dependencies)

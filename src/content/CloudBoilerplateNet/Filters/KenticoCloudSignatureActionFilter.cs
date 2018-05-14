@@ -1,11 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
-using System.Text;
-using System.IO;
 
 namespace CloudBoilerplateNet.Filters
 {
