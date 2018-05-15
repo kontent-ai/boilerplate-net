@@ -72,7 +72,7 @@ namespace CloudBoilerplateNet.Services
         /// <param name="valueFactory">Method to create the entry.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
+        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool awaitCacheEntryCreation = true)
         {
             // Check existence of the cache entry.
             if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
@@ -81,8 +81,14 @@ namespace CloudBoilerplateNet.Services
                 T response = await valueFactory();
 
                 // Create it in a background thread.
-                //var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory)).ConfigureAwait(false);
-                CreateEntry(identifierTokens, response, dependencyListFactory);
+                if (awaitCacheEntryCreation)
+                {
+                    await Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                }
+                else
+                {
+                    var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                }
 
                 return response;
             }

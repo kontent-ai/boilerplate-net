@@ -35,13 +35,13 @@ namespace CloudBoilerplateNet.Tests.Services
         }
 
         [Fact]
-        public async void CreatesEntryIfNotExists()
+        public async Task CreatesEntryIfNotExists()
         {
             ReactiveCacheManager cacheManager;
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemVariantDependencyFactory);
+            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemVariantDependencyFactory, true);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(

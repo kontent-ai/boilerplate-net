@@ -21,7 +21,7 @@ namespace CloudBoilerplateNet.Services
         /// <param name="valueFactory">Method to create the entry.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory);
+        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool awaitCacheEntryCreation = true);
 
         /// <summary>
         /// Tries to get a cache entry.
