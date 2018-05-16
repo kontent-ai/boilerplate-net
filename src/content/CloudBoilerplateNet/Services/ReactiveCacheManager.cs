@@ -80,11 +80,11 @@ namespace CloudBoilerplateNet.Services
                 // If it doesn't exist, get it via valueFactory.
                 T response = await valueFactory();
 
-                // Create it in a background thread.
                 if (awaitCacheEntryCreation)
                 {
-                    await Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                    CreateEntry(identifierTokens, response, dependencyListFactory);
                 }
+                // Create it in a background thread.
                 else
                 {
                     var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
