@@ -18,6 +18,8 @@ namespace CloudBoilerplateNet.Services
         #region "Fields"
 
         private readonly IDependentTypesResolver _dependentTypesResolver;
+        private readonly object _dummyEntryCreationLock = new object();
+        private readonly object _entryCreationLock = new object();
         private bool _disposed;
 
         #endregion
@@ -121,9 +123,12 @@ namespace CloudBoilerplateNet.Services
                 // Dummy entries hold just the CancellationTokenSource, nothing else.
                 CancellationTokenSource dummyEntry;
 
-                if (!MemoryCache.TryGetValue(dummyKey, out dummyEntry) || MemoryCache.TryGetValue(dummyKey, out dummyEntry) && dummyEntry.IsCancellationRequested)
+                lock (_dummyEntryCreationLock)
                 {
-                    dummyEntry = MemoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
+                    if (!MemoryCache.TryGetValue(dummyKey, out dummyEntry) || MemoryCache.TryGetValue(dummyKey, out dummyEntry) && dummyEntry.IsCancellationRequested)
+                    {
+                        dummyEntry = MemoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
+                    }
                 }
 
                 if (dummyEntry != null)
@@ -133,7 +138,13 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
+            lock (_entryCreationLock)
+            {
+                if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out object existingValue))
+                {
+                    MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
+                }
+            }
         }
 
         /// <summary>
