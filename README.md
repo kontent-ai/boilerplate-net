@@ -85,6 +85,10 @@ All content retrieved from Kentico Cloud is by default [cached](https://github.c
 
 To create the web hook, go to Project settings --> Webhooks --> Create new Webhook. Give it a name (like "Cache invalidation webhook") and the publicly routable URL of your app with `/WebHooks/KenticoCloud` appended (like "https://myapp.azurewebsites.net/WebHooks/KenticoCloud"). Then, copy the API secret and paste it as the `KenticoCloudWebhookSecret` environment variable (secret) into your app's settings.
 
+**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. 
+
+![New webhook configuration](https://i.imgur.com/ootVcPZ.png)
+
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
 
 ### How to adjust the sitemap.xml
