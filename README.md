@@ -79,15 +79,11 @@ If you want to use [Display Templates (MVC)](http://www.growingwiththeweb.com/20
 ### How to resolve links
 Rich text elements in Kentico Cloud can contain links to other content items. It's up to a developer to decide how the links should be represented on a live site. Resolution logic can be adjusted in the [`CustomContentLinkUrlResolver`](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Resolvers/CustomContentLinkUrlResolver.cs). See the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Resolving-Links-to-Content-Items) for detailed info.
 
-### How to set up fixed-time caching
+### How to set up webhook-enabled caching
 
-All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for five minutes. You can change the time by overriding the value of `CacheTimeoutSeconds` (e.g. in appsettings.json).
+All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for 24 hours in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache) singleton object. You can either change the time by overriding the value of the `CacheTimeoutSeconds` environment variable (e.g. in appsettings.json). Or, if you want your app to immediately clear cache entries of changed content, you can create a webhook in Kentico Cloud for that.
 
-The [CachedDeliveryClient](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) class is a simple wrapper around the original [https://github.com/Kentico/delivery-sdk-net/blob/master/KenticoCloud.Delivery/DeliveryClient.cs](DeliveryClient). It uses an [https://docs.microsoft.com/en-us/aspnet/core/api/microsoft.extensions.caching.memory.imemorycache](IMemoryCache) caching, currently implemented with the [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache?view=netframework-4.7) object.
-
-The `CachedDeliveryClient` has the same methods as the original `DeliveryClient`. Upon invoking these methods, it stores the results into the in-memory cache, for the aforementioned amount of time.
-
-As an in-memory caching mechanism, it is perfectly fine for non-load-balanced apps, or for apps configured with [sticky sessions](https://forums.asp.net/t/1892952.aspx?What+is+sticky+session+). For other scenarios, a distributed cache should be used instead.
+To create the web hook, go to Project settings --> Webhooks --> Create new Webhook. Give it a name (like "Cache invalidation webhook") and the publicly routable URL of your app with `/WebHooks/KenticoCloud` appended (like "https://myapp.azurewebsites.net/WebHooks/KenticoCloud"). Then, copy the API secret and paste it as the `KenticoCloudWebhookSecret` environment variable (secret).
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
 
