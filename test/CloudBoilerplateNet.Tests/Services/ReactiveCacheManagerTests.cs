@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
+using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
 using KenticoCloud.Delivery;
 using Microsoft.Extensions.Caching.Memory;

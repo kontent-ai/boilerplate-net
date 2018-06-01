@@ -2,7 +2,7 @@
 
 using CloudBoilerplateNet.Models;
 
-namespace CloudBoilerplateNet.Services
+namespace CloudBoilerplateNet.Helpers
 {
     public class WebhookListener : IWebhookListener
     {

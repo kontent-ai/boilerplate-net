@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Reactive.Linq;
 
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
-using System.Reactive.Linq;
+using CloudBoilerplateNet.Resolvers;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -17,6 +18,7 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Fields"
 
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly IDependentTypesResolver _dependentTypesResolver;
         private readonly object _dummyEntryCreationLock = new object();
         private readonly object _entryCreationLock = new object();
@@ -74,28 +76,37 @@ namespace CloudBoilerplateNet.Services
         /// <param name="valueFactory">Method to create the entry.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool awaitCacheEntryCreation = true)
+        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = false)
         {
-            // Check existence of the cache entry.
-            if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
+            await _semaphoreSlim.WaitAsync();
+
+            try
             {
-                // If it doesn't exist, get it via valueFactory.
-                T response = await valueFactory();
-
-                if (awaitCacheEntryCreation)
+                // Check existence of the cache entry.
+                if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
                 {
-                    CreateEntry(identifierTokens, response, dependencyListFactory);
-                }
-                // Create it in a background thread.
-                else
-                {
-                    var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                    // If it doesn't exist, get it via valueFactory.
+                    T response = await valueFactory();
+
+                    // Create it in a background thread.
+                    if (createCacheEntriesInBackground)
+                    {
+                        var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                    }
+                    else
+                    {
+                        CreateEntry(identifierTokens, response, dependencyListFactory);
+                    }
+
+                    return response;
                 }
 
-                return response;
+                return entry;
             }
-
-            return entry;
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
         }
 
         /// <summary>
@@ -198,19 +209,18 @@ namespace CloudBoilerplateNet.Services
         }
 
         /// <summary>
-        /// Looks up the cache for an entry and passes it to a method to extract dependencies.
+        /// Looks up the cache for an entry and passes it to a method that extracts specific dependencies.
         /// </summary>
         /// <typeparam name="T">Type of the cache entry.</typeparam>
-        /// <param name="typeIdentifier">Type used to look up the cache entry.</param>
-        /// <param name="codename">The code name used to look up the cache entry.</param>
-        /// <param name="dependencyListFactory">The method that takes the entry and extracts dependencies from it.</param>
+        /// <param name="identifierSet">Identifiers used to look up the cache for the entry.</param>
+        /// <param name="dependencyListFactory">The method that takes the entry, and uses them to extract dedependencies from it.</param>
         /// <returns>Identifiers of the dependencies.</returns>
-        public IEnumerable<IdentifierSet> GetDependenciesFromCacheContents<T>(string typeIdentifier, string codename, Func<T, IEnumerable<IdentifierSet>> dependencyFactory)
+        public IEnumerable<IdentifierSet> GetDependenciesByName<T>(IdentifierSet identifierSet, Func<T, IEnumerable<IdentifierSet>> dependencyFactory)
             where T : class
         {
             var dependencies = new List<IdentifierSet>();
 
-            if (TryGetValue(new[] { typeIdentifier, codename }, out T cacheEntry))
+            if (TryGetValue(new[] { identifierSet.Type, identifierSet.Codename }, out T cacheEntry))
             {
                 return dependencyFactory(cacheEntry);
             }
@@ -219,13 +229,13 @@ namespace CloudBoilerplateNet.Services
         }
 
         /// <summary>
-        /// Creates identifier sets for all alternative types (formats) of the cache entry.
+        /// Prepares identifier sets for all dependent types (formats) of the cache entry and passes them onto <paramref name="dependencyFactory"/> to extract specific dependencies.
         /// </summary>
         /// <param name="originalTypeIdentifier">The original type of the cache entry.</param>
         /// <param name="codename">The code name of the cache entry.</param>
-        /// <param name="dependencyListFactory">The method that takes each of the type identifiers and the code name, and, extracts dependencies from it.</param>
+        /// <param name="dependencyListFactory">The method that takes each of the identifiers of the dependent types (formats), and uses them to extract dependencies.</param>
         /// <returns>Identifiers of the dependencies.</returns>
-        public IEnumerable<IdentifierSet> GetDependenciesForAllDependentTypes(string originalTypeIdentifier, string codename, Func<string, string, IEnumerable<IdentifierSet>> dependencyFactory)
+        public IEnumerable<IdentifierSet> GetDependenciesByType(string originalTypeIdentifier, string codename, Func<IdentifierSet, IEnumerable<IdentifierSet>> dependencyFactory)
         {
             var dependencies = new List<IdentifierSet>();
 
@@ -233,7 +243,7 @@ namespace CloudBoilerplateNet.Services
             {
                 foreach (var typeIdentifier in _dependentTypesResolver.GetDependentTypeNames(originalTypeIdentifier))
                 {
-                    dependencies.AddRange(dependencyFactory(codename, typeIdentifier));
+                    dependencies.AddRange(dependencyFactory(new IdentifierSet { Type = typeIdentifier, Codename = codename }));
                 }
             }
 

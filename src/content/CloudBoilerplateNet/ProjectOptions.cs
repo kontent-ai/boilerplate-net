@@ -9,5 +9,7 @@ namespace CloudBoilerplateNet
         public int CacheTimeoutSeconds { get; set; }
 
         public string KenticoCloudWebhookSecret { get; set; }
+
+        public bool CreateCacheEntriesInBackground { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace CloudBoilerplateNet.Services
         /// <param name="valueFactory">Method to create the entry.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool awaitCacheEntryCreation = true);
+        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = true);
 
         /// <summary>
         /// Tries to get a cache entry.
@@ -40,23 +40,22 @@ namespace CloudBoilerplateNet.Services
         void InvalidateEntry(IdentifierSet identifiers);
 
         /// <summary>
-        /// Looks up the cache for an entry and passes it to a method to extract dependencies.
+        /// Looks up the cache for an entry and passes it to a method that extracts specific dependencies.
         /// </summary>
         /// <typeparam name="T">Type of the cache entry.</typeparam>
-        /// <param name="typeIdentifier">Type used to look up the cache entry.</param>
-        /// <param name="codename">The code name used to look up the cache entry.</param>
-        /// <param name="dependencyListFactory">The method that takes the entry and extracts dependencies from it.</param>
+        /// <param name="identifierSet">Identifiers used to look up the cache for the entry.</param>
+        /// <param name="dependencyListFactory">The method that takes the entry, and uses them to extract dedependencies from it.</param>
         /// <returns>Identifiers of the dependencies.</returns>
-        IEnumerable<IdentifierSet> GetDependenciesFromCacheContents<T>(string typeIdentifier, string codename, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
+        IEnumerable<IdentifierSet> GetDependenciesByName<T>(IdentifierSet identifierSet, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
             where T : class;
 
         /// <summary>
-        /// Creates identifier sets for all alternative types (formats) of the cache entry.
+        /// Prepares identifier sets for all dependent types (formats) of the cache entry and passes them onto <paramref name="dependencyFactory"/> to extract specific dependencies.
         /// </summary>
         /// <param name="originalTypeIdentifier">The original type of the cache entry.</param>
         /// <param name="codename">The code name of the cache entry.</param>
-        /// <param name="dependencyListFactory">The method that takes each of the type identifiers and the code name, and, extracts dependencies from it.</param>
+        /// <param name="dependencyListFactory">The method that takes each of the identifiers of the dependent types (formats), and uses them to extract dependencies.</param>
         /// <returns>Identifiers of the dependencies.</returns>
-        IEnumerable<IdentifierSet> GetDependenciesForAllDependentTypes(string originalTypeIdentifier, string codename, Func<string, string, IEnumerable<IdentifierSet>> dependencyListFactory);
+        IEnumerable<IdentifierSet> GetDependenciesByType(string originalTypeIdentifier, string codename, Func<IdentifierSet, IEnumerable<IdentifierSet>> dependencyListFactory);
     }
 }

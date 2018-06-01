@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
+using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
 using KenticoCloud.Delivery;
 using Microsoft.Extensions.Caching.Memory;
@@ -56,6 +58,7 @@ namespace CloudBoilerplateNet.Tests
             var cachedClient = GetCachedDeliveryClient(MockItems);
             var response = await client.GetItemsAsync(new LimitParameter(2), new SkipParameter(1));
             var dependencies = cachedClient.GetContentItemListingDependencies(response);
+
             AssertItemListingDependencies(dependencies);
         }
 
@@ -67,6 +70,7 @@ namespace CloudBoilerplateNet.Tests
             var cachedClient = GetCachedDeliveryClient(MockItems);
             var response = await client.GetItemsJsonAsync("limit=2", "skip=1");
             var dependencies = cachedClient.GetContentItemListingJsonDependencies(response);
+
             AssertItemListingDependencies(dependencies);
         }
 

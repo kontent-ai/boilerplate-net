@@ -171,7 +171,9 @@ namespace CloudBoilerplateNet.Helpers
 
                 foreach (var property in properties)
                 {
-                    if (property.PropertyType.GenericTypeArguments.Length > 0 && property.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) && property.PropertyType.GenericTypeArguments[0] == typeof(TaxonomyTerm))
+                    if (property.PropertyType.GenericTypeArguments.Length > 0 && 
+                        property.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>) && 
+                        property.PropertyType.GenericTypeArguments[0] == typeof(TaxonomyTerm))
                     {
                         var codenameProperty = item.GetType().GetField($"{property.Name}Codename");
                         codenames.Add(codenameProperty.GetValue(item) as string);
@@ -180,55 +182,29 @@ namespace CloudBoilerplateNet.Helpers
                 return codenames;
             }
         }
-        
-        public static bool IsDeliveryResponse(dynamic response)
-        {
-            if (IsDeliveryItemSingleResponse(response) || IsDeliveryItemListingResponse(response))
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         public static bool IsDeliveryItemSingleResponse(dynamic response)
         {
-            if (response is DeliveryItemResponse || (response.GetType().IsGenericType && response.GetType().GetGenericTypeDefinition() == typeof(DeliveryItemResponse<>)))
-            {
-                return true;
-            }
-
-            return false;
+            return (response is DeliveryItemResponse || 
+                (response.GetType().IsGenericType && 
+                response.GetType().GetGenericTypeDefinition() == typeof(DeliveryItemResponse<>))) ? true : false;
         }
 
         public static bool IsDeliveryItemListingResponse(dynamic response)
         {
-            if (response is DeliveryItemListingResponse || (response.GetType().IsGenericType && response.GetType().GetGenericTypeDefinition() == typeof(DeliveryItemListingResponse<>)))
-            {
-                return true;
-            }
-
-            return false;
+            return (response is DeliveryItemListingResponse || 
+                (response.GetType().IsGenericType && 
+                response.GetType().GetGenericTypeDefinition() == typeof(DeliveryItemListingResponse<>))) ? true : false;
         }
 
         public static bool IsDeliveryItemSingleJsonResponse(JObject response)
         {
-            if (response?[ITEM_IDENTIFIER] != null)
-            {
-                return true;
-            }
-
-            return false;
+            return (response?[ITEM_IDENTIFIER] != null) ? true : false;
         }
 
         public static bool IsDeliveryItemListingJsonResponse(JObject response)
         {
-            if (response?[ITEMS_IDENTIFIER] != null)
-            {
-                return true;
-            }
-
-            return false;
+            return (response?[ITEMS_IDENTIFIER] != null) ? true : false;
         }
 
         public static IEnumerable<string> GetIdentifiersFromParameters(IEnumerable<IQueryParameter> parameters)

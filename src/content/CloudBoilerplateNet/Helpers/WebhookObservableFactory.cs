@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 
 using CloudBoilerplateNet.Models;
 
-namespace CloudBoilerplateNet.Services
+namespace CloudBoilerplateNet.Helpers
 {
     public static class WebhookObservableFactory
     {

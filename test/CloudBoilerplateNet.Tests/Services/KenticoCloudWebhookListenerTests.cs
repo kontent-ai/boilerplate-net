@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
-using CloudBoilerplateNet.Services;
 using Xunit;
 
 namespace CloudBoilerplateNet.Tests.Services

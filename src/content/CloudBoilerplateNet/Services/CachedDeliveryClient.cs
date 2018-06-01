@@ -19,6 +19,7 @@ namespace CloudBoilerplateNet.Services
 
         protected DeliveryClient DeliveryClient { get; }
         protected ICacheManager CacheManager { get; }
+        protected ProjectOptions ProjectOptions { get; }
 
         public IContentLinkUrlResolver ContentLinkUrlResolver
         {
@@ -46,7 +47,8 @@ namespace CloudBoilerplateNet.Services
 
         public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager)
         {
-            DeliveryClient = new DeliveryClient(projectOptions.Value.DeliveryOptions);
+            ProjectOptions = projectOptions.Value;
+            DeliveryClient = new DeliveryClient(ProjectOptions.DeliveryOptions);
             CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
         }
 
@@ -65,7 +67,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
             identifierTokens.AddRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetContentItemSingleJsonDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetContentItemSingleJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsJsonAsync(parameters), GetContentItemListingJsonDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsJsonAsync(parameters), GetContentItemListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetContentItemSingleDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetContentItemSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -130,7 +132,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetContentItemSingleDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetContentItemSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -154,7 +156,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync(parameters), GetContentItemListingDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync(parameters), GetContentItemListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -174,7 +176,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync<T>(parameters), GetContentItemListingDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync<T>(parameters), GetContentItemListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeJsonAsync(codename), GetTypeSingleJsonDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeJsonAsync(codename), GetTypeSingleJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -199,7 +201,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesJsonAsync(parameters), GetTypeListingJsonDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesJsonAsync(parameters), GetTypeListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -211,7 +213,7 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeAsync(codename), GetTypeSingleDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeAsync(codename), GetTypeSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -234,7 +236,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_IDENTIFIER };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesAsync(parameters), GetTypeListingDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesAsync(parameters), GetTypeListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -247,7 +249,7 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -259,7 +261,7 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyJsonAsync(codename), GetTaxonomySingleJsonDependency, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyJsonAsync(codename), GetTaxonomySingleJsonDependency, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -272,7 +274,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesJsonAsync(parameters), GetTaxonomyListingJsonDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesJsonAsync(parameters), GetTaxonomyListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -284,7 +286,7 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyAsync(codename), GetTaxonomySingleDependency, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyAsync(codename), GetTaxonomySingleDependency, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -307,7 +309,7 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
             identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesAsync(parameters), GetTaxonomyListingDependencies, false);
+            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesAsync(parameters), GetTaxonomyListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         #region "Dependency resolvers"
@@ -516,15 +518,8 @@ namespace CloudBoilerplateNet.Services
             {
                 // Dependency on all formats of the item.
                 dependencies.AddRange(
-                    CacheManager.GetDependenciesForAllDependentTypes(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, (itemCodename, formatIdentifier) =>
-                        new List<IdentifierSet>
-                        {
-                            new IdentifierSet
-                            {
-                                Type = formatIdentifier,
-                                Codename = itemCodename
-                            }
-                        }
+                    CacheManager.GetDependenciesByType(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, identifierSet =>
+                        Enumerable.Repeat(identifierSet, 1)
                     ));
 
                 // Dependency on elements of item's type (if possible).
@@ -544,9 +539,9 @@ namespace CloudBoilerplateNet.Services
 
         protected IEnumerable<IdentifierSet> GetTaxonomyDependencies(string originalFormatIdentifier, string taxonomyCodename)
         {
-            return CacheManager.GetDependenciesForAllDependentTypes(
-                originalFormatIdentifier, taxonomyCodename, (codename, formatIdentifier) =>
-                    new List<IdentifierSet> { new IdentifierSet { Type = formatIdentifier, Codename = codename } }
+            return CacheManager.GetDependenciesByType(
+                originalFormatIdentifier, taxonomyCodename, identifierSet =>
+                    Enumerable.Repeat(identifierSet, 1)
             );
         }
 
@@ -555,15 +550,8 @@ namespace CloudBoilerplateNet.Services
             var dependencies = new List<IdentifierSet>();
 
             dependencies.AddRange(
-                CacheManager.GetDependenciesForAllDependentTypes(originalFormatIdentifier, contentTypeCodeName, (typeCodename, formatIdentifier) =>
-                    new List<IdentifierSet>
-                    {
-                        new IdentifierSet
-                        {
-                            Type = formatIdentifier,
-                            Codename = typeCodename
-                        }
-                    }
+                CacheManager.GetDependenciesByType(originalFormatIdentifier, contentTypeCodeName, identifierSet =>
+                    Enumerable.Repeat(identifierSet, 1)
                 ));
 
             // Try to get element codenames from the response.
@@ -593,23 +581,23 @@ namespace CloudBoilerplateNet.Services
             else
             {
                 dependencies.AddRange(
-                    CacheManager.GetDependenciesForAllDependentTypes(
-                        originalFormatIdentifier, contentTypeCodeName, (typeCodename, formatIdentifier) =>
+                    CacheManager.GetDependenciesByType(
+                        originalFormatIdentifier, contentTypeCodeName, identifierSet =>
                         {
-                            return CacheManager.GetDependenciesFromCacheContents<ContentType>(formatIdentifier, typeCodename, cachedContentType =>
+                            return CacheManager.GetDependenciesByName<ContentType>(identifierSet, cachedContentType =>
                             {
                                 var dependenciesPerCacheEntry = new List<IdentifierSet>();
 
-                                foreach (var element in cachedContentType?.Elements?.SelectMany(e => GetContentElementDependencies(e.Value)))
+                                foreach (var elementDependency in cachedContentType?.Elements?.SelectMany(e => GetContentElementDependencies(e.Value)))
                                 {
-                                    dependenciesPerCacheEntry.Add(element);
+                                    dependenciesPerCacheEntry.Add(elementDependency);
                                 }
 
-                                if (!string.IsNullOrEmpty(formatIdentifier))
+                                if (!string.IsNullOrEmpty(identifierSet.Type))
                                 {
                                     dependenciesPerCacheEntry.Add(new IdentifierSet
                                     {
-                                        Type = formatIdentifier,
+                                        Type = identifierSet.Type,
                                         Codename = cachedContentType.System?.Codename
                                     });
                                 }
@@ -643,13 +631,13 @@ namespace CloudBoilerplateNet.Services
             if (!string.IsNullOrEmpty(elementType) && !string.IsNullOrEmpty(elementCodename))
             {
                 dependencies.AddRange(
-                    CacheManager.GetDependenciesForAllDependentTypes(
-                        originalFormatIdentifier, elementCodename, (codename, formatIdentifier) =>
+                    CacheManager.GetDependenciesByType(
+                        originalFormatIdentifier, elementCodename, identifierSet =>
                             new List<IdentifierSet>
                             {
                                 new IdentifierSet
                                 {
-                                    Type = formatIdentifier,
+                                    Type = identifierSet.Type,
                                     Codename = string.Join("|", elementType, elementCodename)
                                 }
                             }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 
+using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
