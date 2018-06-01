@@ -72,7 +72,7 @@ For security reasons, Delivery Preview API key should be stored outside of the p
 
 ### How to generate Strongly Typed Models for Content Types
 
-With the new Delivery SDK, you can [take advantage](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)) of code-first approach. To do that you have to instruct the SDK to use strongly-typed models. These models can be generated automatically by [model generator utility](https://github.com/Kentico/cloud-generators-net). By convention, all Content Type Models are stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) which means that they can be extended in separate files. This should prevent losing custom code in case the models get regenerated.
+With the new Delivery SDK, you can [take advantage](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)) of code-first approach. To do that you have to instruct the SDK to use strongly-typed models. These models can be generated automatically by [model generator utility](https://github.com/Kentico/cloud-generators-net). By convention, all Content Type Models are stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) which means that they can be extended in separate files. This should prevent losing custom code in case the models get regenerated. When generating models, be sure to set the `-n` command line parameter to `[project namespace].Models`.
 
 If you want to use [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html), make sure you generate also a custom type provider (add the `--withtypeprovider` parameter when running the generator utility).
 
@@ -83,7 +83,11 @@ Rich text elements in Kentico Cloud can contain links to other content items. It
 
 All content retrieved from Kentico Cloud is by default [cached](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Services/CachedDeliveryClient.cs) for 24 hours in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache) singleton object. You can either change the time by overriding the value of the `CacheTimeoutSeconds` environment variable (e.g. in appsettings.json). Or, if you want your app to immediately clear cache entries of changed content, you can create a webhook in Kentico Cloud for that.
 
-To create the web hook, go to Project settings --> Webhooks --> Create new Webhook. Give it a name (like "Cache invalidation webhook") and the publicly routable URL of your app with `/WebHooks/KenticoCloud` appended (like "https://myapp.azurewebsites.net/WebHooks/KenticoCloud"). Then, copy the API secret and paste it as the `KenticoCloudWebhookSecret` environment variable (secret).
+To create the web hook, go to Project settings --> Webhooks --> Create new Webhook. Give it a name (like "Cache invalidation webhook") and the publicly routable URL of your app with `/WebHooks/KenticoCloud` appended (like "https://myapp.azurewebsites.net/WebHooks/KenticoCloud"). Then, copy the API secret and paste it as the `KenticoCloudWebhookSecret` environment variable (secret) into your app's settings.
+
+![New webhook configuration](https://i.imgur.com/ootVcPZ.png)
+
+**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. 
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
 
