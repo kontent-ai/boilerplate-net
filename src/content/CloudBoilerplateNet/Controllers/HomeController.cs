@@ -1,7 +1,8 @@
-﻿using CloudBoilerplateNet.Models;
+﻿using System.Threading.Tasks;
+
+using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace CloudBoilerplateNet.Controllers
 {

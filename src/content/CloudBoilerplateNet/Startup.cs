@@ -1,4 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq.Expressions;
+using System.Reactive.Linq;
+
+using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
@@ -30,13 +35,24 @@ namespace CloudBoilerplateNet
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-            services.AddMvc();
 
-            services.AddSingleton<IDeliveryClient>(c => new CachedDeliveryClient(c.GetRequiredService<IOptions<ProjectOptions>>(), c.GetRequiredService<IMemoryCache>())
+            services.AddSingleton<IWebhookListener>(sp => new WebhookListener());
+            services.AddSingleton<IDependentTypesResolver>(sp => new DependentFormatResolver());
+            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
+                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
+                sp.GetRequiredService<IMemoryCache>(), 
+                sp.GetRequiredService<IDependentTypesResolver>(), 
+                sp.GetRequiredService<IWebhookListener>()));
+
+            services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
+                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
+                sp.GetRequiredService<ICacheManager>())
             {
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
             });
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +83,10 @@ namespace CloudBoilerplateNet
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
                 routes.MapRoute(
                     name: "sitemap",
                     defaults: new { controller = "Sitemap", action = "Index" },

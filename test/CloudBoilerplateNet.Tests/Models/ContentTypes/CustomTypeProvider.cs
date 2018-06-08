@@ -1,7 +1,7 @@
 using System;
 using KenticoCloud.Delivery;
 
-namespace CloudBoilerplateNet.Models
+namespace CloudBoilerplateNet.Tests.Models
 {
     public class CustomTypeProvider : ICodeFirstTypeProvider
     {
