@@ -27,11 +27,11 @@ namespace CloudBoilerplateNet.Tests.Services
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            cacheManager.CreateEntry(identifiers, value, ItemVariantDependencyFactory);
+            cacheManager.CreateEntry(identifiers, value, ItemFormatDependencyFactory);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(
-                    string.Join("|", "dummy", ItemVariantDependencyFactory(value).First().Type, ItemVariantDependencyFactory(value).First().Codename)
+                    string.Join("|", "dummy", ItemFormatDependencyFactory(value).First().Type, ItemFormatDependencyFactory(value).First().Codename)
                     ));
         }
 
@@ -42,11 +42,11 @@ namespace CloudBoilerplateNet.Tests.Services
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemVariantDependencyFactory, true);
+            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemFormatDependencyFactory, false);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(
-                    string.Join("|", "dummy", ItemVariantDependencyFactory(value).First().Type, ItemVariantDependencyFactory(value).First().Codename)
+                    string.Join("|", "dummy", ItemFormatDependencyFactory(value).First().Type, ItemFormatDependencyFactory(value).First().Codename)
                     ));
         }
 
@@ -57,8 +57,8 @@ namespace CloudBoilerplateNet.Tests.Services
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            cacheManager.CreateEntry(identifiers, value, ItemVariantDependencyFactory);
-            cacheManager.InvalidateEntry(ItemVariantDependencyFactory(value).First());
+            cacheManager.CreateEntry(identifiers, value, ItemFormatDependencyFactory);
+            cacheManager.InvalidateEntry(ItemFormatDependencyFactory(value).First());
 
             Assert.Null(cacheManager.MemoryCache.Get<string>(identifiers.First()));
         }
@@ -67,9 +67,9 @@ namespace CloudBoilerplateNet.Tests.Services
         public void InvalidatesDependentTypes()
         {
             var cacheManager = BuildCacheManager();
-            cacheManager.CreateEntry(new List<string> { "TestItem" }, "TestItemValue", ItemVariantDependencyFactory);
-            cacheManager.CreateEntry(new List<string> { "TestVariant" }, "TestVariantValue", ItemVariantDependencyFactory);
-            cacheManager.InvalidateEntry(ItemVariantDependencyFactory(null).ElementAt(0));
+            cacheManager.CreateEntry(new List<string> { "TestItem" }, "TestItemValue", ItemFormatDependencyFactory);
+            cacheManager.CreateEntry(new List<string> { "TestVariant" }, "TestVariantValue", ItemFormatDependencyFactory);
+            cacheManager.InvalidateEntry(ItemFormatDependencyFactory(null).ElementAt(0));
 
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestItem"));
             Assert.Null(cacheManager.MemoryCache.Get<string>("TestVariant"));
@@ -87,7 +87,7 @@ namespace CloudBoilerplateNet.Tests.Services
             return Task.FromResult(TEST_VALUE);
         }
 
-        private List<IdentifierSet> ItemVariantDependencyFactory(string value)
+        private List<IdentifierSet> ItemFormatDependencyFactory(string value)
         {
             return new List<IdentifierSet>
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
@@ -176,9 +177,24 @@ namespace CloudBoilerplateNet.Tests
             AssertTypeListingDependencies(dependencies);
         }
 
+        [Fact]
+        public async void GetEntryFromCacheAfterFirstRequest()
+        {
+            var plannedHttpRequests = 2;
+            var actualHttpRequests = new RequestCount();
+            var cachedClient = GetCachedDeliveryClient(mockFunc: MockItemAndLogHttpRequests, actualHttpRequests: actualHttpRequests);
+
+            for (int i = 0; i < plannedHttpRequests; i++)
+            {
+                var response = await cachedClient.GetItemAsync("coffee_beverages_explained", new LanguageParameter("es-ES"));
+            }
+
+            Assert.Equal(1, actualHttpRequests.Value);
+        }
+
         private DeliveryClient GetDeliveryClient(Action mockAction)
         {
-            InitClientPrerequisites(mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions);
+            InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, mockAction);
 
             return new DeliveryClient(deliveryOptions)
             {
@@ -187,9 +203,19 @@ namespace CloudBoilerplateNet.Tests
             };
         }
 
-        private CachedDeliveryClient GetCachedDeliveryClient(Action mockAction)
+        private CachedDeliveryClient GetCachedDeliveryClient(Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)
         {
-            InitClientPrerequisites(mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions);
+            HttpClient httpClient = null;
+            DeliveryOptions deliveryOptions = null;
+
+            if (mockAction != null)
+            {
+                InitClientPrerequisites(out httpClient, out deliveryOptions, mockAction: mockAction);
+            }
+            else if (mockFunc != null && actualHttpRequests != null)
+            {
+                InitClientPrerequisites(out httpClient, out deliveryOptions, mockFunc: mockFunc, actualHttpRequests: actualHttpRequests);
+            }
 
             var projectOptions = Options.Create(new ProjectOptions
             {
@@ -212,9 +238,17 @@ namespace CloudBoilerplateNet.Tests
             };
         }
 
-        private void InitClientPrerequisites(Action mockAction, out HttpClient httpClient, out DeliveryOptions deliveryOptions)
+        private void InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)
         {
-            mockAction();
+            if (mockAction != null)
+            {
+                mockAction();
+            }
+            else
+            {
+                mockFunc?.Invoke(actualHttpRequests);
+            }
+
             httpClient = mockHttp.ToHttpClient();
 
             deliveryOptions = new DeliveryOptions
@@ -226,7 +260,7 @@ namespace CloudBoilerplateNet.Tests
         private void MockItem()
         {
             mockHttp.When($"{baseUrl}/items/{"coffee_beverages_explained"}?language=es-ES")
-                .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\coffee_beverages_explained.json")));
+                .Respond("application/json", GetMockedItemJsonStream());
         }
 
         private void MockItems()
@@ -265,6 +299,26 @@ namespace CloudBoilerplateNet.Tests
             mockHttp.When($"{baseUrl}/taxonomies")
                 .WithQueryString("skip=1")
                 .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\taxonomies_multiple.json")));
+        }
+
+        private RequestCount MockItemAndLogHttpRequests(RequestCount actualHttpRequests)
+        {
+            mockHttp.When($"{baseUrl}/items/{"coffee_beverages_explained"}?language=es-ES")
+                .Respond("application/json", (request) => GetMockedJsonAndLog(actualHttpRequests));
+
+            return actualHttpRequests;
+        }
+
+        private FileStream GetMockedJsonAndLog(RequestCount actualHttpRequests)
+        {
+            actualHttpRequests.Value++;
+
+            return GetMockedItemJsonStream();
+        }
+
+        private FileStream GetMockedItemJsonStream()
+        {
+            return File.OpenRead(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\coffee_beverages_explained.json"));
         }
 
         private static void AssertItemSingleDependencies(IEnumerable<IdentifierSet> dependencies)
@@ -318,5 +372,10 @@ namespace CloudBoilerplateNet.Tests
             Assert.Equal(151, dependencies.Where(d => d.Type.Equals("content_element", StringComparison.Ordinal)).Count());
             Assert.Equal(151, dependencies.Where(d => d.Type.Equals("content_element_json", StringComparison.Ordinal)).Count());
         }
+    }
+
+    public class RequestCount
+    {
+        public int Value = 0;
     }
 }

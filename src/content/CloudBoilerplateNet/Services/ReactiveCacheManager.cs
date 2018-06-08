@@ -11,6 +11,7 @@ using Microsoft.Extensions.Primitives;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
+using System.Collections.Concurrent;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -18,8 +19,10 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Fields"
 
-        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly IDependentTypesResolver _dependentTypesResolver;
+        private readonly ConcurrentDictionary<string, object> _cacheDummyLocks = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _cacheLocks = new ConcurrentDictionary<string, object>();
         private readonly object _dummyEntryCreationLock = new object();
         private readonly object _entryCreationLock = new object();
         private bool _disposed;
@@ -78,12 +81,13 @@ namespace CloudBoilerplateNet.Services
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
         public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = false)
         {
+            var joinedTokens = StringHelpers.Join(identifierTokens);
             await _semaphoreSlim.WaitAsync();
 
             try
             {
                 // Check existence of the cache entry.
-                if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out T entry))
+                if (!MemoryCache.TryGetValue(joinedTokens, out T entry))
                 {
                     // If it doesn't exist, get it via valueFactory.
                     T response = await valueFactory();
@@ -130,15 +134,26 @@ namespace CloudBoilerplateNet.Services
             {
                 var dummyIdentifierTokens = new List<string> { KenticoCloudCacheHelper.DUMMY_IDENTIFIER, dependency.Type, dependency.Codename };
                 var dummyKey = StringHelpers.Join(dummyIdentifierTokens);
+                var newDummyLock = new object();
+                object dummyPadlock;
+
+                if (_cacheDummyLocks.TryAdd(dummyKey, newDummyLock))
+                {
+                    dummyPadlock = newDummyLock;
+                }
+                else
+                {
+                    dummyPadlock = _cacheDummyLocks[dummyKey];
+                }
 
                 // Dummy entries hold just the CancellationTokenSource, nothing else.
                 CancellationTokenSource dummyEntry;
 
-                lock (_dummyEntryCreationLock)
+                if (!DummyEntryExists(dummyKey, out dummyEntry))
                 {
-                    if (!MemoryCache.TryGetValue(dummyKey, out dummyEntry) || MemoryCache.TryGetValue(dummyKey, out dummyEntry) && dummyEntry.IsCancellationRequested)
+                    lock (dummyPadlock)
                     {
-                        dummyEntry = MemoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
+                        dummyEntry = GetOrCreateDummyEntry(dummyOptions, dummyKey);
                     }
                 }
 
@@ -149,11 +164,27 @@ namespace CloudBoilerplateNet.Services
                 }
             }
 
-            lock (_entryCreationLock)
+            var key = StringHelpers.Join(identifierTokens);
+            var newLock = new object();
+            object padlock;
+
+            if (_cacheLocks.TryAdd(key, newLock))
             {
-                if (!MemoryCache.TryGetValue(StringHelpers.Join(identifierTokens), out object existingValue))
+                padlock = newLock;
+            }
+            else
+            {
+                padlock = _cacheLocks[key];
+            }
+
+            if (!EntryExists(key))
+            {
+                lock (_entryCreationLock)
                 {
-                    MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
+                    if (!EntryExists(key))
+                    {
+                        MemoryCache.Set(StringHelpers.Join(identifierTokens), value, entryOptions);
+                    }
                 }
             }
         }
@@ -262,6 +293,26 @@ namespace CloudBoilerplateNet.Services
         #endregion
 
         #region "Non-public methods"
+
+        protected bool EntryExists(string key)
+        {
+            return MemoryCache.TryGetValue(key, out object existingValue);
+        }
+
+        protected CancellationTokenSource GetOrCreateDummyEntry(MemoryCacheEntryOptions dummyOptions, string dummyKey)
+        {
+            if (!DummyEntryExists(dummyKey, out CancellationTokenSource dummyEntry))
+            {
+                dummyEntry = MemoryCache.Set(dummyKey, new CancellationTokenSource(), dummyOptions);
+            }
+
+            return dummyEntry;
+        }
+
+        protected bool DummyEntryExists(string dummyKey, out CancellationTokenSource dummyEntry)
+        {
+            return MemoryCache.TryGetValue(dummyKey, out dummyEntry) && !dummyEntry.IsCancellationRequested;
+        }
 
         protected virtual void Dispose(bool disposing)
         {
