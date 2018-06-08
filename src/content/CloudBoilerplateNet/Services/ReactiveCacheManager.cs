@@ -244,7 +244,7 @@ namespace CloudBoilerplateNet.Services
         /// </summary>
         /// <typeparam name="T">Type of the cache entry.</typeparam>
         /// <param name="identifierSet">Identifiers used to look up the cache for the entry.</param>
-        /// <param name="dependencyListFactory">The method that takes the entry, and uses them to extract dedependencies from it.</param>
+        /// <param name="dependencyListFactory">The method that takes the entry, and uses them to extract dependencies from it.</param>
         /// <returns>Identifiers of the dependencies.</returns>
         public IEnumerable<IdentifierSet> GetDependenciesByName<T>(IdentifierSet identifierSet, Func<T, IEnumerable<IdentifierSet>> dependencyFactory)
             where T : class
