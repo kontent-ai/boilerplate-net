@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace CloudBoilerplateNet.Helpers.Extensions
 {
+    /// <summary>
+    /// Represents the sizes attribute of an image.
+    /// </summary>
     public class ResponsiveImageSizes
     {
         private readonly int _defaultWidth;
@@ -10,7 +13,7 @@ namespace CloudBoilerplateNet.Helpers.Extensions
 
 
         /// <summary>
-        /// Creates new ResponsiveImageSizes instance with default width.
+        /// Creates new <see cref="ResponsiveImageSizes"/> instance with default width.
         /// </summary>
         /// <param name="defaultWidth">Default width in pixels.</param>
         public ResponsiveImageSizes(int defaultWidth)
@@ -19,6 +22,10 @@ namespace CloudBoilerplateNet.Helpers.Extensions
             _mediaContitions = new List<MediaCondition>();
         }
 
+        /// <summary>
+        /// Adds the <paramref name="mediaCondition"/> into sizes attribute value.
+        /// </summary>
+        /// <param name="mediaCondition">Represents one media condition from image sizes attribute.</param>
         public ResponsiveImageSizes WithMediaCondition(MediaCondition mediaCondition)
         {
             _mediaContitions.Add(mediaCondition);

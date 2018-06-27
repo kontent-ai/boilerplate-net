@@ -10,6 +10,9 @@ namespace CloudBoilerplateNet.Helpers.Extensions
 {
     public static class HtmlHelperExtensions
     {
+        /// <summary>
+        /// Application settings.
+        /// </summary>
         public static IOptions<ProjectOptions> ProjectOptions { get; set; }
 
         /// <summary>
