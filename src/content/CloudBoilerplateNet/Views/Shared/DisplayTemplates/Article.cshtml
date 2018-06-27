@@ -1,4 +1,5 @@
-﻿@model Article
+﻿@using CloudBoilerplateNet.Helpers.Extensions
+@model Article
 
 @{
     Layout = null;
@@ -11,7 +12,9 @@
 </div>
 <div class="row">
     <div class="col-sm-4">
-        <img src="@Model.TeaserImage.First().Url" class="img-responsive" alt="@Model.TeaserImage.First().Name"/>
+        @Html.AssetImage(@Model.TeaserImage.First(), title: @Model.TeaserImage.First().Name, cssClass: "img-responsive", sizes: new ResponsiveImageSizes(300)
+            .WithMediaCondition(new MediaCondition { MinWidth = 769, ImageWidth = 300 })
+            .WithMediaCondition(new MediaCondition { MinWidth = 330, MaxWidth = 768, ImageWidth = 689 }))
     </div>
     <div class="col-sm-8">
         @Model.Summary

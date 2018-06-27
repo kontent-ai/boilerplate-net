@@ -13,6 +13,7 @@ This boilerplate includes a set of features and best practices to kick off your 
   - [Sample link resolver](#how-to-resolve-links)
 - [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
+- [Adjustable images](#how-to-resize-images-based-on-window-width)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
 - URL [Rewriting examples](#how-to-adjust-url-rewriting)
   - 301 URL Rewriting
@@ -90,6 +91,9 @@ To create the web hook, go to Project settings --> Webhooks --> Create new Webho
 **Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. 
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
+
+### How to resize images based on window width
+The boilerplate contains a sample implementation of the [`HtmlHelperExtensions`](https://github.com/Kentico/cloud-boilerplate-net/blob/responsive-images/src/content/CloudBoilerplateNet/Helpers/Extensions/HtmlHelperExtensions.cs). Using the `AssetImage()` extension method, you can easily create an `img` tag with `srcset` and `sizes` attributes.
 
 ### How to adjust the sitemap.xml
 The boilerplate contains a sample implementation of the [`SiteMapController`](https://github.com/Kentico/cloud-boilerplate-net/blob/master/src/content/CloudBoilerplateNet/Controllers/SiteMapController.cs). Make sure you specify desired content types in the `Index()` action method. Also, you can adjust the URL resolution logic in the `GetPageUrl()` method.
