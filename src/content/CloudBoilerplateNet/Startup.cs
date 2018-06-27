@@ -7,6 +7,7 @@ using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
+using CloudBoilerplateNet.Helpers.Extensions;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,8 @@ namespace CloudBoilerplateNet
                 CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
                 ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
             });
+
+            HtmlHelperExtensions.ProjectOptions = services.BuildServiceProvider().GetService<IOptions<ProjectOptions>>();
 
             services.AddMvc();
         }

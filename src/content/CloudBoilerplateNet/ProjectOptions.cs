@@ -1,4 +1,5 @@
-﻿using KenticoCloud.Delivery;
+﻿using System.Linq;
+using KenticoCloud.Delivery;
 
 namespace CloudBoilerplateNet
 {
@@ -11,5 +12,15 @@ namespace CloudBoilerplateNet
         public string KenticoCloudWebhookSecret { get; set; }
 
         public bool CreateCacheEntriesInBackground { get; set; }
+
+        public int[] ResponsiveWidths { get; set; }
+
+        public bool ResponsiveImagesEnabled
+        {
+            get
+            {
+                return ResponsiveWidths != null && ResponsiveWidths.Count() > 0;
+            }
+        }
     }
 }
