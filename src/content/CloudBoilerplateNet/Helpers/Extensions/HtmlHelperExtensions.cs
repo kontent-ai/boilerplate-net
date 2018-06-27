@@ -24,6 +24,7 @@ namespace CloudBoilerplateNet.Helpers.Extensions
         /// <param name="cssClass">CSS class</param>
         /// <param name="width">Optional width size</param>
         /// <param name="height">Optional height size</param>
+        /// <param name="sizes">Optional sizes img attribute</param>
         public static Microsoft.AspNetCore.Html.IHtmlContent AssetImage(this IHtmlHelper htmlHelper, Asset asset, string title = null, string cssClass = "", int? width = null, int? height = null, ResponsiveImageSizes sizes = null)
         {
             if (asset == null)
