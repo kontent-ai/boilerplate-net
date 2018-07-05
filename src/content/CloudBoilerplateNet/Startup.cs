@@ -3,11 +3,12 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 
+using CloudBoilerplateNet.Filters;
 using CloudBoilerplateNet.Helpers;
+using CloudBoilerplateNet.Helpers.Extensions;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
-using CloudBoilerplateNet.Helpers.Extensions;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,6 +45,8 @@ namespace CloudBoilerplateNet
                 sp.GetRequiredService<IMemoryCache>(), 
                 sp.GetRequiredService<IDependentTypesResolver>(), 
                 sp.GetRequiredService<IWebhookListener>()));
+
+            services.AddScoped<KenticoCloudSignatureActionFilter>();
 
             services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
                 sp.GetRequiredService<IOptions<ProjectOptions>>(), 
