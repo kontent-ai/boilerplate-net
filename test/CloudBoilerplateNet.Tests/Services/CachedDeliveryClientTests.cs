@@ -192,6 +192,12 @@ namespace CloudBoilerplateNet.Tests
             Assert.Equal(1, actualHttpRequests.Value);
         }
 
+        [Fact]
+        public async void AvoidsAddingNullIdentifierTokens()
+        {
+            //var cachedClient = GetCachedDeliveryClient()
+        }
+
         private DeliveryClient GetDeliveryClient(Action mockAction)
         {
             InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, mockAction);

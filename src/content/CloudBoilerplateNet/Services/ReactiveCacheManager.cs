@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Reactive.Linq;
 
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
+using CloudBoilerplateNet.Extensions;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Concurrent;
 
 namespace CloudBoilerplateNet.Services
@@ -274,7 +275,7 @@ namespace CloudBoilerplateNet.Services
             {
                 foreach (var typeIdentifier in _dependentTypesResolver.GetDependentTypeNames(originalTypeIdentifier))
                 {
-                    dependencies.AddRange(dependencyFactory(new IdentifierSet { Type = typeIdentifier, Codename = codename }));
+                    dependencies.AddNonNullRange(dependencyFactory(new IdentifierSet { Type = typeIdentifier, Codename = codename }));
                 }
             }
 
