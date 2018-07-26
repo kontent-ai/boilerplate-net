@@ -29,6 +29,9 @@
     <None Update="Fixtures\CachedDeliveryClient\coffee_beverages_explained.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Fixtures\CachedDeliveryClient\item.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Fixtures\CachedDeliveryClient\items.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

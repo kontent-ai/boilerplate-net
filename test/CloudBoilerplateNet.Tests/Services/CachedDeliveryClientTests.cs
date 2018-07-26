@@ -195,7 +195,15 @@ namespace CloudBoilerplateNet.Tests
         [Fact]
         public async void AvoidsAddingNullIdentifierTokens()
         {
-            //var cachedClient = GetCachedDeliveryClient()
+            var cachedClient = GetCachedDeliveryClient(() =>
+            {
+                mockHttp.When($"{baseUrl}/items/coffee_beverages_explained")
+                .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\item.json")));
+            });
+
+            var item = (await cachedClient.GetItemAsync<Article>("coffee_beverages_explained")).Item;
+
+            Assert.NotNull(item);
         }
 
         private DeliveryClient GetDeliveryClient(Action mockAction)
