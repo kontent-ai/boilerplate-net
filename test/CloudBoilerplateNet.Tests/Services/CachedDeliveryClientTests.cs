@@ -198,7 +198,7 @@ namespace CloudBoilerplateNet.Tests
             var cachedClient = GetCachedDeliveryClient(() =>
             {
                 mockHttp.When($"{baseUrl}/items/coffee_beverages_explained")
-                .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\item.json")));
+                .Respond("application/json", File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Fixtures\\CachedDeliveryClient\\item_with_null_identifiers.json")));
             });
 
             var item = (await cachedClient.GetItemAsync<Article>("coffee_beverages_explained")).Item;
