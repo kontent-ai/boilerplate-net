@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
 
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using KenticoCloud.Delivery;
-using KenticoCloud.Delivery.InlineContentItems;
+using CloudBoilerplateNet.Extensions;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
-using System.Net.Http;
+using KenticoCloud.Delivery;
+using KenticoCloud.Delivery.InlineContentItems;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -65,7 +66,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
-            identifierTokens.AddRange(parameters);
+            identifierTokens.AddNonNullRange(parameters);
 
             // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
             return await CacheManager.GetOrCreateAsync(
@@ -84,7 +85,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
-            identifierTokens.AddRange(parameters);
+            identifierTokens.AddNonNullRange(parameters);
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -126,7 +127,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
             return await CacheManager.GetOrCreateAsync(
@@ -144,10 +145,10 @@ namespace CloudBoilerplateNet.Services
         /// <param name="codename">The codename of a content item.</param>
         /// <param name="parameters">A collection of query parameters, for example for projection or depth of modular content.</param>
         /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
-        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters)
+        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
             return await CacheManager.GetOrCreateAsync(
@@ -177,7 +178,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -202,7 +203,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -238,7 +239,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<JObject> GetTypesJsonAsync(params string[] parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_JSON_IDENTIFIER };
-            identifierTokens.AddRange(parameters);
+            identifierTokens.AddNonNullRange(parameters);
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -284,7 +285,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<DeliveryTypeListingResponse> GetTypesAsync(IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_IDENTIFIER };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -339,7 +340,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER };
-            identifierTokens.AddRange(parameters);
+            identifierTokens.AddNonNullRange(parameters);
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -385,7 +386,7 @@ namespace CloudBoilerplateNet.Services
         public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
-            identifierTokens.AddRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens, 
@@ -408,11 +409,11 @@ namespace CloudBoilerplateNet.Services
 
             if (KenticoCloudCacheHelper.IsDeliveryItemSingleResponse(response) && response?.Item != null)
             {
-                dependencies.AddRange(GetContentItemDependencies(response.Item));
+                dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(response.Item));
 
                 foreach (var item in response.ModularContent)
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
             }
 
@@ -430,11 +431,11 @@ namespace CloudBoilerplateNet.Services
 
             if (KenticoCloudCacheHelper.IsDeliveryItemSingleJsonResponse(response))
             {
-                dependencies.AddRange(GetContentItemDependencies(response[KenticoCloudCacheHelper.ITEM_IDENTIFIER]));
+                dependencies.AddNonNullRange(GetContentItemDependencies(response[KenticoCloudCacheHelper.ITEM_IDENTIFIER]));
 
                 foreach (var item in response[KenticoCloudCacheHelper.MODULAR_CONTENT_IDENTIFIER]?.Children())
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange(GetContentItemDependencies(item));
                 }
             }
 
@@ -454,12 +455,12 @@ namespace CloudBoilerplateNet.Services
             {
                 foreach (dynamic item in response.Items)
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
 
                 foreach (var item in response.ModularContent)
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
             }
 
@@ -479,12 +480,12 @@ namespace CloudBoilerplateNet.Services
             {
                 foreach (dynamic item in response[KenticoCloudCacheHelper.ITEMS_IDENTIFIER].Children())
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
 
                 foreach (var item in response[KenticoCloudCacheHelper.MODULAR_CONTENT_IDENTIFIER]?.Children())
                 {
-                    dependencies.AddRange(GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
             }
 
@@ -600,18 +601,18 @@ namespace CloudBoilerplateNet.Services
             if (!string.IsNullOrEmpty(extractedItemCodename))
             {
                 // Dependency on all formats of the item.
-                dependencies.AddRange(
+                dependencies.AddNonNullRange(
                     CacheManager.GetDependenciesByType(KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, identifierSet =>
                         Enumerable.Repeat(identifierSet, 1)
                     ));
 
                 // Dependency on elements of item's type (if possible).
-                dependencies.AddRange(GetContentTypeDependencies(KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, extractedTypeCodename));
+                dependencies.AddNonNullRange(GetContentTypeDependencies(KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, extractedTypeCodename));
 
                 // Dependency on item's taxonomy elements.
                 foreach (string taxonomyElementCodename in KenticoCloudCacheHelper.GetItemTaxonomyCodenamesByElements(item))
                 {
-                    dependencies.AddRange(
+                    dependencies.AddNonNullRange(
                         GetTaxonomyDependencies(KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, taxonomyElementCodename)
                     );
                 }
@@ -632,7 +633,7 @@ namespace CloudBoilerplateNet.Services
         {
             var dependencies = new List<IdentifierSet>();
 
-            dependencies.AddRange(
+            dependencies.AddNonNullRange(
                 CacheManager.GetDependenciesByType(originalFormatIdentifier, contentTypeCodeName, identifierSet =>
                     Enumerable.Repeat(identifierSet, 1)
                 ));
@@ -644,7 +645,7 @@ namespace CloudBoilerplateNet.Services
                 {
                     foreach (var element in response.Elements)
                     {
-                        dependencies.AddRange(GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, element.Value));
+                        dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, element.Value));
                     }
                 }
                 else if (response is JObject)
@@ -655,7 +656,7 @@ namespace CloudBoilerplateNet.Services
                     {
                         foreach (var element in elements)
                         {
-                            dependencies.AddRange(GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_JSON_IDENTIFIER, element));
+                            dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentElementDependenciesInternal(KenticoCloudCacheHelper.CONTENT_ELEMENT_JSON_IDENTIFIER, element));
                         }
                     }
                 }
@@ -663,7 +664,7 @@ namespace CloudBoilerplateNet.Services
             // If no response exists, try to get element codenames from the cache.
             else
             {
-                dependencies.AddRange(
+                dependencies.AddNonNullRange(
                     CacheManager.GetDependenciesByType(
                         originalFormatIdentifier, contentTypeCodeName, identifierSet =>
                         {
@@ -713,7 +714,7 @@ namespace CloudBoilerplateNet.Services
 
             if (!string.IsNullOrEmpty(elementType) && !string.IsNullOrEmpty(elementCodename))
             {
-                dependencies.AddRange(
+                dependencies.AddNonNullRange(
                     CacheManager.GetDependenciesByType(
                         originalFormatIdentifier, elementCodename, identifierSet =>
                             new List<IdentifierSet>
