@@ -78,9 +78,11 @@ namespace CloudBoilerplateNet.Services
         /// <typeparam name="T">Type of the cache entry value.</typeparam>
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
         /// <param name="valueFactory">Method to create the entry.</param>
+        /// <param name="productionValidator">Method to check whether a cache entry is worth creating.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
+        /// <param name="createCacheEntriesInBackground">Flag saying if cache entry should be off-loaded to a background thread.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = false)
+        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, bool> productionValidator, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = false)
         {
             var joinedTokens = StringHelpers.Join(identifierTokens);
             await _semaphoreSlim.WaitAsync();
@@ -93,14 +95,17 @@ namespace CloudBoilerplateNet.Services
                     // If it doesn't exist, get it via valueFactory.
                     T response = await valueFactory();
 
-                    // Create it in a background thread.
-                    if (createCacheEntriesInBackground)
+                    if (productionValidator(response))
                     {
-                        var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
-                    }
-                    else
-                    {
-                        CreateEntry(identifierTokens, response, dependencyListFactory);
+                        // Create it in a background thread.
+                        if (createCacheEntriesInBackground)
+                        {
+                            var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                        }
+                        else
+                        {
+                            CreateEntry(identifierTokens, response, dependencyListFactory);
+                        }
                     }
 
                     return response;

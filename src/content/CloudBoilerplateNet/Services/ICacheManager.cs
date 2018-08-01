@@ -19,9 +19,11 @@ namespace CloudBoilerplateNet.Services
         /// <typeparam name="T">Type of the cache entry value.</typeparam>
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
         /// <param name="valueFactory">Method to create the entry.</param>
+        /// <param name="productionValidator">Method to check whether a cache entry is worth creating.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
+        /// <param name="createCacheEntriesInBackground">Flag saying if cache entry should be off-loaded to a background thread.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = true);
+        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, bool> productionValidator, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = true);
 
         /// <summary>
         /// Tries to get a cache entry.
