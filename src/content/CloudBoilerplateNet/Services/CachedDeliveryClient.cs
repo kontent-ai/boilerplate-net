@@ -68,7 +68,13 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemJsonAsync(codename, parameters), GetContentItemSingleJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemJsonAsync(codename, parameters), 
+                response => true, 
+                GetContentItemSingleJsonDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -81,7 +87,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddNonNullRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsJsonAsync(parameters), GetContentItemListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemsJsonAsync(parameters), 
+                response => response["items"].Count() > 0, 
+                GetContentItemListingJsonDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -118,7 +129,13 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync(codename, parameters), GetContentItemSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemAsync(codename, parameters), 
+                response => true, 
+                GetContentItemSingleDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -133,7 +150,13 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemAsync<T>(codename, parameters), GetContentItemSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemAsync<T>(codename, parameters), 
+                response => true, 
+                GetContentItemSingleDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -157,7 +180,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync(parameters), GetContentItemListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemsAsync(parameters), 
+                response => response.Items.Count > 0, 
+                GetContentItemListingDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -177,7 +205,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetItemsAsync<T>(parameters), GetContentItemListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetItemsAsync<T>(parameters), 
+                response => response.Items.Count > 0, 
+                GetContentItemListingDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -189,7 +222,13 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeJsonAsync(codename), GetTypeSingleJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTypeJsonAsync(codename), 
+                response => true, 
+                GetTypeSingleJsonDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -202,7 +241,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddNonNullRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesJsonAsync(parameters), GetTypeListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTypesJsonAsync(parameters), 
+                response => response["types"].Count() > 0, 
+                GetTypeListingJsonDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -214,7 +258,13 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypeAsync(codename), GetTypeSingleDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTypeAsync(codename), 
+                response => true, 
+                GetTypeSingleDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -237,7 +287,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_TYPE_LISTING_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTypesAsync(parameters), GetTypeListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTypesAsync(parameters), 
+                response => response.Types.Count > 0, 
+                GetTypeListingDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -250,7 +305,13 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), GetContentElementDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename), 
+                response => true, 
+                GetContentElementDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -262,7 +323,13 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyJsonAsync(codename), GetTaxonomySingleJsonDependency, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTaxonomyJsonAsync(codename), 
+                response => true, 
+                GetTaxonomySingleJsonDependency, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -275,7 +342,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddNonNullRange(parameters);
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesJsonAsync(parameters), GetTaxonomyListingJsonDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTaxonomiesJsonAsync(parameters), 
+                response => response["taxonomies"].Count() > 0, 
+                GetTaxonomyListingJsonDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -287,7 +359,13 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, codename };
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomyAsync(codename), GetTaxonomySingleDependency, ProjectOptions.CreateCacheEntriesInBackground);
+            // The "productionValidator" delegate does not have to do anything since a DeliveryException is thrown instead.
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTaxonomyAsync(codename), 
+                response => true, 
+                GetTaxonomySingleDependency, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         /// <summary>
@@ -310,7 +388,12 @@ namespace CloudBoilerplateNet.Services
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
 
-            return await CacheManager.GetOrCreateAsync(identifierTokens, () => DeliveryClient.GetTaxonomiesAsync(parameters), GetTaxonomyListingDependencies, ProjectOptions.CreateCacheEntriesInBackground);
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens, 
+                () => DeliveryClient.GetTaxonomiesAsync(parameters), 
+                response => response.Taxonomies.Count > 0, 
+                GetTaxonomyListingDependencies, 
+                ProjectOptions.CreateCacheEntriesInBackground);
         }
 
         #region "Dependency resolvers"
