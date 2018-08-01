@@ -42,7 +42,7 @@ namespace CloudBoilerplateNet.Tests.Services
             List<string> identifiers;
             string value;
             PrepareFixture(out cacheManager, out identifiers, out value);
-            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, (response) => true, ItemFormatDependencyFactory, false);
+            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, ItemFormatDependencyFactory, false);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(
