@@ -71,7 +71,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemJsonAsync(codename, parameters),
-                response => response != null,
+                response => response == null,
                 GetContentItemSingleJsonDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -89,7 +89,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsJsonAsync(parameters),
-                response => response["items"].Count() > 0,
+                response => response["items"].Count() <= 0,
                 GetContentItemListingJsonDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -131,7 +131,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemAsync(codename, parameters),
-                response => response != null,
+                response => response == null,
                 GetContentItemSingleDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -151,7 +151,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemAsync<T>(codename, parameters),
-                response => response != null,
+                response => response == null,
                 GetContentItemSingleDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -180,7 +180,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsAsync(parameters),
-                response => response.Items.Count > 0,
+                response => response.Items.Count <= 0,
                 GetContentItemListingDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -205,7 +205,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsAsync<T>(parameters),
-                response => response.Items.Count > 0,
+                response => response.Items.Count <= 0,
                 GetContentItemListingDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -222,7 +222,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTypeJsonAsync(codename),
-                response => response != null,
+                response => response == null,
                 GetTypeSingleJsonDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -240,7 +240,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTypesJsonAsync(parameters),
-                response => response["types"].Count() > 0,
+                response => response["types"].Count() <= 0,
                 GetTypeListingJsonDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -257,7 +257,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTypeAsync(codename),
-                response => response != null,
+                response => response == null,
                 GetTypeSingleDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -285,7 +285,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTypesAsync(parameters),
-                response => response.Types.Count > 0,
+                response => response.Types.Count <= 0,
                 GetTypeListingDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -303,7 +303,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename),
-                response => response != null,
+                response => response == null,
                 GetContentElementDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -320,7 +320,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTaxonomyJsonAsync(codename),
-                response => response != null,
+                response => response == null,
                 GetTaxonomySingleJsonDependency,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -338,7 +338,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTaxonomiesJsonAsync(parameters),
-                response => response["taxonomies"].Count() > 0,
+                response => response["taxonomies"].Count() <= 0,
                 GetTaxonomyListingJsonDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -355,7 +355,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTaxonomyAsync(codename),
-                response => response != null,
+                response => response == null,
                 GetTaxonomySingleDependency,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -383,7 +383,7 @@ namespace CloudBoilerplateNet.Services
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetTaxonomiesAsync(parameters),
-                response => response.Taxonomies.Count > 0,
+                response => response.Taxonomies.Count <= 0,
                 GetTaxonomyListingDependencies,
                 ProjectOptions.CreateCacheEntriesInBackground);
         }
@@ -587,8 +587,7 @@ namespace CloudBoilerplateNet.Services
         protected IEnumerable<IdentifierSet> GetContentItemDependencies(dynamic item)
         {
             var dependencies = new List<IdentifierSet>();
-            string extractedItemCodename, extractedTypeCodename;
-            KenticoCloudCacheHelper.ExtractCodenamesFromItem(item, out extractedItemCodename, out extractedTypeCodename);
+            KenticoCloudCacheHelper.ExtractCodenamesFromItem(item, out string extractedItemCodename, out string extractedTypeCodename);
 
             if (!string.IsNullOrEmpty(extractedItemCodename))
             {

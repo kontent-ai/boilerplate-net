@@ -23,10 +23,7 @@ namespace CloudBoilerplateNet.Tests.Services
         [Fact]
         public void CreatesEntry()
         {
-            ReactiveCacheManager cacheManager;
-            List<string> identifiers;
-            string value;
-            PrepareFixture(out cacheManager, out identifiers, out value);
+            PrepareFixture(out ReactiveCacheManager cacheManager, out List<string> identifiers, out string value);
             cacheManager.CreateEntry(identifiers, value, ItemFormatDependencyFactory);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
@@ -38,11 +35,8 @@ namespace CloudBoilerplateNet.Tests.Services
         [Fact]
         public async Task CreatesEntryIfNotExists()
         {
-            ReactiveCacheManager cacheManager;
-            List<string> identifiers;
-            string value;
-            PrepareFixture(out cacheManager, out identifiers, out value);
-            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, (response) => true, ItemFormatDependencyFactory, false);
+            PrepareFixture(out ReactiveCacheManager cacheManager, out List<string> identifiers, out string value);
+            var cacheEntry = await cacheManager.GetOrCreateAsync(identifiers, ValueFactory, (response) => false, ItemFormatDependencyFactory, false);
 
             Assert.Equal(value, cacheManager.MemoryCache.Get<string>(identifiers.First()));
             Assert.NotNull(cacheManager.MemoryCache.Get<CancellationTokenSource>(
@@ -53,10 +47,7 @@ namespace CloudBoilerplateNet.Tests.Services
         [Fact]
         public void InvalidatesEntry()
         {
-            ReactiveCacheManager cacheManager;
-            List<string> identifiers;
-            string value;
-            PrepareFixture(out cacheManager, out identifiers, out value);
+            PrepareFixture(out ReactiveCacheManager cacheManager, out List<string> identifiers, out string value);
             cacheManager.CreateEntry(identifiers, value, ItemFormatDependencyFactory);
             cacheManager.InvalidateEntry(ItemFormatDependencyFactory(value).First());
 

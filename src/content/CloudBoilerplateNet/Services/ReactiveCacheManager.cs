@@ -78,7 +78,7 @@ namespace CloudBoilerplateNet.Services
         /// <typeparam name="T">Type of the cache entry value.</typeparam>
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
         /// <param name="valueFactory">Method to create the entry.</param>
-        /// <param name="skipCacheDelegate">Method to check whether a cache entry is worth creating.</param>
+        /// <param name="skipCacheDelegate">Method to check whether a cache entry should be created (TRUE to skip creation of the entry).</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <param name="createCacheEntriesInBackground">Flag saying if cache entry should be off-loaded to a background thread.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
@@ -95,7 +95,7 @@ namespace CloudBoilerplateNet.Services
                     // If it doesn't exist, get it via valueFactory.
                     T response = await valueFactory();
 
-                    if (skipCacheDelegate(response))
+                    if (!skipCacheDelegate(response))
                     {
                         // Create it in a background thread.
                         if (createCacheEntriesInBackground)
@@ -153,9 +153,8 @@ namespace CloudBoilerplateNet.Services
                 }
 
                 // Dummy entries hold just the CancellationTokenSource, nothing else.
-                CancellationTokenSource dummyEntry;
 
-                if (!DummyEntryExists(dummyKey, out dummyEntry))
+                if (!DummyEntryExists(dummyKey, out CancellationTokenSource dummyEntry))
                 {
                     lock (dummyPadlock)
                     {
