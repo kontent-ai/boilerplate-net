@@ -120,3 +120,6 @@ We would like to express our thanks to the following people who contributed and 
 - [Lex Li](https://github.com/lextm)
 
 Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-boilerplate-net/issues) and send us a pull request!
+
+
+![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/cloud-boilerplate-net?pixel)
