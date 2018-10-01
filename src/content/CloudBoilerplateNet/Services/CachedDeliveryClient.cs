@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net.Http;
 
 using CloudBoilerplateNet.Extensions;
 using CloudBoilerplateNet.Helpers;
@@ -18,7 +17,7 @@ namespace CloudBoilerplateNet.Services
     {
         #region "Properties"
 
-        protected DeliveryClient DeliveryClient { get; }
+        protected IDeliveryClient DeliveryClient { get; }
         protected ICacheManager CacheManager { get; }
         protected ProjectOptions ProjectOptions { get; }
 
@@ -34,22 +33,16 @@ namespace CloudBoilerplateNet.Services
             set => DeliveryClient.CodeFirstModelProvider = value;
         }
 
-        public HttpClient HttpClient
-        {
-            get => DeliveryClient.HttpClient;
-            set => DeliveryClient.HttpClient = value;
-        }
-
         public IInlineContentItemsProcessor InlineContentItemsProcessor => DeliveryClient.InlineContentItemsProcessor;
 
         #endregion
 
         #region "Constructors"
 
-        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager)
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager, IDeliveryClient deliveryClient)
         {
             ProjectOptions = projectOptions.Value;
-            DeliveryClient = new DeliveryClient(ProjectOptions.DeliveryOptions);
+            DeliveryClient = deliveryClient ?? throw new ArgumentNullException(nameof(deliveryClient));
             CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
         }
 
