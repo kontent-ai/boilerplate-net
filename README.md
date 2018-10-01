@@ -11,7 +11,6 @@ This boilerplate includes a set of features and best practices to kick off your 
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
   - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)  
   - [Sample link resolver](#how-to-resolve-links)
-- [Simple fixed-time caching](#how-to-set-up-fixed-time-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [Adjustable images](#how-to-resize-images-based-on-window-width)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
