@@ -62,6 +62,7 @@ namespace CloudBoilerplateNet.Helpers.Extensions
             string titleToUse = title ?? asset.Description ?? string.Empty;
             image.MergeAttribute("alt", titleToUse);
             image.MergeAttribute("title", titleToUse);
+            image.TagRenderMode = TagRenderMode.SelfClosing;
 
             return image;
         }
