@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reactive.Linq;
-
+﻿using System.IO;
 using CloudBoilerplateNet.Filters;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Helpers.Extensions;
@@ -12,6 +8,7 @@ using CloudBoilerplateNet.Services;
 using KenticoCloud.Delivery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -59,7 +56,7 @@ namespace CloudBoilerplateNet
 
             HtmlHelperExtensions.ProjectOptions = services.BuildServiceProvider().GetService<IOptions<ProjectOptions>>();
 
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,7 +65,6 @@ namespace CloudBoilerplateNet
             if (env.IsDevelopment())
             {
                 //app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
             }
             else
             {
