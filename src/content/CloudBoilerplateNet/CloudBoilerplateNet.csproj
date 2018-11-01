@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KenticoCloud.Delivery" Version="4.14.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App"/>
+    <PackageReference Include="KenticoCloud.Delivery" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="System.Reactive" Version="4.1.2" />
   </ItemGroup>
 
   <ItemGroup>

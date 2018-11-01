@@ -19,7 +19,7 @@ namespace CloudBoilerplateNet.Models
 
         public string Title { get; set; }
         public IEnumerable<Asset> Image { get; set; }
-        public string MarketingMessage { get; set; }
+        public IRichTextContent MarketingMessage { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
 }
