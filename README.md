@@ -87,7 +87,15 @@ To create the web hook, go to Project settings --> Webhooks --> Create new Webho
 
 ![New webhook configuration](https://i.imgur.com/ootVcPZ.png)
 
-**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. 
+To get all the benefits of the caching functionality, you should configure the `PreviewApiKey` settings key with the value found in "Project settings" -> "API keys" -> "Delivery Preview API".
+
+![Copy the Preview API key](https://i.imgur.com/lPTyRgZ.png)
+
+This is because the caching functionality always builds a list of dependent KC data from the actual Delivery API response. Without the `PreviewApiKey` settings key, the caching wouldn't know about not-yet-published content items. Publishing of such items would not invalidate cached listing responses and linked items that should now contain the newly-published items. Therefore, you can configure the caching to use the Preview API, simply by having the `DeliveryOptions` -> `PreviewApiKey` key configured in your settings/secrets. You don't have to enable Preview API for your app via `DeliveryOptions` -> `UsePreviewApi`. The app can still run against the production-ready Delivery API. When `UsePreviewApi` is `false` and `PreviewApiKey` is set, then only the caching functionality will use the Preview API to recognize all not-yet-published items upfront.
+
+**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. When using IIS Express, you might need to initialize ngrok with a host header:
+
+`ngrok http [port] -host-header="localhost:[port]"`
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Cloud applications is not speed but lowering the amount of requests needed (See [pricing](https://kenticocloud.com/pricing) for details).
 

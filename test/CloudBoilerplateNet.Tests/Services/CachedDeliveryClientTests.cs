@@ -187,6 +187,9 @@ namespace CloudBoilerplateNet.Tests
             for (int i = 0; i < plannedHttpRequests; i++)
             {
                 var response = await cachedClient.GetItemAsync("coffee_beverages_explained", new LanguageParameter("es-ES"));
+
+                // ReactiveCacheManager.CreateEntry needs time to build the cache entry in the background thread. Otherwise actualHttpRequests might be incremented once more.
+                await Task.Delay(500);
             }
 
             Assert.Equal(1, actualHttpRequests.Value);

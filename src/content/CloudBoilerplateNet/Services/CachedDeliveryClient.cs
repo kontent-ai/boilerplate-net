@@ -20,6 +20,8 @@ namespace CloudBoilerplateNet.Services
         protected IDeliveryClient DeliveryClient { get; }
         protected ICacheManager CacheManager { get; }
         protected ProjectOptions ProjectOptions { get; }
+        protected bool UseDependencyListValueFactories { get; }
+        protected IDeliveryClient DependencyListDeliveryClient { get; }
 
         public IContentLinkUrlResolver ContentLinkUrlResolver
         {
@@ -44,6 +46,32 @@ namespace CloudBoilerplateNet.Services
             ProjectOptions = projectOptions.Value;
             DeliveryClient = deliveryClient ?? throw new ArgumentNullException(nameof(deliveryClient));
             CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
+            UseDependencyListValueFactories = !projectOptions.Value.DeliveryOptions.UsePreviewApi && !string.IsNullOrEmpty(projectOptions.Value.DeliveryOptions.PreviewApiKey);
+
+            if (UseDependencyListValueFactories)
+            {
+                var originalOptions = projectOptions.Value.DeliveryOptions;
+
+                var dependencyListOptions = new DeliveryOptions
+                {
+                    EnableResilienceLogic = originalOptions.EnableResilienceLogic,
+                    MaxRetryAttempts = originalOptions.MaxRetryAttempts,
+                    PreviewApiKey = originalOptions.PreviewApiKey,
+                    PreviewEndpoint = originalOptions.PreviewEndpoint,
+                    ProductionEndpoint = originalOptions.ProductionEndpoint,
+                    ProjectId = originalOptions.ProjectId,
+                    SecuredProductionApiKey = originalOptions.SecuredProductionApiKey,
+                    WaitForLoadingNewContent = originalOptions.WaitForLoadingNewContent,
+                    UsePreviewApi = true,
+                    UseSecuredProductionApi = false
+                };
+
+                DependencyListDeliveryClient = new DeliveryClient(dependencyListOptions)
+                {
+                    CodeFirstModelProvider = DeliveryClient.CodeFirstModelProvider,
+                    ContentLinkUrlResolver = DeliveryClient.ContentLinkUrlResolver
+                }; 
+            }
         }
 
         #endregion
@@ -60,13 +88,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(parameters);
+            Func<Task<JObject>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemJsonAsync(codename, parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemJsonAsync(codename, parameters),
                 response => response == null,
                 GetContentItemSingleJsonDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>
@@ -78,13 +113,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
             identifierTokens.AddNonNullRange(parameters);
+            Func<Task<JObject>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemsJsonAsync(parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsJsonAsync(parameters),
                 response => response["items"].Count() <= 0,
                 GetContentItemListingJsonDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>
@@ -120,13 +162,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            Func<Task<DeliveryItemResponse>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemAsync(codename, parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemAsync(codename, parameters),
                 response => response == null,
                 GetContentItemSingleDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>
@@ -140,13 +189,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            Func<Task<DeliveryItemResponse<T>>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemAsync<T>(codename, parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemAsync<T>(codename, parameters),
                 response => response == null,
                 GetContentItemSingleDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>
@@ -169,13 +225,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            Func<Task<DeliveryItemListingResponse>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemsAsync(parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsAsync(parameters),
                 response => response.Items.Count <= 0,
                 GetContentItemListingDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>
@@ -194,13 +257,20 @@ namespace CloudBoilerplateNet.Services
         {
             var identifierTokens = new List<string> { KenticoCloudCacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
             identifierTokens.AddNonNullRange(KenticoCloudCacheHelper.GetIdentifiersFromParameters(parameters));
+            Func<Task<DeliveryItemListingResponse<T>>> dependencyListValueFactory = null;
+
+            if (UseDependencyListValueFactories)
+            {
+                dependencyListValueFactory = () => DependencyListDeliveryClient.GetItemsAsync<T>(parameters);
+            }
 
             return await CacheManager.GetOrCreateAsync(
                 identifierTokens,
                 () => DeliveryClient.GetItemsAsync<T>(parameters),
                 response => response.Items.Count <= 0,
                 GetContentItemListingDependencies,
-                ProjectOptions.CreateCacheEntriesInBackground);
+                ProjectOptions.CreateCacheEntriesInBackground,
+                dependencyListValueFactory);
         }
 
         /// <summary>

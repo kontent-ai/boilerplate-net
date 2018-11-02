@@ -22,8 +22,15 @@ namespace CloudBoilerplateNet.Services
         /// <param name="skipCacheDelegate">Method to check whether a cache entry should be created (TRUE to skip creation of the entry).</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <param name="createCacheEntriesInBackground">Flag saying if cache entry should be off-loaded to a background thread.</param>
+        /// <param name="dependencyListValueFactory">Method to prepare a different input data to build the dependency list.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, bool> skipCacheDelegate, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = true);
+        Task<T> GetOrCreateAsync<T>(
+            IEnumerable<string> identifierTokens,
+            Func<Task<T>> valueFactory,
+            Func<T, bool> skipCacheDelegate,
+            Func<T, IEnumerable<IdentifierSet>> dependencyListFactory,
+            bool createCacheEntriesInBackground = true,
+            Func<Task<T>> dependencyListValueFactory = null);
 
         /// <summary>
         /// Tries to get a cache entry.

@@ -78,11 +78,18 @@ namespace CloudBoilerplateNet.Services
         /// <typeparam name="T">Type of the cache entry value.</typeparam>
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
         /// <param name="valueFactory">Method to create the entry.</param>
-        /// <param name="skipCacheDelegate">Method to check whether a cache entry should be created (TRUE to skip creation of the entry).</param>
+        /// <param name="skipCacheDelegate">Method to check whether a cache entry should be created (<see langword="true"/> to skip creation of the entry).</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifiers of entries that the current entry depends upon.</param>
         /// <param name="createCacheEntriesInBackground">Flag saying if cache entry should be off-loaded to a background thread.</param>
+        /// <param name="dependencyListValueFactory">Method to prepare a different input data to build the dependency list.</param>
         /// <returns>The cache entry value, either cached or obtained through the <paramref name="valueFactory"/>.</returns>
-        public async Task<T> GetOrCreateAsync<T>(IEnumerable<string> identifierTokens, Func<Task<T>> valueFactory, Func<T, bool> skipCacheDelegate, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, bool createCacheEntriesInBackground = false)
+        public async Task<T> GetOrCreateAsync<T>(
+            IEnumerable<string> identifierTokens, 
+            Func<Task<T>> valueFactory, 
+            Func<T, bool> skipCacheDelegate, 
+            Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, 
+            bool createCacheEntriesInBackground = false, 
+            Func<Task<T>> dependencyListValueFactory = null)
         {
             var joinedTokens = StringHelpers.Join(identifierTokens);
             await _semaphoreSlim.WaitAsync();
@@ -93,22 +100,22 @@ namespace CloudBoilerplateNet.Services
                 if (!MemoryCache.TryGetValue(joinedTokens, out T entry))
                 {
                     // If it doesn't exist, get it via valueFactory.
-                    T response = await valueFactory();
+                    T value = await valueFactory();
 
-                    if (!skipCacheDelegate(response))
+                    if (!skipCacheDelegate(value))
                     {
                         // Create it in a background thread.
                         if (createCacheEntriesInBackground)
                         {
-                            var task = Task.Run(() => CreateEntry(identifierTokens, response, dependencyListFactory));
+                            var task = Task.Run(() => CreateEntry(identifierTokens, value, dependencyListFactory, dependencyListValueFactory));
                         }
                         else
                         {
-                            CreateEntry(identifierTokens, response, dependencyListFactory);
+                            CreateEntry(identifierTokens, value, dependencyListFactory, dependencyListValueFactory);
                         }
                     }
 
-                    return response;
+                    return value;
                 }
 
                 return entry;
@@ -126,9 +133,16 @@ namespace CloudBoilerplateNet.Services
         /// <param name="identifierTokens">String tokens that form a unique identifier of the entry.</param>
         /// <param name="value">Value of the entry.</param>
         /// <param name="dependencyListFactory">Method to get a collection of identifier of entries that the current entry depends upon.</param>
-        public void CreateEntry<T>(IEnumerable<string> identifierTokens, T value, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory)
+        /// <param name="dependencyListValueFactory">Method to prepare a different input data to build the dependency list.</param>
+        public async void CreateEntry<T>(IEnumerable<string> identifierTokens, T value, Func<T, IEnumerable<IdentifierSet>> dependencyListFactory, Func<Task<T>> dependencyListValueFactory = null)
         {
-            var dependencies = dependencyListFactory(value) ?? new List<IdentifierSet>();
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            T dependencyListValue = dependencyListValueFactory != null ? await dependencyListValueFactory() : value;
+            var dependencies = dependencyListFactory(dependencyListValue) ?? new List<IdentifierSet>();
 
             // Restart entries' expiration period each time they're requested.
             var entryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(CacheExpirySeconds));
