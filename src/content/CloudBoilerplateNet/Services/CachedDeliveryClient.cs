@@ -54,7 +54,7 @@ namespace CloudBoilerplateNet.Services
         /// Returns a content item as JSON data.
         /// </summary>
         /// <param name="codename">The codename of a content item.</param>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
         /// <returns>The <see cref="JObject"/> instance that represents the content item with the specified codename.</returns>
         public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
         {
@@ -72,7 +72,7 @@ namespace CloudBoilerplateNet.Services
         /// <summary>
         /// Returns content items as JSON data.
         /// </summary>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
         /// <returns>The <see cref="JObject"/> instance that represents the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
         {
@@ -91,7 +91,7 @@ namespace CloudBoilerplateNet.Services
         /// Returns a content item.
         /// </summary>
         /// <param name="codename">The codename of a content item.</param>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, params IQueryParameter[] parameters)
         {
@@ -103,7 +103,7 @@ namespace CloudBoilerplateNet.Services
         /// </summary>
         /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
         /// <param name="codename">The codename of a content item.</param>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, params IQueryParameter[] parameters)
         {
@@ -114,7 +114,7 @@ namespace CloudBoilerplateNet.Services
         /// Returns a content item.
         /// </summary>
         /// <param name="codename">The codename of a content item.</param>
-        /// <param name="parameters">A collection of query parameters, for example for projection or depth of modular content.</param>
+        /// <param name="parameters">A collection of query parameters, for example for projection or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
         {
@@ -134,7 +134,7 @@ namespace CloudBoilerplateNet.Services
         /// </summary>
         /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
         /// <param name="codename">The codename of a content item.</param>
-        /// <param name="parameters">A collection of query parameters, for example for projection or depth of modular content.</param>
+        /// <param name="parameters">A collection of query parameters, for example for projection or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
         public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
         {
@@ -153,7 +153,7 @@ namespace CloudBoilerplateNet.Services
         /// Searches the content repository for items that match the filter criteria.
         /// Returns content items.
         /// </summary>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse> GetItemsAsync(params IQueryParameter[] parameters)
         {
@@ -163,7 +163,7 @@ namespace CloudBoilerplateNet.Services
         /// <summary>
         /// Returns content items.
         /// </summary>
-        /// <param name="parameters">A collection of query parameters, for example for filtering, ordering or depth of modular content.</param>
+        /// <param name="parameters">A collection of query parameters, for example for filtering, ordering or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
         {
@@ -183,7 +183,7 @@ namespace CloudBoilerplateNet.Services
         /// Returns strongly typed content items.
         /// </summary>
         /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
-        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of modular content.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
         /// <returns>The <see cref="DeliveryItemListingResponse{T}"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
         public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(params IQueryParameter[] parameters)
         {
@@ -387,7 +387,7 @@ namespace CloudBoilerplateNet.Services
         /// Extracts identifier sets from a single-item response.
         /// </summary>
         /// <param name="response">The <see cref="DeliveryItemResponse"/> or <see cref="DeliveryItemResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
-        /// <returns>Identifiers of all formats of the item, its modular content items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
+        /// <returns>Identifiers of all formats of the item, its linked items items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemSingleDependencies(dynamic response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -409,7 +409,7 @@ namespace CloudBoilerplateNet.Services
         /// Extracts identifier sets from a single-item JSON response.
         /// </summary>
         /// <param name="response">The <see cref="JObject"/> response.</param>
-        /// <returns>Identifiers of all formats of the item, its modular content items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
+        /// <returns>Identifiers of all formats of the item, its linked items items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemSingleJsonDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -418,7 +418,7 @@ namespace CloudBoilerplateNet.Services
             {
                 dependencies.AddNonNullRange(GetContentItemDependencies(response[KenticoCloudCacheHelper.ITEM_IDENTIFIER]));
 
-                foreach (var item in response[KenticoCloudCacheHelper.MODULAR_CONTENT_IDENTIFIER]?.Children())
+                foreach (var item in response[KenticoCloudCacheHelper.LINKED_ITEMS_IDENTIFIER]?.Children())
                 {
                     dependencies.AddNonNullRange(GetContentItemDependencies(item));
                 }
@@ -431,7 +431,7 @@ namespace CloudBoilerplateNet.Services
         /// Extracts identifier sets from an item listing response.
         /// </summary>
         /// <param name="response">The <see cref="DeliveryItemListingResponse"/> or <see cref="DeliveryItemListingResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
-        /// <returns>Identifiers of all formats of the items, their modular content items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
+        /// <returns>Identifiers of all formats of the items, their linked items items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemListingDependencies(dynamic response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -456,7 +456,7 @@ namespace CloudBoilerplateNet.Services
         /// Extracts identifier sets from a item listing JSON response.
         /// </summary>
         /// <param name="response">The <see cref="JObject"/> item listing response.</param>
-        /// <returns>Identifiers of all formats of the items, their modular content items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
+        /// <returns>Identifiers of all formats of the items, their linked items items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
         public IEnumerable<IdentifierSet> GetContentItemListingJsonDependencies(JObject response)
         {
             var dependencies = new List<IdentifierSet>();
@@ -468,7 +468,7 @@ namespace CloudBoilerplateNet.Services
                     dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
 
-                foreach (var item in response[KenticoCloudCacheHelper.MODULAR_CONTENT_IDENTIFIER]?.Children())
+                foreach (var item in response[KenticoCloudCacheHelper.LINKED_ITEMS_IDENTIFIER]?.Children())
                 {
                     dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
