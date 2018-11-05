@@ -87,11 +87,17 @@ To create the web hook, go to Project settings --> Webhooks --> Create new Webho
 
 ![New webhook configuration](https://i.imgur.com/ootVcPZ.png)
 
-To get all the benefits of the caching functionality, you should configure the `PreviewApiKey` settings key with the value found in "Project settings" -> "API keys" -> "Delivery Preview API".
+To get all the benefits of the caching functionality, you should set the `DeliveryOptions` -> `PreviewApiKey` key (secret) for your app with the value found in "Project settings" -> "API keys" -> "Delivery Preview API".
 
 ![Copy the Preview API key](https://i.imgur.com/lPTyRgZ.png)
 
-This is because the caching functionality always builds a list of dependent KC data from the actual Delivery API response. Without the `PreviewApiKey` settings key, the caching wouldn't know about not-yet-published content items. Publishing of such items would not invalidate cached listing responses and linked items that should now contain the newly-published items. Therefore, you can configure the caching to use the Preview API, simply by having the `DeliveryOptions` -> `PreviewApiKey` key set in your settings/secrets. You don't have to enable Preview API for your app via `DeliveryOptions` -> `UsePreviewApi`. The app can still run against the production-ready Delivery API. When `UsePreviewApi` is `false` and `PreviewApiKey` is set, then only the caching functionality will use the Preview API to recognize all not-yet-published items upfront.
+By setting just the `PreviewApiKey` (without setting the `UsePreviewApi` key at the same time) you will allow only the caching functionality to see the not-yet-published content items when a dependency list is being built. The app will continue to consume and display the production-grade Delivery API data as before.
+
+The caching works in a way that each new Delivery response is being inspected to see which KC artifacts the current response depends upon. For instance, a content item with two linked items depends on its content type, the two linked items and their types. Later, when the app is told that one of the linked items have changed (via a web hook), the caching invalidates both the linked item's cache entry and that of the parent item's.
+
+Without the `PreviewApiKey`, the above inspection logic would not know about the not-yet-published items.
+
+It is important to know how often the content contributors create new content items. Not how often they publish them, but how often they create them. You should set the `CacheTimeoutSeconds` settings key to a value that's slightly smaller than a typical time span between item creations.
 
 **Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. When using IIS Express, you might need to initialize ngrok with a host header:
 
