@@ -34,7 +34,7 @@ namespace CloudBoilerplateNet.Helpers
         public const string DUMMY_IDENTIFIER = "dummy";
         public const string CODENAME_IDENTIFIER = "codename";
         public const string SYSTEM_IDENTIFIER = "system";
-        public const string MODULAR_CONTENT_IDENTIFIER = "modular_content";
+        public const string LINKED_ITEMS_IDENTIFIER = "modular_content";
         public const string ITEM_IDENTIFIER = "item";
         public const string ITEMS_IDENTIFIER = "items";
         public const string TYPE_IDENTIFIER = "type";
