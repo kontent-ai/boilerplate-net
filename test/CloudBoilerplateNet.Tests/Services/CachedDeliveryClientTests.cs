@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using CloudBoilerplateNet.Helpers;
+﻿using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using CloudBoilerplateNet.Resolvers;
 using CloudBoilerplateNet.Services;
@@ -13,15 +6,20 @@ using KenticoCloud.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
 using Xunit;
 
 namespace CloudBoilerplateNet.Tests
 {
     public class CachedDeliveryClientTests
     {
-        readonly string guid = string.Empty;
-        readonly string baseUrl = string.Empty;
-        readonly MockHttpMessageHandler mockHttp;
+        private readonly string guid = string.Empty;
+        private readonly string baseUrl = string.Empty;
+        private readonly MockHttpMessageHandler mockHttp;
 
         public CachedDeliveryClientTests()
         {
@@ -206,15 +204,11 @@ namespace CloudBoilerplateNet.Tests
             Assert.NotNull(item);
         }
 
-        private DeliveryClient GetDeliveryClient(Action mockAction)
+        private IDeliveryClient GetDeliveryClient(Action mockAction)
         {
             InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, mockAction);
 
-            return new DeliveryClient(deliveryOptions)
-            {
-                CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() },
-                HttpClient = httpClient
-            };
+            return DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithCodeFirstTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build();
         }
 
         private CachedDeliveryClient GetCachedDeliveryClient(Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)
@@ -246,13 +240,7 @@ namespace CloudBoilerplateNet.Tests
             var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new DependentFormatResolver(), new WebhookListener());
 
             return new CachedDeliveryClient(projectOptions, cacheManager
-                , new DeliveryClient(deliveryOptions)
-                {
-                    HttpClient = httpClient
-                })
-            {
-                CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider() }
-            };
+                , DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithCodeFirstTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build());
         }
 
         private void InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)

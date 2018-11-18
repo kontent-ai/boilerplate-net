@@ -66,14 +66,7 @@ namespace CloudBoilerplateNet.Tests
 
             var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new DependentFormatResolver(), new WebhookListener());
 
-            return new CachedDeliveryClient(projectOptions, cacheManager, new DeliveryClient(projectOptions.Value.DeliveryOptions)
-            {
-                HttpClient = httpClient
-            })
-            {
-                CodeFirstModelProvider = { TypeProvider = new Models.CustomTypeProvider()
-    }
-};
+            return new CachedDeliveryClient(projectOptions, cacheManager, DeliveryClientBuilder.WithOptions(o => projectOptions.Value.DeliveryOptions).WithCodeFirstTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build());
         }
     }
 }

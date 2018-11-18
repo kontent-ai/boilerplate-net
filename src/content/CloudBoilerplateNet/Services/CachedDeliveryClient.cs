@@ -380,7 +380,7 @@ namespace CloudBoilerplateNet.Services
             {
                 dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(response.Item));
 
-                foreach (var item in response.ModularContent)
+                foreach (var item in response.LinkedItems)
                 {
                     dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
@@ -427,12 +427,9 @@ namespace CloudBoilerplateNet.Services
                     dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
 
-                if (DynamicExtensions.HasProperty(response, "ModularContent"))
+                foreach (var item in response.LinkedItems)
                 {
-                    foreach (var item in response.ModularContent)
-                    {
-                        dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
-                    }
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
             }
 
