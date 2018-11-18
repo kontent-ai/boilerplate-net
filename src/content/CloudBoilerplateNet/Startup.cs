@@ -1,5 +1,4 @@
-﻿using System.IO;
-using CloudBoilerplateNet.Filters;
+﻿using CloudBoilerplateNet.Filters;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Helpers.Extensions;
 using CloudBoilerplateNet.Models;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace CloudBoilerplateNet
 {
@@ -35,24 +35,26 @@ namespace CloudBoilerplateNet
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
 
+            var deliveryOptions = new DeliveryOptions();
+            Configuration.GetSection(nameof(DeliveryOptions)).Bind(deliveryOptions);
+
             services.AddSingleton<IWebhookListener>(sp => new WebhookListener());
             services.AddSingleton<IDependentTypesResolver>(sp => new DependentFormatResolver());
             services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
-                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
-                sp.GetRequiredService<IMemoryCache>(), 
-                sp.GetRequiredService<IDependentTypesResolver>(), 
+                sp.GetRequiredService<IOptions<ProjectOptions>>(),
+                sp.GetRequiredService<IMemoryCache>(),
+                sp.GetRequiredService<IDependentTypesResolver>(),
                 sp.GetRequiredService<IWebhookListener>()));
-
             services.AddScoped<KenticoCloudSignatureActionFilter>();
 
             services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
-                sp.GetRequiredService<IOptions<ProjectOptions>>(), 
+                sp.GetRequiredService<IOptions<ProjectOptions>>(),
                 sp.GetRequiredService<ICacheManager>(),
-                new DeliveryClient(sp.GetRequiredService<IOptions<ProjectOptions>>().Value.DeliveryOptions))
-            {
-                CodeFirstModelProvider = { TypeProvider = new CustomTypeProvider() },
-                ContentLinkUrlResolver = new CustomContentLinkUrlResolver()
-            });
+                DeliveryClientBuilder.WithOptions(_ => deliveryOptions)
+                .WithCodeFirstTypeProvider(new CustomTypeProvider())
+                .WithContentLinkUrlResolver(new CustomContentLinkUrlResolver())
+                .Build())
+               );
 
             HtmlHelperExtensions.ProjectOptions = services.BuildServiceProvider().GetService<IOptions<ProjectOptions>>();
 

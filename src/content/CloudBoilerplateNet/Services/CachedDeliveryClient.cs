@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using CloudBoilerplateNet.Extensions;
+﻿using CloudBoilerplateNet.Extensions;
 using CloudBoilerplateNet.Helpers;
 using CloudBoilerplateNet.Models;
 using KenticoCloud.Delivery;
-using KenticoCloud.Delivery.InlineContentItems;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CloudBoilerplateNet.Services
 {
@@ -20,20 +18,6 @@ namespace CloudBoilerplateNet.Services
         protected IDeliveryClient DeliveryClient { get; }
         protected ICacheManager CacheManager { get; }
         protected ProjectOptions ProjectOptions { get; }
-
-        public IContentLinkUrlResolver ContentLinkUrlResolver
-        {
-            get => DeliveryClient.ContentLinkUrlResolver;
-            set => DeliveryClient.ContentLinkUrlResolver = value;
-        }
-
-        public ICodeFirstModelProvider CodeFirstModelProvider
-        {
-            get => DeliveryClient.CodeFirstModelProvider;
-            set => DeliveryClient.CodeFirstModelProvider = value;
-        }
-
-        public IInlineContentItemsProcessor InlineContentItemsProcessor => DeliveryClient.InlineContentItemsProcessor;
 
         #endregion
 
@@ -443,9 +427,12 @@ namespace CloudBoilerplateNet.Services
                     dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
                 }
 
-                foreach (var item in response.ModularContent)
+                if (DynamicExtensions.HasProperty(response, "ModularContent"))
                 {
-                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                    foreach (var item in response.ModularContent)
+                    {
+                        dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                    }
                 }
             }
 
@@ -470,7 +457,7 @@ namespace CloudBoilerplateNet.Services
 
                 foreach (var item in response[KenticoCloudCacheHelper.LINKED_ITEMS_IDENTIFIER]?.Children())
                 {
-                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                    dependencies.AddNonNullRange(GetContentItemDependencies(item));
                 }
             }
 
