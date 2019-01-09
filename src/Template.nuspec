@@ -8,7 +8,8 @@
     <language>en-US</language>
     <projectUrl>https://github.com/Kentico/cloud-boilerplate-net</projectUrl>
     <licenseUrl>https://github.com/Kentico/cloud-boilerplate-net/blob/master/LICENSE</licenseUrl>
-	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://github.com/Kentico/Home/blob/master/images/logo_nuget.png?raw=true</iconUrl>
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>
