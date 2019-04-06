@@ -208,7 +208,7 @@ namespace CloudBoilerplateNet.Tests
         {
             InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, mockAction);
 
-            return DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithCodeFirstTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build();
+            return DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build();
         }
 
         private CachedDeliveryClient GetCachedDeliveryClient(Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)
@@ -240,7 +240,7 @@ namespace CloudBoilerplateNet.Tests
             var cacheManager = new ReactiveCacheManager(projectOptions, new MemoryCache(memoryCacheOptions), new DependentFormatResolver(), new WebhookListener());
 
             return new CachedDeliveryClient(projectOptions, cacheManager
-                , DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithCodeFirstTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build());
+                , DeliveryClientBuilder.WithOptions(o => deliveryOptions).WithTypeProvider(new Models.CustomTypeProvider()).WithHttpClient(httpClient).Build());
         }
 
         private void InitClientPrerequisites(out HttpClient httpClient, out DeliveryOptions deliveryOptions, Action mockAction = null, Func<RequestCount, RequestCount> mockFunc = null, RequestCount actualHttpRequests = null)
