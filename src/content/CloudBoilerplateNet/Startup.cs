@@ -51,7 +51,7 @@ namespace CloudBoilerplateNet
                 sp.GetRequiredService<IOptions<ProjectOptions>>(),
                 sp.GetRequiredService<ICacheManager>(),
                 DeliveryClientBuilder.WithOptions(_ => deliveryOptions)
-                .WithCodeFirstTypeProvider(new CustomTypeProvider())
+                .WithTypeProvider(new CustomTypeProvider())
                 .WithContentLinkUrlResolver(new CustomContentLinkUrlResolver())
                 .Build())
                );

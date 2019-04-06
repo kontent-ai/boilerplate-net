@@ -5,7 +5,7 @@ using KenticoCloud.Delivery;
 
 namespace CloudBoilerplateNet.Tests.Models
 {
-    public class CustomTypeProvider : ICodeFirstTypeProvider
+    public class CustomTypeProvider : ITypeProvider
     {
         private static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
         {
