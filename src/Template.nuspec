@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>KenticoCloud.CloudBoilerplateNet</id>
+    <id>Kentico.Kontent.Boilerplate</id>
     <version>1.0.0</version>
     <authors>Kentico Software</authors>
-    <description>Kentico Cloud .NET MVC Boilerplate</description>
+    <description>Kentico Kontent .NET MVC Boilerplate</description>
     <language>en-US</language>
-    <projectUrl>https://github.com/Kentico/cloud-boilerplate-net</projectUrl>
-    <licenseUrl>https://github.com/Kentico/cloud-boilerplate-net/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Kentico/kontent-boilerplate-net</projectUrl>
+    <licenseUrl>https://github.com/Kentico/kontent-boilerplate-net/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://github.com/Kentico/Home/blob/master/images/logo_nuget.png?raw=true</iconUrl>
+    <iconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</iconUrl>
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>

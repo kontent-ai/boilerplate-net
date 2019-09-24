@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Article>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="header clearfix">
+    <nav>
+        <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="/">Home</a></li>
+            <li role="presentation"><a href="https://kontent.ai/" target="_blank">Kentico Kontent</a></li>
+            <li role="presentation"><a href="https://app.kontent.ai/sign-up" target="_blank">Sign up</a></li>
+        </ul>
+    </nav>
+    <h3 class="text-muted">Kentico Kontent Boilerplate</h3>
+</div>
+
+<div class="jumbotron">
+    <h1>Let's Get Started</h1>
+    <p class="lead">This boilerplate includes a set of features and best practices to kick off your website development with Kentico Kontent smoothly. Take a look into the code to see how it works.</p>
+    <p><a class="btn btn-lg btn-success" href="https://github.com/Kentico/kontent-boilerplate-net#quick-start" target="_blank" role="button">Read the Quick Start</a></p>
+</div>
+
+<div class="row marketing">
+    <h2>Articles from the Dancing Goat Sample Site</h2>
+</div>
+<div class="row marketing">
+    @*
+        This MVC helper method ensures that current model is rendered
+        with suitable view from /Views/Shared/DisplayTemplates
+    *@
+    @Html.DisplayForModel()
+</div>
