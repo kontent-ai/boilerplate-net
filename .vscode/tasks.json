@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/content/CloudBoilerplateNet/CloudBoilerplateNet.csproj"
+                "${workspaceFolder}/src/content/Kentico.Kontent.Boilerplate/Kentico.Kontent.Boilerplate.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

@@ -1,0 +1,704 @@
+﻿using Kentico.Kontent.Boilerplate.Extensions;
+using Kentico.Kontent.Boilerplate.Helpers;
+using Kentico.Kontent.Boilerplate.Models;
+using Kentico.Kontent.Delivery;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Kentico.Kontent.Boilerplate.Services
+{
+    public class CachedDeliveryClient : IDeliveryClient
+    {
+        #region "Properties"
+
+        protected IDeliveryClient DeliveryClient { get; }
+        protected ICacheManager CacheManager { get; }
+        protected ProjectOptions ProjectOptions { get; }
+
+        #endregion
+
+        #region "Constructors"
+
+        public CachedDeliveryClient(IOptions<ProjectOptions> projectOptions, ICacheManager cacheManager, IDeliveryClient deliveryClient)
+        {
+            ProjectOptions = projectOptions.Value;
+            DeliveryClient = deliveryClient ?? throw new ArgumentNullException(nameof(deliveryClient));
+            CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
+        }
+
+        #endregion
+
+        #region "Public methods"
+
+        /// <summary>
+        /// Returns a content item as JSON data.
+        /// </summary>
+        /// <param name="codename">The codename of a content item.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the content item with the specified codename.</returns>
+        public async Task<JObject> GetItemJsonAsync(string codename, params string[] parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_JSON_IDENTIFIER, codename };
+            identifierTokens.AddNonNullRange(parameters);
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemJsonAsync(codename, parameters),
+                response => response == null,
+                GetContentItemSingleJsonDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns content items as JSON data.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the content items. If no query parameters are specified, all content items are returned.</returns>
+        public async Task<JObject> GetItemsJsonAsync(params string[] parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_JSON_IDENTIFIER };
+            identifierTokens.AddNonNullRange(parameters);
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemsJsonAsync(parameters),
+                response => response["items"].Count() <= 0,
+                GetContentItemListingJsonDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a content item.
+        /// </summary>
+        /// <param name="codename">The codename of a content item.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
+        public async Task<DeliveryItemResponse> GetItemAsync(string codename, params IQueryParameter[] parameters)
+        {
+            return await GetItemAsync(codename, (IEnumerable<IQueryParameter>)parameters);
+        }
+
+        /// <summary>
+        /// Gets one strongly typed content item by its codename.
+        /// </summary>
+        /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
+        /// <param name="codename">The codename of a content item.</param>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for projection or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
+        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, params IQueryParameter[] parameters)
+        {
+            return await GetItemAsync<T>(codename, (IEnumerable<IQueryParameter>)parameters);
+        }
+
+        /// <summary>
+        /// Returns a content item.
+        /// </summary>
+        /// <param name="codename">The codename of a content item.</param>
+        /// <param name="parameters">A collection of query parameters, for example for projection or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemResponse"/> instance that contains the content item with the specified codename.</returns>
+        public async Task<DeliveryItemResponse> GetItemAsync(string codename, IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, codename };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemAsync(codename, parameters),
+                response => response == null,
+                GetContentItemSingleDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Gets one strongly typed content item by its codename.
+        /// </summary>
+        /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
+        /// <param name="codename">The codename of a content item.</param>
+        /// <param name="parameters">A collection of query parameters, for example for projection or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemResponse{T}"/> instance that contains the content item with the specified codename.</returns>
+        public async Task<DeliveryItemResponse<T>> GetItemAsync<T>(string codename, IEnumerable<IQueryParameter> parameters = null)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_SINGLE_TYPED_IDENTIFIER, codename };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemAsync<T>(codename, parameters),
+                response => response == null,
+                GetContentItemSingleDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Searches the content repository for items that match the filter criteria.
+        /// Returns content items.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
+        public async Task<DeliveryItemListingResponse> GetItemsAsync(params IQueryParameter[] parameters)
+        {
+            return await GetItemsAsync((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        /// <summary>
+        /// Returns content items.
+        /// </summary>
+        /// <param name="parameters">A collection of query parameters, for example for filtering, ordering or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemListingResponse"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
+        public async Task<DeliveryItemListingResponse> GetItemsAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_IDENTIFIER };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemsAsync(parameters),
+                response => response.Items.Count <= 0,
+                GetContentItemListingDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Searches the content repository for items that match the filter criteria.
+        /// Returns strongly typed content items.
+        /// </summary>
+        /// <typeparam name="T">Type of the code-first model. (Or <see cref="object"/> if the return type is not yet known.)</typeparam>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for filtering, ordering or depth of linked items.</param>
+        /// <returns>The <see cref="DeliveryItemListingResponse{T}"/> instance that contains the content items. If no query parameters are specified, all content items are returned.</returns>
+        public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(params IQueryParameter[] parameters)
+        {
+            return await GetItemsAsync<T>((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        public async Task<DeliveryItemListingResponse<T>> GetItemsAsync<T>(IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ITEM_LISTING_TYPED_IDENTIFIER };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetItemsAsync<T>(parameters),
+                response => response.Items.Count <= 0,
+                GetContentItemListingDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a content type as JSON data.
+        /// </summary>
+        /// <param name="codename">The codename of a content type.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the content type with the specified codename.</returns>
+        public async Task<JObject> GetTypeJsonAsync(string codename)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER, codename };
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTypeJsonAsync(codename),
+                response => response == null,
+                GetTypeSingleJsonDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns content types as JSON data.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for paging.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the content types. If no query parameters are specified, all content types are returned.</returns>
+        public async Task<JObject> GetTypesJsonAsync(params string[] parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_TYPE_LISTING_JSON_IDENTIFIER };
+            identifierTokens.AddNonNullRange(parameters);
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTypesJsonAsync(parameters),
+                response => response["types"].Count() <= 0,
+                GetTypeListingJsonDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a content type.
+        /// </summary>
+        /// <param name="codename">The codename of a content type.</param>
+        /// <returns>The content type with the specified codename.</returns>
+        public async Task<ContentType> GetTypeAsync(string codename)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, codename };
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTypeAsync(codename),
+                response => response == null,
+                GetTypeSingleDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns content types.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example for paging.</param>
+        /// <returns>The <see cref="DeliveryTypeListingResponse"/> instance that represents the content types. If no query parameters are specified, all content types are returned.</returns>
+        public async Task<DeliveryTypeListingResponse> GetTypesAsync(params IQueryParameter[] parameters)
+        {
+            return await GetTypesAsync((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        /// <summary>
+        /// Returns content types.
+        /// </summary>
+        /// <param name="parameters">A collection of query parameters, for example for paging.</param>
+        /// <returns>The <see cref="DeliveryTypeListingResponse"/> instance that represents the content types. If no query parameters are specified, all content types are returned.</returns>
+        public async Task<DeliveryTypeListingResponse> GetTypesAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_TYPE_LISTING_IDENTIFIER };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTypesAsync(parameters),
+                response => response.Types.Count <= 0,
+                GetTypeListingDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a content element.
+        /// </summary>
+        /// <param name="contentTypeCodename">The codename of the content type.</param>
+        /// <param name="contentElementCodename">The codename of the content element.</param>
+        /// <returns>A content element with the specified codename that is a part of a content type with the specified codename.</returns>
+        public async Task<ContentElement> GetContentElementAsync(string contentTypeCodename, string contentElementCodename)
+        {
+            var identifierTokens = new List<string> { CacheHelper.CONTENT_ELEMENT_IDENTIFIER, contentTypeCodename, contentElementCodename };
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetContentElementAsync(contentTypeCodename, contentElementCodename),
+                response => response == null,
+                GetContentElementDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a taxonomy group as JSON data.
+        /// </summary>
+        /// <param name="codename">The codename of a taxonomy group.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the taxonomy group with the specified codename.</returns>
+        public async Task<JObject> GetTaxonomyJsonAsync(string codename)
+        {
+            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER, codename };
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTaxonomyJsonAsync(codename),
+                response => response == null,
+                GetTaxonomySingleJsonDependency,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns taxonomy groups as JSON data.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="JObject"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
+        public async Task<JObject> GetTaxonomiesJsonAsync(params string[] parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_LISTING_JSON_IDENTIFIER };
+            identifierTokens.AddNonNullRange(parameters);
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTaxonomiesJsonAsync(parameters),
+                response => response["taxonomies"].Count() <= 0,
+                GetTaxonomyListingJsonDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns a taxonomy group.
+        /// </summary>
+        /// <param name="codename">The codename of a taxonomy group.</param>
+        /// <returns>The taxonomy group with the specified codename.</returns>
+        public async Task<TaxonomyGroup> GetTaxonomyAsync(string codename)
+        {
+            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, codename };
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTaxonomyAsync(codename),
+                response => response == null,
+                GetTaxonomySingleDependency,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        /// <summary>
+        /// Returns taxonomy groups.
+        /// </summary>
+        /// <param name="parameters">An array that contains zero or more query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="DeliveryTaxonomyListingResponse"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
+        public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(params IQueryParameter[] parameters)
+        {
+            return await GetTaxonomiesAsync((IEnumerable<IQueryParameter>)parameters);
+        }
+
+        /// <summary>
+        /// Returns taxonomy groups.
+        /// </summary>
+        /// <param name="parameters">A collection of query parameters, for example, for paging.</param>
+        /// <returns>The <see cref="DeliveryTaxonomyListingResponse"/> instance that represents the taxonomy groups. If no query parameters are specified, all taxonomy groups are returned.</returns>
+        public async Task<DeliveryTaxonomyListingResponse> GetTaxonomiesAsync(IEnumerable<IQueryParameter> parameters)
+        {
+            var identifierTokens = new List<string> { CacheHelper.TAXONOMY_GROUP_LISTING_IDENTIFIER };
+            identifierTokens.AddNonNullRange(CacheHelper.GetIdentifiersFromParameters(parameters));
+
+            return await CacheManager.GetOrCreateAsync(
+                identifierTokens,
+                () => DeliveryClient.GetTaxonomiesAsync(parameters),
+                response => response.Taxonomies.Count <= 0,
+                GetTaxonomyListingDependencies,
+                ProjectOptions.CreateCacheEntriesInBackground);
+        }
+
+        #region "Dependency resolvers"
+
+        /// <summary>
+        /// Extracts identifier sets from a single-item response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryItemResponse"/> or <see cref="DeliveryItemResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
+        /// <returns>Identifiers of all formats of the item, its linked items items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
+        public IEnumerable<IdentifierSet> GetContentItemSingleDependencies(dynamic response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (CacheHelper.IsDeliveryItemSingleResponse(response) && response?.Item != null)
+            {
+                dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(response.Item));
+
+                foreach (var item in response.LinkedItems)
+                {
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                }
+            }
+
+            return dependencies.Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a single-item JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> response.</param>
+        /// <returns>Identifiers of all formats of the item, its linked items items, taxonomies used in elements, underlying content type and eventually its elements (when present in the cache).</returns>
+        public IEnumerable<IdentifierSet> GetContentItemSingleJsonDependencies(JObject response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (CacheHelper.IsDeliveryItemSingleJsonResponse(response))
+            {
+                dependencies.AddNonNullRange(GetContentItemDependencies(response[CacheHelper.ITEM_IDENTIFIER]));
+
+                foreach (var item in response[CacheHelper.LINKED_ITEMS_IDENTIFIER]?.Children())
+                {
+                    dependencies.AddNonNullRange(GetContentItemDependencies(item));
+                }
+            }
+
+            return dependencies.Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from an item listing response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryItemListingResponse"/> or <see cref="DeliveryItemListingResponse{T}"/>, either strongly-typed, or runtime-typed.</param>
+        /// <returns>Identifiers of all formats of the items, their linked items items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
+        public IEnumerable<IdentifierSet> GetContentItemListingDependencies(dynamic response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (CacheHelper.IsDeliveryItemListingResponse(response))
+            {
+                foreach (dynamic item in response.Items)
+                {
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                }
+
+                foreach (var item in response.LinkedItems)
+                {
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                }
+            }
+
+            return dependencies.Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a item listing JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> item listing response.</param>
+        /// <returns>Identifiers of all formats of the items, their linked items items, taxonomies used in elements, underlying content types and eventually their elements (when present in the cache).</returns>
+        public IEnumerable<IdentifierSet> GetContentItemListingJsonDependencies(JObject response)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            if (CacheHelper.IsDeliveryItemListingJsonResponse(response))
+            {
+                foreach (dynamic item in response[CacheHelper.ITEMS_IDENTIFIER].Children())
+                {
+                    dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentItemDependencies(item));
+                }
+
+                foreach (var item in response[CacheHelper.LINKED_ITEMS_IDENTIFIER]?.Children())
+                {
+                    dependencies.AddNonNullRange(GetContentItemDependencies(item));
+                }
+            }
+
+            return dependencies.Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a content element response.
+        /// </summary>
+        /// <param name="response">The <see cref="ContentElement"/> response.</param>
+        /// <returns>Identifiers of all formats of the element.</returns>
+        public IEnumerable<IdentifierSet> GetContentElementDependencies(ContentElement response)
+        {
+            return GetContentElementDependenciesInternal(CacheHelper.CONTENT_ELEMENT_IDENTIFIER, response).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a singnle taxonomy group response.
+        /// </summary>
+        /// <param name="response">The <see cref="TaxonomyGroup"/> response.</param>
+        /// <returns>Identifiers of all formats of the taxonomy.</returns>
+        public IEnumerable<IdentifierSet> GetTaxonomySingleDependency(TaxonomyGroup response)
+        {
+            return GetTaxonomyDependencies(CacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, response?.System?.Codename).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a single taxonomy group JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> taxonomy response.</param>
+        /// <returns>Identifiers of all formats of the taxonomy.</returns>
+        public IEnumerable<IdentifierSet> GetTaxonomySingleJsonDependency(JObject response)
+        {
+            return GetTaxonomyDependencies(
+                CacheHelper.TAXONOMY_GROUP_SINGLE_JSON_IDENTIFIER,
+                response?[CacheHelper.SYSTEM_IDENTIFIER][CacheHelper.CODENAME_IDENTIFIER]?.ToString()).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a listing taxonomy group response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryTaxonomyListingResponse"/> response.</param>
+        /// <returns>Identifiers of all formats of all the taxonomies.</returns>
+        public IEnumerable<IdentifierSet> GetTaxonomyListingDependencies(DeliveryTaxonomyListingResponse response)
+        {
+            return response?.Taxonomies?.SelectMany(t => GetTaxonomySingleDependency(t)).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a listing taxonomy group JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> response.</param>
+        /// <returns>Identifiers of all formats of all the taxonomies.</returns>
+        public IEnumerable<IdentifierSet> GetTaxonomyListingJsonDependencies(JObject response)
+        {
+            return response?[CacheHelper.TAXONOMIES_IDENTIFIER]?.SelectMany(t => GetTaxonomySingleJsonDependency(t.ToObject<JObject>())).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a content type response.
+        /// </summary>
+        /// <param name="response">The <see cref="ContentType"/> response.</param>
+        /// <returns>Identifiers of all formats of the content type and its elements.</returns>
+        public IEnumerable<IdentifierSet> GetTypeSingleDependencies(ContentType response)
+        {
+            return GetContentTypeDependencies(CacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, response?.System?.Codename, response).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a content type response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> content type response.</param>
+        /// <returns>Identifiers of all formats of the content type and its elements.</returns>
+        public IEnumerable<IdentifierSet> GetTypeSingleJsonDependencies(JObject response)
+        {
+            return GetContentTypeDependencies(
+                CacheHelper.CONTENT_TYPE_SINGLE_JSON_IDENTIFIER,
+                response?[CacheHelper.SYSTEM_IDENTIFIER][CacheHelper.CODENAME_IDENTIFIER]?.ToString(), response).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a content type listing response.
+        /// </summary>
+        /// <param name="response">The <see cref="DeliveryTypeListingResponse"/> response.</param>
+        /// <returns>Identifiers of all formats of all the content types and their elements.</returns>
+        public IEnumerable<IdentifierSet> GetTypeListingDependencies(DeliveryTypeListingResponse response)
+        {
+            return response?.Types?.SelectMany(t => GetTypeSingleDependencies(t)).Distinct();
+        }
+
+        /// <summary>
+        /// Extracts identifier sets from a content type listing JSON response.
+        /// </summary>
+        /// <param name="response">The <see cref="JObject"/> content type listing response.</param>
+        /// <returns>Identifiers of all formats of all the content types and their elements.</returns>
+        public IEnumerable<IdentifierSet> GetTypeListingJsonDependencies(JObject response)
+        {
+            return response?[CacheHelper.TYPES_IDENTIFIER]?.SelectMany(t => GetTypeSingleJsonDependencies(t.ToObject<JObject>())).Distinct();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region "Protected methods"
+
+        protected IEnumerable<IdentifierSet> GetContentItemDependencies(dynamic item)
+        {
+            var dependencies = new List<IdentifierSet>();
+            CacheHelper.ExtractCodenamesFromItem(item, out string extractedItemCodename, out string extractedTypeCodename);
+
+            if (!string.IsNullOrEmpty(extractedItemCodename))
+            {
+                // Dependency on all formats of the item.
+                dependencies.AddNonNullRange(
+                    CacheManager.GetDependenciesByType(CacheHelper.CONTENT_ITEM_SINGLE_IDENTIFIER, extractedItemCodename, identifierSet =>
+                        Enumerable.Repeat(identifierSet, 1)
+                    ));
+
+                // Dependency on elements of item's type (if possible).
+                dependencies.AddNonNullRange(GetContentTypeDependencies(CacheHelper.CONTENT_TYPE_SINGLE_IDENTIFIER, extractedTypeCodename));
+
+                // Dependency on item's taxonomy elements.
+                foreach (string taxonomyElementCodename in CacheHelper.GetItemTaxonomyCodenamesByElements(item))
+                {
+                    dependencies.AddNonNullRange(
+                        GetTaxonomyDependencies(CacheHelper.TAXONOMY_GROUP_SINGLE_IDENTIFIER, taxonomyElementCodename)
+                    );
+                }
+            }
+
+            return dependencies;
+        }
+
+        protected IEnumerable<IdentifierSet> GetTaxonomyDependencies(string originalFormatIdentifier, string taxonomyCodename)
+        {
+            return CacheManager.GetDependenciesByType(
+                originalFormatIdentifier, taxonomyCodename, identifierSet =>
+                    Enumerable.Repeat(identifierSet, 1)
+            );
+        }
+
+        protected IEnumerable<IdentifierSet> GetContentTypeDependencies(string originalFormatIdentifier, string contentTypeCodeName, dynamic response = null)
+        {
+            var dependencies = new List<IdentifierSet>();
+
+            dependencies.AddNonNullRange(
+                CacheManager.GetDependenciesByType(originalFormatIdentifier, contentTypeCodeName, identifierSet =>
+                    Enumerable.Repeat(identifierSet, 1)
+                ));
+
+            // Try to get element codenames from the response.
+            if (response != null)
+            {
+                if (response is ContentType && response?.Elements != null)
+                {
+                    foreach (var element in response.Elements)
+                    {
+                        dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentElementDependenciesInternal(CacheHelper.CONTENT_ELEMENT_IDENTIFIER, element.Value));
+                    }
+                }
+                else if (response is JObject)
+                {
+                    var elements = response?[CacheHelper.ELEMENTS_IDENTIFIER];
+
+                    if (elements != null)
+                    {
+                        foreach (var element in elements)
+                        {
+                            dependencies.AddNonNullRange((IEnumerable<IdentifierSet>)GetContentElementDependenciesInternal(CacheHelper.CONTENT_ELEMENT_JSON_IDENTIFIER, element));
+                        }
+                    }
+                }
+            }
+            // If no response exists, try to get element codenames from the cache.
+            else
+            {
+                dependencies.AddNonNullRange(
+                    CacheManager.GetDependenciesByType(
+                        originalFormatIdentifier, contentTypeCodeName, identifierSet =>
+                        {
+                            return CacheManager.GetDependenciesByName<ContentType>(identifierSet, cachedContentType =>
+                            {
+                                var dependenciesPerCacheEntry = new List<IdentifierSet>();
+
+                                foreach (var elementDependency in cachedContentType?.Elements?.SelectMany(e => GetContentElementDependencies(e.Value)))
+                                {
+                                    dependenciesPerCacheEntry.Add(elementDependency);
+                                }
+
+                                if (!string.IsNullOrEmpty(identifierSet.Type))
+                                {
+                                    dependenciesPerCacheEntry.Add(new IdentifierSet
+                                    {
+                                        Type = identifierSet.Type,
+                                        Codename = cachedContentType.System?.Codename
+                                    });
+                                }
+
+                                return dependenciesPerCacheEntry;
+                            });
+                        }
+                ));
+            }
+
+            return dependencies;
+        }
+
+        protected IEnumerable<IdentifierSet> GetContentElementDependenciesInternal(string originalFormatIdentifier, dynamic response)
+        {
+            var dependencies = new List<IdentifierSet>();
+            string elementCodename = null;
+            string elementType = null;
+
+            if (response is ContentElement)
+            {
+                elementCodename = response?.Codename?.ToString();
+                elementType = response?.Type?.ToString();
+            }
+            else if (response is JProperty)
+            {
+                elementCodename = response?.Name?.ToString();
+                elementType = response?.Value?[CacheHelper.TYPE_IDENTIFIER]?.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(elementType) && !string.IsNullOrEmpty(elementCodename))
+            {
+                dependencies.AddNonNullRange(
+                    CacheManager.GetDependenciesByType(
+                        originalFormatIdentifier, elementCodename, identifierSet =>
+                            new List<IdentifierSet>
+                            {
+                                new IdentifierSet
+                                {
+                                    Type = identifierSet.Type,
+                                    Codename = string.Join("|", elementType, elementCodename)
+                                }
+                            }
+                ));
+            }
+
+            return dependencies;
+        }
+
+        #endregion
+    }
+}

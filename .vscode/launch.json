@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/content/CloudBoilerplateNet/bin/Debug/netcoreapp2.0/CloudBoilerplateNet.dll",
+            "program": "${workspaceFolder}/src/content/Kentico.Kontent.Boilerplate/bin/Debug/netcoreapp2.0/Kentico.Kontent.Boilerplate.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/content/CloudBoilerplateNet",
+            "cwd": "${workspaceFolder}/src/content/Kentico.Kontent.Boilerplate",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
