@@ -62,7 +62,7 @@ You can read more about the differences on [Rick Strahl's blog](https://weblog.w
 
 We recommend choosing the **second option - as a standalone app**. In Visual Studio, you can switch to it in the toolbar:
 
-![Debugging mode](https://i.imgur.com/PoxRBus.png)
+![Debugging mode](https://i.imgur.com/DA6QW5L.png)
 
 ### How to change Kentico Kontent Project ID and Delivery Preview API key
 
