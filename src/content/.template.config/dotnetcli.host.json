@@ -1,0 +1,12 @@
+{
+    "symbolInfo": {
+      "domain": {
+        "longName": "domain",
+        "shortName": "d"
+      },
+      "projectId": {
+        "longName": "project-id",
+        "shortName": "pid"
+      }
+    }
+  }

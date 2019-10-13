@@ -7,5 +7,17 @@
   },
   "identity": "Kentico.Kontent.Boilerplate",
   "shortName": "kentico-kontent-mvc",
-  "sourceName": "Kentico.Kontent.Boilerplate"
+  "sourceName": "Kentico.Kontent.Boilerplate",
+  "symbols": {
+    "domain": {
+        "type": "parameter",
+        "datatype": "string",
+        "replaces": "example.com"        
+    },
+    "projectId": {
+        "type": "parameter",
+        "datatype": "guid",
+        "replaces": "975bf280-fd91-488c-994c-2f04416e5ee3"
+    }
+  }
 }
