@@ -1,7 +1,7 @@
 ﻿using Kentico.Kontent.Boilerplate.Controllers;
 using Xunit;
 
-namespace Kentico.Kontent.Boilerplate.Tests
+namespace Kentico.Kontent.Boilerplate.Tests.Controllers
 {
     public class ErrorControllerTests
     {
