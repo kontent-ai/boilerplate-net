@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Kentico.Kontent.Boilerplate.Filters;
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Models;
@@ -14,7 +16,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
 
         public WebhooksController(ICacheManager cacheManager)
         {
-            _cacheManager = cacheManager;
+            _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
         }
 
         [HttpPost]
@@ -23,22 +25,37 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
         {
             if (model != null)
             {
-                foreach (var item in model.Data.Items ?? Enumerable.Empty<Item>())
+                var dependencies = new HashSet<string>();
+                if (model.Data.Items.Any())
                 {
-                    _cacheManager.InvalidateDependency(CacheHelper.GetItemDependencyKey(item.Codename));
+                    foreach (var item in model.Data.Items ?? Enumerable.Empty<Item>())
+                    {
+                        dependencies.Add(CacheHelper.GetItemDependencyKey(item.Codename));
+                    }
+
+                    dependencies.Add(CacheHelper.GetItemsDependencyKey());
                 }
 
-                foreach (var taxonomy in model.Data.Taxonomies ?? Enumerable.Empty<Taxonomy>())
+                if (model.Data.Taxonomies.Any())
                 {
-                    _cacheManager.InvalidateDependency(CacheHelper.GetTaxonomyDependencyKey(taxonomy.Codename));
-                }
+                    foreach (var taxonomy in model.Data.Taxonomies ?? Enumerable.Empty<Taxonomy>())
+                    {
+                        dependencies.Add(CacheHelper.GetTaxonomyDependencyKey(taxonomy.Codename));
+                    }
 
-                _cacheManager.InvalidateDependency(CacheHelper.GetItemsDependencyKey());
-                _cacheManager.InvalidateDependency(CacheHelper.GetTaxonomiesDependencyKey());
+                    dependencies.Add(CacheHelper.GetTaxonomiesDependencyKey());
+                    dependencies.Add(CacheHelper.GetItemsDependencyKey());
+                    dependencies.Add(CacheHelper.GetTypesDependencyKey());
+                }
 
                 if (model.Message.Type == "content_type")
                 {
-                    _cacheManager.InvalidateDependency(CacheHelper.GetTypesDependencyKey());
+                    dependencies.Add(CacheHelper.GetTypesDependencyKey());
+                }
+
+                foreach (var dependency in dependencies)
+                {
+                    _cacheManager.InvalidateDependency(dependency);
                 }
             }
 
