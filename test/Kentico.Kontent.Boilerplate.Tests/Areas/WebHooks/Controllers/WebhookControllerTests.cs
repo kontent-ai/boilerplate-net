@@ -31,7 +31,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
         [InlineData(PayloadType.Taxonomies, "taxonomy", "personas", "lorem_ipsum")]
         [InlineData(PayloadType.Items, "lorem_ipsum", "dolor_sit_amet", "lorem_ipsum")]
         [InlineData(PayloadType.Taxonomies, "lorem_ipsum", "dolor_sit_amet", "lorem_ipsum")]
-        public void ReturnsOkWheneverPossible(PayloadType payloadType, string artefactType, string dataType, string operation)
+        public async Task ReturnsOkWheneverPossible(PayloadType payloadType, string artefactType, string dataType, string operation)
         {
             Item[] items = null;
             Taxonomy[] taxonomies = null;
@@ -53,7 +53,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
             };
 
             var controller = new WebhooksController(new CacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new CacheOptions())));
-            var result = (StatusCodeResult)Task.Run(() => controller.Index(model)).Result;
+            var result = (StatusCodeResult)await Task.Run(() => controller.Index(model));
 
             Assert.InRange(result.StatusCode, 200, 299);
         }

@@ -343,7 +343,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
             private readonly ICacheManager _cacheManager;
             private string _continuationToken;
 
-            public bool HasMoreResults => _itemsFeed.HasMoreResults;
+            public bool HasMoreResults { get; private set; } = true;
 
             public CachingDeliveryItemsFeed(IEnumerable<IQueryParameter> parameters, IDeliveryItemsFeed itemsFeed, ICacheManager cacheManager)
             {
@@ -360,6 +360,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
                     r => r != null);
 
                 _continuationToken = response?.ContinuationToken;
+                HasMoreResults = !string.IsNullOrEmpty(_continuationToken);
                 return response;
             }
         }
@@ -371,7 +372,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
             private readonly ICacheManager _cacheManager;
             private string _continuationToken;
 
-            public bool HasMoreResults => _itemsFeed.HasMoreResults;
+            public bool HasMoreResults { get; private set; } = true;
 
             public CachingDeliveryItemsFeed(IEnumerable<IQueryParameter> parameters, IDeliveryItemsFeed<T> itemsFeed, ICacheManager cacheManager)
             {
@@ -388,6 +389,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
                     r => r != null);
 
                 _continuationToken = response?.ContinuationToken;
+                HasMoreResults = !string.IsNullOrEmpty(_continuationToken);
                 return response;
             }
         }
