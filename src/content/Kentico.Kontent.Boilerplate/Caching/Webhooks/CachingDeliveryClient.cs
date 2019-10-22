@@ -164,7 +164,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
         /// <returns>The <see cref="IDeliveryItemsFeed" /> instance that can be used to enumerate through content items. If no query parameters are specified, all content items are enumerated.</returns>
         public IDeliveryItemsFeed GetItemsFeed(params IQueryParameter[] parameters)
         {
-            return GetItemsFeed((IEnumerable<IQueryParameter>)parameters);
+            return DeliveryClient.GetItemsFeed(parameters);
         }
 
         /// <summary>
@@ -174,8 +174,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
         /// <returns>The <see cref="IDeliveryItemsFeed" /> instance that can be used to enumerate through content items. If no query parameters are specified, all content items are enumerated.</returns>
         public IDeliveryItemsFeed GetItemsFeed(IEnumerable<IQueryParameter> parameters)
         {
-            var queryParameters = parameters as IQueryParameter[] ?? parameters?.ToArray() ?? Array.Empty<IQueryParameter>();
-            return new CachingDeliveryItemsFeed(queryParameters, DeliveryClient.GetItemsFeed(queryParameters), CacheManager);
+            return DeliveryClient.GetItemsFeed(parameters);
         }
 
         /// <summary>
@@ -186,7 +185,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
         /// <returns>The <see cref="IDeliveryItemsFeed{T}" /> instance that can be used to enumerate through content items. If no query parameters are specified, all content items are enumerated.</returns>
         public IDeliveryItemsFeed<T> GetItemsFeed<T>(params IQueryParameter[] parameters)
         {
-            return GetItemsFeed<T>((IEnumerable<IQueryParameter>)parameters);
+            return DeliveryClient.GetItemsFeed<T>(parameters);
         }
 
         /// <summary>
@@ -197,8 +196,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
         /// <returns>The <see cref="IDeliveryItemsFeed{T}" /> instance that can be used to enumerate through content items. If no query parameters are specified, all content items are enumerated.</returns>
         public IDeliveryItemsFeed<T> GetItemsFeed<T>(IEnumerable<IQueryParameter> parameters)
         {
-            var queryParameters = parameters as IQueryParameter[] ?? parameters?.ToArray() ?? Array.Empty<IQueryParameter>();
-            return new CachingDeliveryItemsFeed<T>(queryParameters, DeliveryClient.GetItemsFeed<T>(queryParameters), CacheManager);
+            return DeliveryClient.GetItemsFeed<T>(parameters);
         }
 
         /// <summary>
@@ -349,66 +347,6 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
                 () => DeliveryClient.GetTaxonomiesAsync(queryParameters),
                 CacheHelper.GetTaxonomiesDependencies,
                 response => response.Taxonomies.Any());
-        }
-
-        public class CachingDeliveryItemsFeed : IDeliveryItemsFeed
-        {
-            private readonly IEnumerable<IQueryParameter> _parameters;
-            private readonly IDeliveryItemsFeed _itemsFeed;
-            private readonly ICacheManager _cacheManager;
-            private string _continuationToken;
-
-            public bool HasMoreResults { get; private set; } = true;
-
-            public CachingDeliveryItemsFeed(IEnumerable<IQueryParameter> parameters, IDeliveryItemsFeed itemsFeed, ICacheManager cacheManager)
-            {
-                _parameters = parameters;
-                _itemsFeed = itemsFeed;
-                _cacheManager = cacheManager;
-            }
-
-            public async Task<DeliveryItemsFeedResponse> FetchNextBatchAsync()
-            {
-                var response = await _cacheManager.GetOrAddAsync(
-                    CacheHelper.GetItemsFeedKey(_parameters, _continuationToken),
-                    () => _itemsFeed.FetchNextBatchAsync(),
-                    CacheHelper.GetItemsFeedDependencies,
-                    r => r != null);
-
-                _continuationToken = response?.ContinuationToken;
-                HasMoreResults = !string.IsNullOrEmpty(_continuationToken);
-                return response;
-            }
-        }
-
-        public class CachingDeliveryItemsFeed<T> : IDeliveryItemsFeed<T>
-        {
-            private readonly IEnumerable<IQueryParameter> _parameters;
-            private readonly IDeliveryItemsFeed<T> _itemsFeed;
-            private readonly ICacheManager _cacheManager;
-            private string _continuationToken;
-
-            public bool HasMoreResults { get; private set; } = true;
-
-            public CachingDeliveryItemsFeed(IEnumerable<IQueryParameter> parameters, IDeliveryItemsFeed<T> itemsFeed, ICacheManager cacheManager)
-            {
-                _parameters = parameters;
-                _itemsFeed = itemsFeed;
-                _cacheManager = cacheManager;
-            }
-
-            public async Task<DeliveryItemsFeedResponse<T>> FetchNextBatchAsync()
-            {
-                var response = await _cacheManager.GetOrAddAsync(
-                    CacheHelper.GetItemsFeedTypedKey(_parameters, _continuationToken),
-                    () => _itemsFeed.FetchNextBatchAsync(),
-                    CacheHelper.GetItemsFeedDependencies,
-                    r => r != null);
-
-                _continuationToken = response?.ContinuationToken;
-                HasMoreResults = !string.IsNullOrEmpty(_continuationToken);
-                return response;
-            }
         }
     }
 }

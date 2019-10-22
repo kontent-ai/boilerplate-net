@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Kentico.Kontent.Delivery;
 using Xunit;
 
 using static Kentico.Kontent.Boilerplate.Tests.Caching.ResponseHelper;
@@ -158,94 +156,6 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Default
             scenario.GetRequestCount(url).Should().Be(1);
         }
         
-        #endregion
-
-        #region GetItemsFeed
-
-        [Fact]
-        public async Task GetItemsFeed_ResponseIsCached()
-        {
-            var url = "items-feed";
-            var headersWithContinuation = new[] { new KeyValuePair<string, string>("X-Continuation", "continuationToken") };
-            var itemB = CreateItem("b", "original");
-            var partOne = CreateItemsFeedResponse(new[] { CreateItem("a", "original"), itemB });
-            var updatedPartOne = CreateItemsFeedResponse(new[] { CreateItem("a", "updated"), itemB });
-            var partTwo = CreateItemsFeedResponse(new[] { CreateItem("c", "original") });
-
-            var scenarioBuilder = new ScenarioBuilder();
-
-            var scenario = scenarioBuilder
-                .WithResponse(url, headersWithContinuation, partTwo, null)
-                .WithResponse(url, null, partOne, headersWithContinuation)
-                .Build();
-            var feed = scenario.CachingClient.GetItemsFeed();
-            var responsesA = new List<DeliveryItemsFeedResponse>();
-            while (feed.HasMoreResults)
-            {
-                responsesA.Add(await feed.FetchNextBatchAsync());
-            }
-
-            scenario = scenarioBuilder
-                .WithResponse(url, headersWithContinuation, partTwo, null)
-                .WithResponse(url, null, updatedPartOne, headersWithContinuation)
-                .Build();
-
-            feed = scenario.CachingClient.GetItemsFeed();
-            var responsesB = new List<DeliveryItemsFeedResponse>();
-            while (feed.HasMoreResults)
-            {
-                responsesB.Add(await feed.FetchNextBatchAsync());
-            }
-
-            responsesA.Should().NotBeNull();
-            responsesA.Should().BeEquivalentTo(responsesB);
-            scenario.GetRequestCount(url).Should().Be(2);
-        }
-        
-        #endregion
-
-        #region GetItemsFeedTyped
-
-        [Fact]
-        public async Task GetItemsFeedTyped_ResponseIsCached()
-        {
-            var url = "items-feed";
-            var headersWithContinuation = new[] { new KeyValuePair<string, string>("X-Continuation", "continuationToken") };
-            var itemB = CreateItem("b", "original");
-            var partOne = CreateItemsFeedResponse(new[] { CreateItem("a", "original"), itemB });
-            var updatedPartOne = CreateItemsFeedResponse(new[] { CreateItem("a", "updated"), itemB });
-            var partTwo = CreateItemsFeedResponse(new[] { CreateItem("c", "original") });
-
-            var scenarioBuilder = new ScenarioBuilder();
-
-            var scenario = scenarioBuilder
-                .WithResponse(url, headersWithContinuation, partTwo, null)
-                .WithResponse(url, null, partOne, headersWithContinuation)
-                .Build();
-            var feed = scenario.CachingClient.GetItemsFeed<TestItem>();
-            var responsesA = new List<DeliveryItemsFeedResponse<TestItem>>();
-            while (feed.HasMoreResults)
-            {
-                responsesA.Add(await feed.FetchNextBatchAsync());
-            }
-
-            scenario = scenarioBuilder
-                .WithResponse(url, headersWithContinuation, partTwo, null)
-                .WithResponse(url, null, updatedPartOne, headersWithContinuation)
-                .Build();
-
-            feed = scenario.CachingClient.GetItemsFeed<TestItem>();
-            var responsesB = new List<DeliveryItemsFeedResponse<TestItem>>();
-            while (feed.HasMoreResults)
-            {
-                responsesB.Add(await feed.FetchNextBatchAsync());
-            }
-
-            responsesA.Should().NotBeNull();
-            responsesA.Should().BeEquivalentTo(responsesB);
-            scenario.GetRequestCount(url).Should().Be(2);
-        }
-
         #endregion
 
         #region GetTypeJson
