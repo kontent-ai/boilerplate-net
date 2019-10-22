@@ -19,8 +19,6 @@ namespace Kentico.Kontent.Boilerplate.Caching
         private const string CONTENT_ITEM_LISTING_IDENTIFIER = "content_item_listing";
         private const string CONTENT_ITEM_LISTING_TYPED_IDENTIFIER = "content_item_listing_typed";
         private const string CONTENT_ITEM_LISTING_JSON_IDENTIFIER = "content_item_listing_json";
-        private const string CONTENT_ITEM_FEED = "content_item_feed";
-        private const string CONTENT_ITEM_FEED_TYPED = "content_item_feed_typed";
 
         private const string CONTENT_TYPE_IDENTIFIER = "content_type";
         private const string CONTENT_TYPE_JSON_IDENTIFIER = "content_type_json";
@@ -72,36 +70,6 @@ namespace Kentico.Kontent.Boilerplate.Caching
         public static string GetItemsTypedKey(IEnumerable<IQueryParameter> parameters)
         {
             return StringHelpers.Join(new[] { CONTENT_ITEM_LISTING_TYPED_IDENTIFIER }.Concat(parameters?.Select(x => x.GetQueryStringParameter()) ?? Enumerable.Empty<string>()));
-        }
-
-        public static string GetItemsFeedKey(IEnumerable<IQueryParameter> parameters, string continuationToken)
-        {
-            var identifiers = new List<string> { CONTENT_ITEM_FEED };
-            if (parameters != null && parameters.Any())
-            {
-                identifiers.AddRange(parameters.Select(x => x.GetQueryStringParameter()));
-            }
-
-            if (continuationToken != null)
-            {
-                identifiers.Add(continuationToken);
-            }
-            return StringHelpers.Join(identifiers);
-        }
-
-        public static string GetItemsFeedTypedKey(IEnumerable<IQueryParameter> parameters, string continuationToken)
-        {
-            var identifiers = new List<string> { CONTENT_ITEM_FEED_TYPED };
-            if (parameters != null && parameters.Any())
-            {
-                identifiers.AddRange(parameters.Select(x => x.GetQueryStringParameter()));
-            }
-
-            if (continuationToken != null)
-            {
-                identifiers.Add(continuationToken);
-            }
-            return StringHelpers.Join(identifiers);
         }
 
         public static string GetTypeJsonKey(string codename)

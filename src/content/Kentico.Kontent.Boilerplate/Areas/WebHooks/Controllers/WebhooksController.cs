@@ -26,7 +26,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
             if (model != null)
             {
                 var dependencies = new HashSet<string>();
-                if (model.Data.Items.Any())
+                if (model.Data.Items?.Any() == true)
                 {
                     foreach (var item in model.Data.Items ?? Enumerable.Empty<Item>())
                     {
@@ -36,7 +36,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
                     dependencies.Add(CacheHelper.GetItemsDependencyKey());
                 }
 
-                if (model.Data.Taxonomies.Any())
+                if (model.Data.Taxonomies?.Any() == true)
                 {
                     foreach (var taxonomy in model.Data.Taxonomies ?? Enumerable.Empty<Taxonomy>())
                     {
