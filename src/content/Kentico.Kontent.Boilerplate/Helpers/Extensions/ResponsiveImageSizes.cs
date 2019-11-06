@@ -9,7 +9,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
     public class ResponsiveImageSizes
     {
         private readonly int _defaultWidth;
-        private readonly List<MediaCondition> _mediaContitions;
+        private readonly List<MediaCondition> _mediaConditions;
 
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         public ResponsiveImageSizes(int defaultWidth)
         {
             _defaultWidth = defaultWidth;
-            _mediaContitions = new List<MediaCondition>();
+            _mediaConditions = new List<MediaCondition>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         /// <param name="mediaCondition">Represents one media condition from image sizes attribute.</param>
         public ResponsiveImageSizes WithMediaCondition(MediaCondition mediaCondition)
         {
-            _mediaContitions.Add(mediaCondition);
+            _mediaConditions.Add(mediaCondition);
 
             return this;
         }
@@ -37,6 +37,6 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         /// Generates sizes attribute value.
         /// </summary>
         public string GenerateSizesValue() =>
-            string.Join(", ", _mediaContitions.Select(mc => mc.ToString()).Concat(new string[] { $"{_defaultWidth}px" }));
+            string.Join(", ", _mediaConditions.Select(mc => mc.ToString()).Concat(new [] { $"{_defaultWidth}px" }));
     }
 }

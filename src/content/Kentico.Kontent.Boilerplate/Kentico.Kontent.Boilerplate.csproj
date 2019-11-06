@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>Kentico.Kontent.Boilerplate</UserSecretsId>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,14 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kentico.Kontent.Delivery" Version="11.0.3" />
+    <PackageReference Include="Kentico.Kontent.Delivery" Version="12.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />
-    <PackageReference Include="System.Reactive" Version="4.1.3" />
+    <PackageReference Include="System.Reactive" Version="4.1.6" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Helpers\Extensions\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
   </ItemGroup>
 </Project>

@@ -59,7 +59,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
 
             image.MergeAttribute("src", $"{imageUrlBuilder.Url}");
             image.AddCssClass(cssClass);
-            string titleToUse = title ?? asset.Description ?? string.Empty;
+            var titleToUse = title ?? asset.Description ?? string.Empty;
             image.MergeAttribute("alt", titleToUse);
             image.MergeAttribute("title", titleToUse);
             image.TagRenderMode = TagRenderMode.SelfClosing;
