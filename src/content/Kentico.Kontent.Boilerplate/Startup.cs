@@ -1,20 +1,18 @@
-﻿using Kentico.Kontent.Boilerplate;
+﻿using System;
 using Kentico.Kontent.Boilerplate.Filters;
-using Kentico.Kontent.Boilerplate.Helpers;
 using Kentico.Kontent.Boilerplate.Helpers.Extensions;
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Boilerplate.Resolvers;
-using Kentico.Kontent.Boilerplate.Services;
 using Kentico.Kontent.Delivery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.IO;
+using Kentico.Kontent.Boilerplate.Caching;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -35,27 +33,29 @@ namespace Kentico.Kontent.Boilerplate
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-
+            
             var deliveryOptions = new DeliveryOptions();
             Configuration.GetSection(nameof(DeliveryOptions)).Bind(deliveryOptions);
 
-            services.AddSingleton<IWebhookListener>(sp => new WebhookListener());
-            services.AddSingleton<IDependentTypesResolver>(sp => new DependentFormatResolver());
-            services.AddSingleton<ICacheManager>(sp => new ReactiveCacheManager(
-                sp.GetRequiredService<IOptions<ProjectOptions>>(),
-                sp.GetRequiredService<IMemoryCache>(),
-                sp.GetRequiredService<IDependentTypesResolver>(),
-                sp.GetRequiredService<IWebhookListener>()));
-            services.AddScoped<KenticoKontentSignatureActionFilter>();
+            services.AddScoped<SignatureActionFilter>();
 
-            services.AddSingleton<IDeliveryClient>(sp => new CachedDeliveryClient(
-                sp.GetRequiredService<IOptions<ProjectOptions>>(),
-                sp.GetRequiredService<ICacheManager>(),
-                DeliveryClientBuilder.WithOptions(_ => deliveryOptions)
+            IDeliveryClient BuildBaseClient(IServiceProvider sp) => DeliveryClientBuilder
+                .WithOptions(_ => deliveryOptions)
                 .WithTypeProvider(new CustomTypeProvider())
                 .WithContentLinkUrlResolver(new CustomContentLinkUrlResolver())
-                .Build())
-               );
+                .Build();
+
+            // Use cached client version based on the use case
+            //services.AddCachingClient(BuildBaseClient, options =>
+            //{
+            //    options.StaleContentTimeout = TimeSpan.FromSeconds(2);
+            //    options.DefaultTimeout = TimeSpan.FromSeconds(20);
+            //});
+            services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
+            {
+                options.StaleContentTimeout = TimeSpan.FromSeconds(2);
+                options.DefaultTimeout = TimeSpan.FromHours(24);
+            });
 
             HtmlHelperExtensions.ProjectOptions = services.BuildServiceProvider().GetService<IOptions<ProjectOptions>>();
 
