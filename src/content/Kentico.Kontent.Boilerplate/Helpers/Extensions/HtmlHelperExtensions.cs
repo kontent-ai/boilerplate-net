@@ -4,7 +4,6 @@ using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.ImageTransformation;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
 {
@@ -13,7 +12,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         /// <summary>
         /// Application settings.
         /// </summary>
-        public static IOptions<ProjectOptions> ProjectOptions { get; set; }
+        public static ProjectOptions ProjectOptions { get; set; }
 
         /// <summary>
         /// Generates an IMG tag for an image file.
@@ -47,7 +46,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
                 imageUrlBuilder = imageUrlBuilder.WithHeight(Convert.ToDouble(height));
             }
 
-            if (ProjectOptions.Value.ResponsiveImagesEnabled && !width.HasValue && !height.HasValue)
+            if (ProjectOptions.ResponsiveImagesEnabled && !width.HasValue && !height.HasValue)
             {
                 image.MergeAttribute("srcset", GenerateSrcsetValue(asset.Url));
 
@@ -71,7 +70,7 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         {
             var imageUrlBuilder = new ImageUrlBuilder(imageUrl);
 
-            return string.Join(",", ProjectOptions.Value.ResponsiveWidths.Select(w
+            return string.Join(",", ProjectOptions.ResponsiveWidths.Select(w
                 => $"{imageUrlBuilder.WithWidth(Convert.ToDouble(w)).Url} {w}w"));
         }
     }
