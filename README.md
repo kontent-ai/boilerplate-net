@@ -26,22 +26,23 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 ### Prerequisites
 
-The most seamless way to get all prerequisities is to install [Visual Studio 2017](https://www.visualstudio.com/vs/) with the ".NET Core cross-platform development" workload.
-
 **Required:**
-You must have the latest version ([.NET Core 2](https://www.microsoft.com/net/download/core) is minimal) of the dotnet tooling installed. It comes with Visual Studio 2017 (15.3 or higher), or you can download it with the [.NET Core SDK](https://www.microsoft.com/net/download/core). You can check your .NET Core version via `dotnet --version`.
+- [.NET Core 3](https://www.microsoft.com/net/download/core)
+You can check your .NET Core version via `dotnet --version`.
 
 Optional:
-* [Visual Studio 2017](https://www.visualstudio.com/vs/) for full experience
+The most seamless way to get all prerequisities is to install 
+
+* [Visual Studio 2019](https://www.visualstudio.com/vs/) with the ".NET Core cross-platform development" workload
 * or [Visual Studio Code](https://code.visualstudio.com/)
 
 ### Installation from NuGet
 
-1. Open Developer Command Prompt for VS 2017
+1. Open Developer Command Prompt
 2. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
 3. Wait for the command to finish (it may take a minute or two)
-4. Run `dotnet new kentico-kontent-mvc --name "MyWebsite"  [--output "<path>"]`. (**Note:** the `--output` parameter is optional.)
-5. Open in Visual Studio 2017/Code and Run
+4. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]`.
+5. Open in the IDE of your choice and Run
 
 ### Installation from source
 
@@ -68,6 +69,8 @@ We recommend choosing the **second option - as a standalone app**. In Visual Stu
 
 Kentico Kontent Project ID is stored inside `appsettings.json` file. This setting is automatically loaded [using Options and configuration objects](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration). You can also provide additional environment-specific configuration in `appsettings.production.json` and `appsettings.development.json` files.
 
+You can also set the Project ID during the template instantiation by applying the `-pid|project-id` parameter.
+
 For security reasons, Delivery Preview API key should be stored outside of the project tree. It's recommended to use [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) to store sensitive data.
 
 ### How to generate Strongly Typed Models for Content Types
@@ -75,6 +78,8 @@ For security reasons, Delivery Preview API key should be stored outside of the p
 With the new Delivery SDK, you can [take advantage](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)) of code-first approach. To do that you have to instruct the SDK to use strongly-typed models. These models can be generated automatically by [model generator utility](https://github.com/Kentico/kontent-generators-net). By convention, all Content Type Models are stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) which means that they can be extended in separate files. This should prevent losing custom code in case the models get regenerated. When generating models, be sure to set the `-n` command line parameter to `[project namespace].Models`.
 
 If you want to use [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html), make sure you generate also a custom type provider (add the `--withtypeprovider` parameter when running the generator utility).
+
+You can regenerate the models using the included PowerShell script that utilizes the model generator utility. The script is located at [`Tools/GenerateModels.ps1`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Tools/GenerateModels.ps1).
 
 ### How to resolve links
 Rich text elements in Kentico Kontent can contain links to other content items. It's up to a developer to decide how the links should be represented on a live site. Resolution logic can be adjusted in the [`CustomContentLinkUrlResolver`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Resolvers/CustomContentLinkUrlResolver.cs). See the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Resolving-Links-to-Content-Items) for detailed info.
@@ -106,6 +111,8 @@ Error handling is setup by default. Any server exception or error response withi
 The Boilerplate is configured to load all [URL Rewriting](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting) rules from [IISUrlRewrite.xml](/src/content/Kentico.Kontent.Boilerplate/IISUrlRewrite.xml) file. Add or modify existing rules to match your expected behavior.
 This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 
+You can adjust the domain name in the default rewriting rules during the template instantiation by applying the `-d|domain` parameter.
+
 ## Feedback & Contributing
 Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
 
@@ -117,6 +124,7 @@ We would like to express our thanks to the following people who contributed and 
 - [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
 - [Charith Sooriyaarachchi](https://github.com/charithsoori) - [99X Technology](http://www.99xtechnology.com/)
 - [Lex Li](https://github.com/lextm)
+- [Kashif Jamal Soofi](https://github.com/kashifsoofi)
 
 Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/kontent-boilerplate-net/issues) and send us a pull request!
 
