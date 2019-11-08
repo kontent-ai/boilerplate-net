@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json.schemastore.org/template",
   "author": "Kentico Software",
   "classifications": [ "Boilerplate" ],
   "name": "ASP.NET Core MVC with Kentico Kontent",

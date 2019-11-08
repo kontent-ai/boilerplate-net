@@ -2,7 +2,24 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>Kentico.Kontent.Boilerplate</UserSecretsId>
+    <Authors>Kentico Software</Authors>
+    <Product>Kentico Kontent</Product>
+    <Copyright>© 2016 Kentico Software. All rights reserved.</Copyright>
+    <Description>Kentico Kontent .NET MVC Boilerplate</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <PackageId>Kentico.Kontent.Boilerplate</PackageId>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageProjectUrl>https://github.com/Kentico/kontent-boilerplate-net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Kentico/kontent-boilerplate-net.git</RepositoryUrl>
+    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
+    <PackageTags>kentico;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
+    <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
   </PropertyGroup>
+  
   <ItemGroup>
     <Content Include="IISUrlRewrite.xml" />
   </ItemGroup>
@@ -15,4 +32,5 @@
   <ItemGroup>
     <Folder Include="Models\ContentTypes\" />
   </ItemGroup>
+
 </Project>

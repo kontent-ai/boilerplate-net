@@ -7,17 +7,15 @@
     <description>Kentico Kontent .NET MVC Boilerplate</description>
     <language>en-US</language>
     <projectUrl>https://github.com/Kentico/kontent-boilerplate-net</projectUrl>
-    <licenseUrl>https://github.com/Kentico/kontent-boilerplate-net/blob/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</iconUrl>
+    <icon>kk-logo-nuget.png</icon>
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>
-    <!-- dependencies>
-      <dependency id="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" version="1.0.0-beta1-*" />
-    </dependencies -->
   </metadata>
   <files>
-    <file src="**" exclude="content\Web-CSharp\**\*;**\bin\**\*;**\obj\**\*;**\*.user;**\*.lock.json" />
+    <file src="content/**" exclude="**/node_modules/**;**/bin/**;**/obj/**;**/.vs/**;**/.vscode/**;**/ClientApp/dist/**;**/wwwroot/dist/**;content/Directory.Build.*" />
+    <file src="../img/kk-logo-nuget.png" />
   </files>
 </package>
