@@ -4,12 +4,13 @@ using Kentico.Kontent.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using SimpleMvcSitemap;
+using Microsoft.Extensions.Logging;
 
 namespace Kentico.Kontent.Boilerplate.Controllers
 {
-    public class SiteMapController : BaseController
+    public class SiteMapController : BaseController<SiteMapController>
     {
-        public SiteMapController(IDeliveryClient deliveryClient): base(deliveryClient)
+        public SiteMapController(IDeliveryClient deliveryClient, ILogger<SiteMapController> logger): base(deliveryClient, logger)
         {
         }
 

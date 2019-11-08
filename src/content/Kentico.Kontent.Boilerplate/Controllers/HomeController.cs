@@ -3,12 +3,13 @@
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Delivery;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Kentico.Kontent.Boilerplate.Controllers
 {
-    public class HomeController : BaseController
+    public class HomeController : BaseController<HomeController>
     {
-        public HomeController(IDeliveryClient deliveryClient) : base(deliveryClient)
+        public HomeController(IDeliveryClient deliveryClient, ILogger<HomeController> logger) : base(deliveryClient, logger)
         {
             
         }
