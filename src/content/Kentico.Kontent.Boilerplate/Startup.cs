@@ -1,5 +1,4 @@
 ﻿using System;
-using Kentico.Kontent.Boilerplate.Filters;
 using Kentico.Kontent.Boilerplate.Helpers.Extensions;
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Boilerplate.Resolvers;
@@ -10,8 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Kentico.Kontent.Boilerplate.Caching;
+using Kentico.Kontent.Boilerplate.Middleware;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -32,11 +31,9 @@ namespace Kentico.Kontent.Boilerplate
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-            
+
             var deliveryOptions = new DeliveryOptions();
             Configuration.GetSection(nameof(DeliveryOptions)).Bind(deliveryOptions);
-
-            services.AddScoped<SignatureActionFilter>();
 
             IDeliveryClient BuildBaseClient(IServiceProvider sp) => DeliveryClientBuilder
                 .WithOptions(_ => deliveryOptions)
@@ -84,6 +81,11 @@ namespace Kentico.Kontent.Boilerplate
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseStaticFiles();
+
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), appBuilder =>
+            {
+                appBuilder.UseMiddleware<SignatureMiddleware>();
+            });
 
             app.UseEndpoints(endpoints =>
             {

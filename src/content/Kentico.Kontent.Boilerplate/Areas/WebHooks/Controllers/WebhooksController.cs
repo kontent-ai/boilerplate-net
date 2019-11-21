@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Kentico.Kontent.Boilerplate.Filters;
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Models;
 using Kentico.Kontent.Boilerplate.Caching;
 using Kentico.Kontent.Boilerplate.Caching.Webhooks;
@@ -20,7 +19,6 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(SignatureActionFilter))]
         public IActionResult Index([FromBody] WebhookModel model)
         {
             if (model != null)
