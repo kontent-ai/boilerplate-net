@@ -48,7 +48,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
                     dependencies.Add(CacheHelper.GetTypesDependencyKey());
                 }
 
-                if (model.Message.Type == "content_type")
+                if (model.Message.Type.Equals("content_type", StringComparison.Ordinal))
                 {
                     dependencies.Add(CacheHelper.GetTypesDependencyKey());
                 }

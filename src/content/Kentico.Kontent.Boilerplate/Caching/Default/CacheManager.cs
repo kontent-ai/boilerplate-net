@@ -50,13 +50,13 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
                 var valueCacheOptions = new MemoryCacheEntryOptions();
                 if (value is AbstractResponse ar && ar.HasStaleContent)
                 {
-                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.StaleContentTimeout);
+                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.StaleContentExpiration);
                 }
                 else
                 {
-                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.DefaultTimeout);
+                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.DefaultExpiration);
                 }
-                
+
                 return _memoryCache.Set(key, value, valueCacheOptions);
             }
             finally

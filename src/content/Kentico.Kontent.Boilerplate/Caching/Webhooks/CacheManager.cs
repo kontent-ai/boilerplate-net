@@ -53,11 +53,11 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
                 var valueCacheOptions = new MemoryCacheEntryOptions();
                 if (value is AbstractResponse ar && ar.HasStaleContent)
                 {
-                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.StaleContentTimeout);
+                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.StaleContentExpiration);
                 }
                 else
                 {
-                    valueCacheOptions.SetSlidingExpiration(_cacheOptions.DefaultTimeout);
+                    valueCacheOptions.SetSlidingExpiration(_cacheOptions.DefaultExpiration);
                 }
 
                 var dependencies = dependenciesFactory?.Invoke(value) ?? new List<string>();

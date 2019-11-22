@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Kentico.Kontent.Boilerplate.Caching;
 
 namespace Kentico.Kontent.Boilerplate
@@ -32,7 +31,7 @@ namespace Kentico.Kontent.Boilerplate
 
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
-            
+
             var deliveryOptions = new DeliveryOptions();
             Configuration.GetSection(nameof(DeliveryOptions)).Bind(deliveryOptions);
 
@@ -45,16 +44,16 @@ namespace Kentico.Kontent.Boilerplate
                 .Build();
 
             // Use cached client version based on the use case
-            //services.AddCachingClient(BuildBaseClient, options =>
-            //{
-            //    options.StaleContentTimeout = TimeSpan.FromSeconds(2);
-            //    options.DefaultTimeout = TimeSpan.FromSeconds(20);
-            //});
-            services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
+            services.AddCachingClient(BuildBaseClient, options =>
             {
-                options.StaleContentTimeout = TimeSpan.FromSeconds(2);
-                options.DefaultTimeout = TimeSpan.FromHours(24);
+                options.StaleContentExpiration = TimeSpan.FromSeconds(2);
+                options.DefaultExpiration = TimeSpan.FromSeconds(20);
             });
+            //services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
+            //{
+            //    options.StaleContentExpiration = TimeSpan.FromSeconds(2);
+            //    options.DefaultExpiration = TimeSpan.FromHours(24);
+            //});
 
             HtmlHelperExtensions.ProjectOptions = Configuration.Get<ProjectOptions>();
 

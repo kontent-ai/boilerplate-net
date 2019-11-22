@@ -80,7 +80,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching
         internal static (string codename, object item) CreateComponent()
         {
             var id = Guid.NewGuid().ToString();
-            id = $"{id.Substring(0, 14)}0{id.Substring(15)}";
+            id = $"{id.Substring(0, 14)}01{id.Substring(16)}";
             var codename = $"n{id}";
             return (
                 codename,
