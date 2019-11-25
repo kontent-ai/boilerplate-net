@@ -45,7 +45,7 @@ namespace Kentico.Kontent.Boilerplate
             services.AddCachingClient(BuildBaseClient, options =>
             {
                 options.StaleContentExpiration = TimeSpan.FromSeconds(2);
-                options.DefaultExpiration = TimeSpan.FromSeconds(20);
+                options.DefaultExpiration = TimeSpan.FromMinutes(10);
             });
             //services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
             //{
