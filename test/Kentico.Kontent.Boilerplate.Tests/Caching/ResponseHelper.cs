@@ -79,6 +79,8 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching
 
         internal static (string codename, object item) CreateComponent()
         {
+            // Components have substring 01 in its id starting at position 14.
+            // xxxxxxxx-xxxx-01xx-xxxx-xxxxxxxxxxxx
             var id = Guid.NewGuid().ToString();
             id = $"{id.Substring(0, 14)}01{id.Substring(16)}";
             var codename = $"n{id}";
