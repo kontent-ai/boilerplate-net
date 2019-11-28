@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Kentico.Kontent.Boilerplate.Caching
 {
-    public class CacheHelper
+    public static class CacheHelper
     {
         #region Constants
 
@@ -174,7 +174,7 @@ namespace Kentico.Kontent.Boilerplate.Caching
 
             return dependencies.Count > MAX_DEPENDENCY_ITEMS
                 ? new[] { GetItemsDependencyKey() }
-                : dependencies.Distinct();
+                : dependencies.AsEnumerable();
 
             bool TryExtractCodename(JObject item, out string codename)
             {
@@ -215,7 +215,7 @@ namespace Kentico.Kontent.Boilerplate.Caching
 
             return dependencies.Count > MAX_DEPENDENCY_ITEMS
                 ? new[] { GetItemsDependencyKey() }
-                : dependencies.Distinct();
+                : dependencies.AsEnumerable();
         }
 
         public static IEnumerable<string> GetItemsJsonDependencies(JObject response)
@@ -230,16 +230,6 @@ namespace Kentico.Kontent.Boilerplate.Caching
             return IsItemListingResponse(response)
                 ? new[] { GetItemsDependencyKey() }
                 : Enumerable.Empty<string>();
-        }
-
-        public static IEnumerable<string> GetItemsFeedDependencies(DeliveryItemsFeedResponse _)
-        {
-            return new[] { GetItemsDependencyKey() };
-        }
-
-        public static IEnumerable<string> GetItemsFeedDependencies<T>(DeliveryItemsFeedResponse<T> _)
-        {
-            return new[] { GetItemsDependencyKey() };
         }
 
         public static IEnumerable<string> GetTypeJsonDependencies(JObject response)
@@ -334,10 +324,10 @@ namespace Kentico.Kontent.Boilerplate.Caching
 
         private static bool IsComponent(JProperty property)
         {
-            // Components have 0 on index 14 in its id.
-            // xxxxxxxx-xxxx-0xxx-xxxx-xxxxxxxxxxxx
+            // Components have substring 01 in its id starting at position 14.
+            // xxxxxxxx-xxxx-01xx-xxxx-xxxxxxxxxxxx
             var id = property?.Value?["system"]?["id"]?.Value<string>();
-            return Guid.TryParse(id, out _) && id?[14] == '0';
+            return Guid.TryParse(id, out _) && id.Substring(14, 2).Equals("01", StringComparison.Ordinal);
         }
     }
 }

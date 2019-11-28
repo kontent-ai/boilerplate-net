@@ -151,10 +151,10 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Webhooks
         {
             const string key = "key";
             var value = await GetAbstractResponseInstance(false);
-            _cacheOptions.DefaultTimeout = TimeSpan.FromMilliseconds(500);
+            _cacheOptions.DefaultExpiration = TimeSpan.FromMilliseconds(500);
 
             await _cacheManager.GetOrAddAsync(key, () => Task.FromResult(value), null);
-            await Task.Delay(_cacheOptions.DefaultTimeout);
+            await Task.Delay(_cacheOptions.DefaultExpiration);
 
             Assert.False(_memoryCache.TryGetValue(key, out _));
         }
@@ -164,10 +164,10 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Webhooks
         {
             const string key = "key";
             var value = await GetAbstractResponseInstance(true);
-            _cacheOptions.StaleContentTimeout = TimeSpan.FromMilliseconds(500);
+            _cacheOptions.StaleContentExpiration = TimeSpan.FromMilliseconds(500);
 
             await _cacheManager.GetOrAddAsync(key, () => Task.FromResult(value), null);
-            await Task.Delay(_cacheOptions.StaleContentTimeout);
+            await Task.Delay(_cacheOptions.StaleContentExpiration);
 
             Assert.False(_memoryCache.TryGetValue(key, out _));
         }

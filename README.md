@@ -86,13 +86,15 @@ Rich text elements in Kentico Kontent can contain links to other content items. 
 
 ### How to set up webhook-enabled caching
 
-All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Services/CachedDeliveryClient.cs) for 24 hours in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache) singleton object. You can either change the time by overriding the value of the `CacheTimeoutSeconds` environment variable (e.g. in appsettings.json). Or, if you want your app to immediately clear cache entries of changed content, you can create a webhook in Kentico Kontent for that.
+All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Default/CachingDeliveryClient.cs) for 10 minutes in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.memory.memorycache) singleton object. When content is stale (newer version exists) it is cached for 2 seconds. You can change the expiration times in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L47).
 
-To create the web hook, go to Project settings --> Webhooks --> Create new Webhook. Give it a name (like "Cache invalidation webhook") and the publicly routable URL of your app with `/WebHooks/KenticoKontent` appended (like "https://myapp.azurewebsites.net/WebHooks/KenticoKontent"). Then, copy the API secret and paste it as the `KenticoKontentWebhookSecret` environment variable (secret) into your app's settings.
+If displaying outdated content for a limited time is not an option, you need to use another caching strategy and invalidate cached content when a webhook notification about content change is received. To enable this caching strategy just switch to another [caching client](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Webhooks/CachingDeliveryClient.cs) by using `IServiceCollection.AddWebhookInvalidatedCachingClient` extension in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L53).
 
-![New webhook configuration](https://i.imgur.com/ootVcPZ.png)
+Also, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-apps/integrate/using-webhooks-for-automatic-updates#a-creating-a-webhook). When entering a webhook URL, append a `/Webhooks/Webhooks` path to a publicly available URL address of the application, e.g. `https://myapp.azurewebsites.net/Webhooks/Webhooks`. Finally, copy the API secret and put it into the app settings (usually the appsettings.json) as the `KenticoKontentWebhookSecret` environment variable.
 
-**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. 
+![New webhook configuration](https://i.imgur.com/TjJ7n5H.png)
+
+**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. Simply start your application locally and run command `ngrok http [port] localhost:[port]` and set the webhook URL to the displayed HTTPS address.
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Kontent applications is not speed but lowering the amount of requests needed (See [pricing](https://kontent.ai/pricing) for details).
 

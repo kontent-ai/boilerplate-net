@@ -42,16 +42,16 @@ namespace Kentico.Kontent.Boilerplate
                 .Build();
 
             // Use cached client version based on the use case
-            //services.AddCachingClient(BuildBaseClient, options =>
-            //{
-            //    options.StaleContentTimeout = TimeSpan.FromSeconds(2);
-            //    options.DefaultTimeout = TimeSpan.FromSeconds(20);
-            //});
-            services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
+            services.AddCachingClient(BuildBaseClient, options =>
             {
-                options.StaleContentTimeout = TimeSpan.FromSeconds(2);
-                options.DefaultTimeout = TimeSpan.FromHours(24);
+                options.StaleContentExpiration = TimeSpan.FromSeconds(2);
+                options.DefaultExpiration = TimeSpan.FromMinutes(10);
             });
+            //services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
+            //{
+            //    options.StaleContentExpiration = TimeSpan.FromSeconds(2);
+            //    options.DefaultExpiration = TimeSpan.FromHours(24);
+            //});
 
             HtmlHelperExtensions.ProjectOptions = Configuration.Get<ProjectOptions>();
 
