@@ -27,7 +27,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 ### Prerequisites
 
 **Required:**
-- [.NET Core 3](https://www.microsoft.com/net/download/core)
+- [.NET Core 3.1](https://www.microsoft.com/net/download/core)
 You can check your .NET Core version via `dotnet --version`.
 
 Optional:
