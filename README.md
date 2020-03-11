@@ -94,7 +94,7 @@ Also, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-a
 
 ![New webhook configuration](https://i.imgur.com/TjJ7n5H.png)
 
-**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. Simply start your application locally and run command `ngrok http [port] localhost:[port]` and set the webhook URL to the displayed HTTPS address.
+**Note**: During local development, you can use the [ngrok](https://ngrok.com/) service to route to your workstation. Simply start your application locally and run command `.\ngrok.exe http [port] -host-header="localhost:[port]"` (e.g. `.\ngrok.exe http 59652 -host-header="localhost:59652"`) and set the webhook URL to the displayed HTTPS address.
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Kontent applications is not speed but lowering the amount of requests needed (See [pricing](https://kontent.ai/pricing) for details).
 
