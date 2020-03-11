@@ -8,9 +8,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
+namespace Kentico.Kontent.Boilerplate.Caching
 {
-    public class CacheManager : ICacheManager, IDisposable
+    public class InvalidatingCacheManager : ICacheManager, IDisposable
     {
         private readonly IMemoryCache _memoryCache;
         private readonly CacheOptions _cacheOptions;
@@ -18,7 +18,7 @@ namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
         private readonly ConcurrentDictionary<string, object> _dependencyLocks = new ConcurrentDictionary<string, object>();
 
 
-        public CacheManager(IMemoryCache memoryCache, IOptions<CacheOptions> cacheOptions)
+        public InvalidatingCacheManager(IMemoryCache memoryCache, IOptions<CacheOptions> cacheOptions)
         {
             _memoryCache = memoryCache;
             _cacheOptions = cacheOptions.Value ?? new CacheOptions();

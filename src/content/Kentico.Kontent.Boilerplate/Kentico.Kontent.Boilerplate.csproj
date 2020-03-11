@@ -30,6 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Caching\Default\" />
+    <Folder Include="Caching\Webhooks\" />
     <Folder Include="Models\ContentTypes\" />
   </ItemGroup>
 

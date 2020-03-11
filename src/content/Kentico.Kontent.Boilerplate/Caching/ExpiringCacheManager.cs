@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Kentico.Kontent.Boilerplate.Caching.Default
+namespace Kentico.Kontent.Boilerplate.Caching
 {
-    public class CacheManager : ICacheManager, IDisposable
+    public class ExpiringCacheManager : ICacheManager, IDisposable
     {
         private readonly IMemoryCache _memoryCache;
         private readonly CacheOptions _cacheOptions;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _createLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
 
-        public CacheManager(IMemoryCache memoryCache, IOptions<CacheOptions> cacheOptions)
+        public ExpiringCacheManager(IMemoryCache memoryCache, IOptions<CacheOptions> cacheOptions)
         {
             _memoryCache = memoryCache;
             _cacheOptions = cacheOptions.Value ?? new CacheOptions();
         }
 
-        public async Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> valueFactory, Func<T, bool> shouldCache = null)
+        public async Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> valueFactory, Func<T, IEnumerable<string>> dependenciesFactory = null, Func<T, bool> shouldCache = null)
         {
             if (TryGet(key, out T entry))
             {
@@ -46,16 +47,10 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
                     return value;
                 }
 
-                // Set different timeout for stale content
+                // Set different timeout for stale content                
+                TimeSpan expiration = value is AbstractResponse ar && ar.HasStaleContent ? _cacheOptions.StaleContentExpiration : _cacheOptions.DefaultExpiration;
                 var valueCacheOptions = new MemoryCacheEntryOptions();
-                if (value is AbstractResponse ar && ar.HasStaleContent)
-                {
-                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.StaleContentExpiration);
-                }
-                else
-                {
-                    valueCacheOptions.SetAbsoluteExpiration(_cacheOptions.DefaultExpiration);
-                }
+                valueCacheOptions.SetAbsoluteExpiration(expiration);
 
                 return _memoryCache.Set(key, value, valueCacheOptions);
             }
@@ -63,8 +58,6 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
             {
                 entryLock.Release();
             }
-
-
         }
 
         public bool TryGet<T>(string key, out T value)
@@ -80,6 +73,11 @@ namespace Kentico.Kontent.Boilerplate.Caching.Default
         public void Dispose()
         {
             _memoryCache?.Dispose();
+        }
+
+        public void InvalidateDependency(string key)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Newtonsoft.Json.Linq;
 
-namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
+namespace Kentico.Kontent.Boilerplate.Caching
 {
     public class CachingDeliveryClient : IDeliveryClient
     {

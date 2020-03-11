@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kentico.Kontent.Boilerplate.Caching;
-using Kentico.Kontent.Boilerplate.Caching.Default;
 using Kentico.Kontent.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -20,7 +19,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Default
     public class CacheManagerTests
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly CacheManager _cacheManager;
+        private readonly ExpiringCacheManager _cacheManager;
         private readonly CacheOptions _cacheOptions;
 
         public CacheManagerTests()
@@ -37,7 +36,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Default
             _memoryCache.CreateEntry(Arg.Any<object>()).Returns(c => memoryCache.CreateEntry(c[0]));
 
             _cacheOptions = new CacheOptions();
-            _cacheManager = new CacheManager(_memoryCache, Options.Create(_cacheOptions));
+            _cacheManager = new ExpiringCacheManager(_memoryCache, Options.Create(_cacheOptions));
         }
 
         [Fact]
@@ -57,7 +56,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Default
             const string key = "key";
             const string value = "newValue";
 
-            var result = await _cacheManager.GetOrAddAsync(key, () => Task.FromResult(value), _ => false);
+            var result = await _cacheManager.GetOrAddAsync(key, () => Task.FromResult(value), null, _ => false);
 
             result.Should().Be(value);
             _memoryCache.TryGetValue(key, out _).Should().BeFalse();

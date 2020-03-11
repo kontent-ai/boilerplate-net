@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using Kentico.Kontent.Boilerplate.Caching;
-using Kentico.Kontent.Boilerplate.Caching.Default;
 using Kentico.Kontent.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -16,7 +15,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Default
         public Scenario(IMemoryCache memoryCache, HttpClient httpClient, DeliveryOptions deliveryOptions, Dictionary<string, int> requestCounter)
         {
             _requestCounter = requestCounter;
-            var cacheManager = new CacheManager(memoryCache, Options.Create(new CacheOptions()));
+            var cacheManager = new ExpiringCacheManager(memoryCache, Options.Create(new CacheOptions()));
             var baseClient = DeliveryClientBuilder.WithOptions(_ => deliveryOptions).WithHttpClient(httpClient).Build();
             CachingClient = new CachingDeliveryClient(cacheManager, baseClient);
         }

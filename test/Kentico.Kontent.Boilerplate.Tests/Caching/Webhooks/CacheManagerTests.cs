@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kentico.Kontent.Boilerplate.Caching;
-using Kentico.Kontent.Boilerplate.Caching.Webhooks;
 using Kentico.Kontent.Delivery;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -20,7 +19,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Webhooks
     public class CacheManagerTests
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly CacheManager _cacheManager;
+        private readonly InvalidatingCacheManager _cacheManager;
         private readonly CacheOptions _cacheOptions;
 
         public CacheManagerTests()
@@ -37,7 +36,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Caching.Webhooks
             _memoryCache.CreateEntry(Arg.Any<object>()).Returns(c => memoryCache.CreateEntry(c[0]));
 
             _cacheOptions = new CacheOptions();
-            _cacheManager = new CacheManager(_memoryCache, Options.Create(_cacheOptions));
+            _cacheManager = new InvalidatingCacheManager(_memoryCache, Options.Create(_cacheOptions));
         }
 
         [Fact]

@@ -2,7 +2,6 @@
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers;
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Models;
 using Kentico.Kontent.Boilerplate.Caching;
-using Kentico.Kontent.Boilerplate.Caching.Webhooks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -52,7 +51,7 @@ namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
                 Message = new Message { Type = artefactType, Operation = operation }
             };
 
-            var controller = new WebhooksController(new CacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new CacheOptions())));
+            var controller = new WebhooksController(new InvalidatingCacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new CacheOptions())));
             var result = (StatusCodeResult)await Task.Run(() => controller.Index(model));
 
             Assert.InRange(result.StatusCode, 200, 299);

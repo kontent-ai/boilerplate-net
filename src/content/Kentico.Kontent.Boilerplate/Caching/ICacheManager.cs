@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Kentico.Kontent.Boilerplate.Caching.Webhooks
+namespace Kentico.Kontent.Boilerplate.Caching
 {
     public interface ICacheManager
     {
