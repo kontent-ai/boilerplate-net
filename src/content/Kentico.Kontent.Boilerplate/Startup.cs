@@ -2,15 +2,15 @@
 using Kentico.Kontent.Boilerplate.Helpers.Extensions;
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Boilerplate.Resolvers;
-using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Caching;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Kentico.Kontent.Boilerplate.Caching;
 using Kentico.Kontent.Boilerplate.Middleware;
+using Kentico.Kontent.Delivery.Caching.Extensions;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -32,26 +32,16 @@ namespace Kentico.Kontent.Boilerplate
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
 
-            var deliveryOptions = new DeliveryOptions();
-            Configuration.GetSection(nameof(DeliveryOptions)).Bind(deliveryOptions);
+            services.AddSingleton<CustomTypeProvider>();
+            services.AddSingleton<CustomContentLinkUrlResolver>();
+            services.AddDeliveryClient(Configuration);
 
-            IDeliveryClient BuildBaseClient(IServiceProvider sp) => DeliveryClientBuilder
-                .WithOptions(_ => deliveryOptions)
-                .WithTypeProvider(new CustomTypeProvider())
-                .WithContentLinkUrlResolver(new CustomContentLinkUrlResolver())
-                .Build();
-
-            // Use cached client version based on the use case
-            services.AddCachingClient(BuildBaseClient, options =>
+            // Use cached client decorator
+            services.AddDeliveryClientCache(new DeliveryCacheOptions()
             {
-                options.StaleContentExpiration = TimeSpan.FromSeconds(2);
-                options.DefaultExpiration = TimeSpan.FromMinutes(10);
+                StaleContentExpiration = TimeSpan.FromSeconds(2),
+                DefaultExpiration = TimeSpan.FromMinutes(24)
             });
-            //services.AddWebhookInvalidatedCachingClient(BuildBaseClient, options =>
-            //{
-            //    options.StaleContentExpiration = TimeSpan.FromSeconds(2);
-            //    options.DefaultExpiration = TimeSpan.FromHours(24);
-            //});
 
             HtmlHelperExtensions.ProjectOptions = Configuration.Get<ProjectOptions>();
 
@@ -82,6 +72,7 @@ namespace Kentico.Kontent.Boilerplate
             app.UseRouting();
             app.UseStaticFiles();
 
+            // Register webhook-based cache invalidation controller
             app.UseWhen(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), appBuilder =>
             {
                 appBuilder.UseMiddleware<SignatureMiddleware>();

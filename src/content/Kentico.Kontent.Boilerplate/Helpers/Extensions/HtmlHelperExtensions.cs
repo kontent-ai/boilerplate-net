@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.ImageTransformation;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,6 +26,11 @@ namespace Kentico.Kontent.Boilerplate.Helpers.Extensions
         /// <param name="sizes">Optional sizes img attribute</param>
         public static Microsoft.AspNetCore.Html.IHtmlContent AssetImage(this IHtmlHelper htmlHelper, Asset asset, string title = null, string cssClass = "", int? width = null, int? height = null, ResponsiveImageSizes sizes = null)
         {
+            if (htmlHelper is null)
+            {
+                throw new ArgumentNullException(nameof(htmlHelper));
+            }
+
             if (asset == null)
             {
                 return HtmlString.Empty;

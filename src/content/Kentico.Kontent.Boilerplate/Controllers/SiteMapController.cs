@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using SimpleMvcSitemap;
 using Microsoft.Extensions.Logging;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.Boilerplate.Controllers
 {

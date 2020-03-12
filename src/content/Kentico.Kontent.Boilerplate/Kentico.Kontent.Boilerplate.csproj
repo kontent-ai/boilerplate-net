@@ -25,13 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kentico.Kontent.Delivery" Version="12.3.0" />
+    <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1-beta8" />
+    <PackageReference Include="Kentico.Kontent.Delivery.Caching" Version="13.0.1-beta8" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Caching\Default\" />
-    <Folder Include="Caching\Webhooks\" />
     <Folder Include="Models\ContentTypes\" />
   </ItemGroup>
 
