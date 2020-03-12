@@ -19,7 +19,7 @@
     <PackageTags>kentico;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
     <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Content Include="IISUrlRewrite.xml" />
   </ItemGroup>
@@ -31,7 +31,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\ContentTypes\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
+  <Target Name="GenerateModels" BeforeTargets="BeforeBuild;BeforeRebuild">
+    <PropertyGroup>
+      <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+      <ScriptLocation Condition=" '$(ScriptLocation)'=='' ">$(ProjectDir)\Tools\GenerateModels.ps1</ScriptLocation>
+    </PropertyGroup>
+    <Exec Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -command &quot;&amp; { &quot;$(ScriptLocation)&quot; } &quot;">
+    </Exec>
+    <ItemGroup>
+      <Compile Remove="Models\**\*.cs" />
+      <Compile Include="Models\**\*.cs"  />
+      <FileWrites Remove="Models\**\*.cs" />
+      <FileWrites Update="Models\**\*.cs" />
+    </ItemGroup>
+  </Target>
 </Project>
