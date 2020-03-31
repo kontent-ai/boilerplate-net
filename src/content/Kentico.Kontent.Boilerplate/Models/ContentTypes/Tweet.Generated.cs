@@ -13,13 +13,13 @@ namespace Kentico.Kontent.Boilerplate.Models
     public partial class Tweet
     {
         public const string Codename = "tweet";
-        public const string TweetLinkCodename = "tweet_link";
-        public const string ThemeCodename = "theme";
         public const string DisplayOptionsCodename = "display_options";
+        public const string ThemeCodename = "theme";
+        public const string TweetLinkCodename = "tweet_link";
 
-        public string TweetLink { get; set; }
-        public IEnumerable<MultipleChoiceOption> Theme { get; set; }
         public IEnumerable<MultipleChoiceOption> DisplayOptions { get; set; }
         public ContentItemSystemAttributes System { get; set; }
+        public IEnumerable<MultipleChoiceOption> Theme { get; set; }
+        public string TweetLink { get; set; }
     }
 }

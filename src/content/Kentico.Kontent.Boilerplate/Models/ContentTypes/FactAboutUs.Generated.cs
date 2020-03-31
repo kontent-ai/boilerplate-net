@@ -14,14 +14,14 @@ namespace Kentico.Kontent.Boilerplate.Models
     {
         public const string Codename = "fact_about_us";
         public const string DescriptionCodename = "description";
-        public const string TitleCodename = "title";
-        public const string SitemapCodename = "sitemap";
         public const string ImageCodename = "image";
+        public const string SitemapCodename = "sitemap";
+        public const string TitleCodename = "title";
 
         public string Description { get; set; }
-        public string Title { get; set; }
-        public IEnumerable<TaxonomyTerm> Sitemap { get; set; }
         public IEnumerable<Asset> Image { get; set; }
+        public IEnumerable<TaxonomyTerm> Sitemap { get; set; }
         public ContentItemSystemAttributes System { get; set; }
+        public string Title { get; set; }
     }
 }
