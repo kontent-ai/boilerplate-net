@@ -32,7 +32,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 1. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
 2. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]` to init a website from the template
-   a. You can change the project ID later at any time in `appsettings.json`
+   - You can change the project ID later at any time in `appsettings.json`
 3. Open in the IDE of your choice and Run
 
 _Note: You can [install the tempalte from the sourcecode](../../wiki/Installation-from-source) too._
