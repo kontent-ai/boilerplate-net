@@ -7,7 +7,7 @@
  |:-------------:| :-------------:|  :-------------:|  
 | [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate) | [`netcoreapp3.1`](https://www.microsoft.com/net/download/core) | 
 
-This boilerplate includes a set of features and best practices to kick off your website development with Kentico Kontent smoothly.
+This boilerplate lets you easily scaffold a web project for development with Kentico Kontent and give you a head start in a successful web project. It includes a set of pre-configured features and demonstrates best practices in order to kick off your website development with Kontent smoothly.
 
 ## What's included
 [<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
