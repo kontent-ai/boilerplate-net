@@ -32,21 +32,12 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 1. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
 2. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]` to init a website from the template
+   a. You can change the project ID later at any time in `appsettings.json`
 3. Open in the IDE of your choice and Run
 
 _Note: You can [install the tempalte from the sourcecode](../../wiki/Installation-from-source) too._
 
-
 ## How Tos
-
-
-### How to change Kentico Kontent Project ID and Delivery Preview API key
-
-Kentico Kontent Project ID is stored inside `appsettings.json` file. This setting is automatically loaded [using Options and configuration objects](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration). You can also provide additional environment-specific configuration in `appsettings.production.json` and `appsettings.development.json` files.
-
-You can also set the Project ID during the template instantiation by applying the `-pid|project-id` parameter.
-
-For security reasons, Delivery Preview API key should be stored outside of the project tree. It's recommended to use [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) to store sensitive data.
 
 ### How to generate Strongly Typed Models for Content Types
 
