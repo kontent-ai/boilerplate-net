@@ -1,8 +1,13 @@
 # Kentico Kontent Boilerplate for ASP.NET Core MVC
 [<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
 [![Build status](https://ci.appveyor.com/api/projects/status/1s02tbk1tml2wdmj/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-boilerplate-net/branch/master)
-[![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/)
+
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
+
+
+ | Package | Downloads | Compatibility | 
+ |:-------------:| :-------------:|  :-------------:|  
+| [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate) | [`netcoreapp3.1`](https://www.microsoft.com/net/download/core) | 
 
 This boilerplate includes a set of features and best practices to kick off your website development with Kentico Kontent smoothly.
 
@@ -22,48 +27,20 @@ This boilerplate includes a set of features and best practices to kick off your 
 - Logging
 - Unit tests ([xUnit](https://xunit.github.io))
 
-## Quick start
+## Getting started
 
-### Prerequisites
-
-**Required:**
-- [.NET Core 3.1](https://www.microsoft.com/net/download/core)
-You can check your .NET Core version via `dotnet --version`.
-
-Optional:
-The most seamless way to get all prerequisities is to install 
-
-* [Visual Studio 2019](https://www.visualstudio.com/vs/) with the ".NET Core cross-platform development" workload
-* or [Visual Studio Code](https://code.visualstudio.com/)
 
 ### Installation from NuGet
 
-1. Open Developer Command Prompt
-2. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
-3. Wait for the command to finish (it may take a minute or two)
-4. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]`.
-5. Open in the IDE of your choice and Run
+1. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
+2. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]` to init a website from the template
+3. Open in the IDE of your choice and Run
 
-### Installation from source
+_Note: You can [install the tempalte from the sourcecode](../../wiki/Installation-from-source) too._
 
-1. `git clone https://github.com/Kentico/kontent-boilerplate-net.git`
-2. `dotnet build`
-3. `dotnet new -i artifacts/*.nupkg`
 
 ## How Tos
 
-### How to debug the app
-
-In Windows, there are basically two ways to run the app:
-
-* via IIS
-* as a standalone command-line app
-
-You can read more about the differences on [Rick Strahl's blog](https://weblog.west-wind.com/posts/2016/Jun/06/Publishing-and-Running-ASPNET-Core-Applications-with-IIS).
-
-We recommend choosing the **second option - as a standalone app**. In Visual Studio, you can switch to it in the toolbar:
-
-![Debugging mode](https://i.imgur.com/DA6QW5L.png)
 
 ### How to change Kentico Kontent Project ID and Delivery Preview API key
 
@@ -115,20 +92,8 @@ This is a good way to set up 301 Permanent redirects or www<->non-www redirects.
 
 You can adjust the domain name in the default rewriting rules during the template instantiation by applying the `-d|domain` parameter.
 
-## Feedback & Contributing
-Any feedback is much appreciated. Check out the [contributing](https://github.com/Kentico/Home/blob/master/CONTRIBUTING.md) to see the best places to file issues, start discussions and begin contributing.
+## Get involved
 
-### Wall of Fame
-We would like to express our thanks to the following people who contributed and made the project possible:
-
-- [Emmanuel Tissera](https://github.com/emmanueltissera) - [GetStarted](https://github.com/getstarted) 
-- [Andy Thompson](https://github.com/andythompy)- [GetStarted](https://github.com/getstarted)
-- [Sayed Ibrahim Hashimi](https://github.com/sayedihashimi) - [Microsoft](https://github.com/Microsoft)
-- [Charith Sooriyaarachchi](https://github.com/charithsoori) - [99X Technology](http://www.99xtechnology.com/)
-- [Lex Li](https://github.com/lextm)
-- [Kashif Jamal Soofi](https://github.com/kashifsoofi)
-
-Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/kontent-boilerplate-net/issues) and send us a pull request!
-
+Check out the [contributing](CONTRIBUTING.md) page to see the best places to file issues, start discussions, and begin contributing.
 
 ![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/kontent-boilerplate-net?pixel)
