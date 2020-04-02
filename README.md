@@ -1,5 +1,5 @@
 # Kentico Kontent Boilerplate for ASP.NET Core MVC
-[<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/1s02tbk1tml2wdmj/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-boilerplate-net/branch/master)
 
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
@@ -12,7 +12,7 @@
 This boilerplate includes a set of features and best practices to kick off your website development with Kentico Kontent smoothly.
 
 ## What's included
-
+[<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
   - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)  
   - [Sample link resolver](#how-to-resolve-links)
