@@ -12,13 +12,13 @@ This boilerplate includes a set of features and best practices to kick off your 
 ## What's included
 [<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
-  - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)  
   - [Sample link resolver](#how-to-resolve-links)
+- [Pre-build event for model generating](#how-to-generate-strongly-typed-models-for-content-types)  
 - [Webhook-enabed caching](#how-to-set-up-webhook-enabled-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [Adjustable images](#how-to-resize-images-based-on-window-width)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
-- URL [Rewriting examples](#how-to-adjust-url-rewriting)
+- [URL Rewriting examples](#how-to-adjust-url-rewriting)
   - 301 URL Rewriting
   - www -> non-www redirection
 - Configs for Dev and Production environment
@@ -54,11 +54,9 @@ Rich text elements in Kentico Kontent can contain links to other content items. 
 
 ### How to set up webhook-enabled caching
 
-All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Default/CachingDeliveryClient.cs) for 10 minutes in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.memory.memorycache) singleton object. When content is stale (newer version exists) it is cached for 2 seconds. You can change the expiration times in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L47).
+All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Caching-responses) for 24 minutes. When content is stale (a newer version exists) it is cached for only 2 seconds. You can change the expiration times via the `DeliveryCacheOptions` in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L40-L44).
 
-If displaying outdated content for a limited time is not an option, you need to use another caching strategy and invalidate cached content when a webhook notification about content change is received. To enable this caching strategy just switch to another [caching client](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Webhooks/CachingDeliveryClient.cs) by using `IServiceCollection.AddWebhookInvalidatedCachingClient` extension in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L53).
-
-Also, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-apps/integrate/using-webhooks-for-automatic-updates#a-creating-a-webhook). When entering a webhook URL, append a `/Webhooks/Webhooks` path to a publicly available URL address of the application, e.g. `https://myapp.azurewebsites.net/Webhooks/Webhooks`. Finally, copy the API secret and put it into the app settings (usually the appsettings.json) as the `KenticoKontentWebhookSecret` environment variable.
+If you want to invalidate cache items as soon as they're updated in Kontent, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-apps/integrate/using-webhooks-for-automatic-updates#a-creating-a-webhook) and point it to the `/Webhooks/Webhooks` relative path of your application. The URL of the app needs to be publicly accessible, e.g. `https://myboilerplate.azurewebsites.net/Webhooks/Webhooks`. Finally, copy the API secret and store it as `KenticoKontentWebhookSecret` in your `Configuration` object, typically in the [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) or [Azure Key Vault](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration)
 
 ![New webhook configuration](https://i.imgur.com/TjJ7n5H.png)
 
