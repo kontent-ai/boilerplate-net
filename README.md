@@ -14,6 +14,7 @@ This boilerplate includes a set of features and best practices to kick off your 
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
   - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)  
   - [Sample link resolver](#how-to-resolve-links)
+- [Webhook-enabed caching](#how-to-set-up-webhook-enabled-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [Adjustable images](#how-to-resize-images-based-on-window-width)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
@@ -40,12 +41,13 @@ _Note: You can [install the tempalte from the sourcecode](../../wiki/Installatio
 ## How Tos
 
 ### How to generate Strongly Typed Models for Content Types
+By convention, all [strongly-typed Content Type models](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models) are generated and stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) to enable further customization without losing the generated code.
 
-With the new Delivery SDK, you can [take advantage](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)) of code-first approach. To do that you have to instruct the SDK to use strongly-typed models. These models can be generated automatically by [model generator utility](https://github.com/Kentico/kontent-generators-net). By convention, all Content Type Models are stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) which means that they can be extended in separate files. This should prevent losing custom code in case the models get regenerated. When generating models, be sure to set the `-n` command line parameter to `[project namespace].Models`.
+The generating is facilitated by a [.NET generator tool](https://github.com/Kentico/kontent-generators-net) as pre-build event. If you wish to customize the process, adjust the [`Tools/GenerateModels.ps1`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Tools/GenerateModels.ps1) script.
 
-If you want to use [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html), make sure you generate also a custom type provider (add the `--withtypeprovider` parameter when running the generator utility).
+For instance, to set a different namespace, set the `-n` command line parameter to `[project namespace].Models`. Or, to enable usage of [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html) for rich-text elements, set `--structuredmodel true`.
 
-You can regenerate the models using the included PowerShell script that utilizes the model generator utility. The script is located at [`Tools/GenerateModels.ps1`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Tools/GenerateModels.ps1).
+You can regenerate the models using the included PowerShell script that utilizes the model generator utility. The script is located at .
 
 ### How to resolve links
 Rich text elements in Kentico Kontent can contain links to other content items. It's up to a developer to decide how the links should be represented on a live site. Resolution logic can be adjusted in the [`CustomContentLinkUrlResolver`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Resolvers/CustomContentLinkUrlResolver.cs). See the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Resolving-Links-to-Content-Items) for detailed info.
