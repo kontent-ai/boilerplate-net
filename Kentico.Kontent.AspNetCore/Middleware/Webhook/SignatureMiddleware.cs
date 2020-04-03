@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Kentico.Kontent.Boilerplate.Middleware
+namespace Kentico.Kontent.AspNetCore.Middleware.Webhook
 {
     public class SignatureMiddleware
     {
@@ -18,7 +19,7 @@ namespace Kentico.Kontent.Boilerplate.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IOptions<ProjectOptions> projectOptions)
+        public async Task InvokeAsync(HttpContext httpContext, IOptions<WebhookOptions> projectOptions)
         {
             var request = httpContext.Request;
             request.EnableBuffering();
@@ -27,12 +28,12 @@ namespace Kentico.Kontent.Boilerplate.Middleware
             var content = await reader.ReadToEndAsync();
             request.Body.Seek(0, SeekOrigin.Begin);
 
-            var generatedSignature = GenerateHash(content, projectOptions.Value.KenticoKontentWebhookSecret);
+            var generatedSignature = GenerateHash(content, projectOptions.Value.Secret);
             var signature = request.Headers["X-KC-Signature"].FirstOrDefault();
 
             if (generatedSignature != signature)
             {
-                httpContext.Response.StatusCode = 401;
+                httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 return;
             }
 

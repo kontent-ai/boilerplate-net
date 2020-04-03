@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Kentico.Kontent.AspNetCore.Middleware.Webhook;
 using Kentico.Kontent.Delivery;
 
 namespace Kentico.Kontent.Boilerplate
@@ -7,7 +8,7 @@ namespace Kentico.Kontent.Boilerplate
     {
         public DeliveryOptions DeliveryOptions { get; set; }
 
-        public string KenticoKontentWebhookSecret { get; set; }
+        public WebhookOptions WebhookOptions { get; set; }
 
         public int[] ResponsiveWidths { get; set; }
 

@@ -18,6 +18,7 @@
     <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
     <PackageTags>kentico;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
     <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +33,10 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Kentico.Kontent.AspNetCore\Kentico.Kontent.AspNetCore.csproj" />
   </ItemGroup>
 
   <Target Name="GenerateModels" BeforeTargets="BeforeBuild;BeforeRebuild">
