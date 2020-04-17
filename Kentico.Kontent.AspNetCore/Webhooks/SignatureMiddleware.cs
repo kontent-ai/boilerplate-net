@@ -14,12 +14,15 @@ namespace Kentico.Kontent.AspNetCore.Middleware.Webhook
     {
         private readonly RequestDelegate _next;
 
-        public SignatureMiddleware(RequestDelegate next)
+        public IOptions<WebhookOptions> WebhookOptions { get; }
+
+        public SignatureMiddleware(RequestDelegate next, IOptions<WebhookOptions> webhookOptions)
         {
             _next = next;
+            WebhookOptions = webhookOptions;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext, IOptions<WebhookOptions> projectOptions)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             var request = httpContext.Request;
             request.EnableBuffering();
@@ -28,7 +31,7 @@ namespace Kentico.Kontent.AspNetCore.Middleware.Webhook
             var content = await reader.ReadToEndAsync();
             request.Body.Seek(0, SeekOrigin.Begin);
 
-            var generatedSignature = GenerateHash(content, projectOptions.Value.Secret);
+            var generatedSignature = GenerateHash(content, WebhookOptions.Value.Secret);
             var signature = request.Headers["X-KC-Signature"].FirstOrDefault();
 
             if (generatedSignature != signature)

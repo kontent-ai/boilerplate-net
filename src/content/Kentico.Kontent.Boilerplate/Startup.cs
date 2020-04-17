@@ -72,7 +72,7 @@ namespace Kentico.Kontent.Boilerplate
             app.UseStaticFiles();
 
             // Register webhook-based cache invalidation controller
-            app.UseWebhookSignatureValidator(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase));
+            app.UseWebhookSignatureValidator(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), Configuration.GetSection(nameof(WebhookOptions)));
 
             app.UseEndpoints(endpoints =>
             {

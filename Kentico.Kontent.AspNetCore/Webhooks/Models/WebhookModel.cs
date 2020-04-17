@@ -1,59 +1,59 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Models
+namespace Kentico.Kontent.AspNetCore.Webhooks.Models
 {
     public class WebhookModel
     {
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public Message Message { get; set; }
 
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public Data Data { get; set; }
     }
 
     public class Message
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonProperty("operation")]
+        [JsonPropertyName("operation")]
         public string Operation { get; set; }
 
-        [JsonProperty("api_name")]
+        [JsonPropertyName("api_name")]
         public string ApiName { get; set; }
 
-        [JsonProperty("project_id")]
+        [JsonPropertyName("project_id")]
         public Guid ProjectId { get; set; }
     }
 
     public class Data
     {
-        [JsonProperty("items")]
+        [JsonPropertyName("items")]
         public Item[] Items { get; set; }
 
-        [JsonProperty("taxonomies")]
+        [JsonPropertyName("taxonomies")]
         public Taxonomy[] Taxonomies { get; set; }
     }
 
     public class Item
     {
-        [JsonProperty("language")]
+        [JsonPropertyName("language")]
         public string Language { get; set; }
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
-        [JsonProperty("codename")]
+        [JsonPropertyName("codename")]
         public string Codename { get; set; }
     }
 
     public class Taxonomy
     {
-        [JsonProperty("codename")]
+        [JsonPropertyName("codename")]
         public string Codename { get; set; }
     }
 }
