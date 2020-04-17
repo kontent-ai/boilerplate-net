@@ -11,7 +11,5 @@ namespace Kentico.Kontent.Boilerplate
         public WebhookOptions WebhookOptions { get; set; }
 
         public int[] ResponsiveWidths { get; set; }
-
-        public bool ResponsiveImagesEnabled => ResponsiveWidths != null && ResponsiveWidths.Any();
     }
 }

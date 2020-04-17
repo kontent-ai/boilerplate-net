@@ -1,5 +1,4 @@
 ﻿using System;
-using Kentico.Kontent.Boilerplate.Helpers.Extensions;
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Boilerplate.Resolvers;
 using Kentico.Kontent.Delivery.Caching;
@@ -42,8 +41,6 @@ namespace Kentico.Kontent.Boilerplate
                 StaleContentExpiration = TimeSpan.FromSeconds(2),
                 DefaultExpiration = TimeSpan.FromMinutes(24)
             });
-
-            HtmlHelperExtensions.ProjectOptions = Configuration.Get<ProjectOptions>();
 
             services.AddControllersWithViews();
         }
