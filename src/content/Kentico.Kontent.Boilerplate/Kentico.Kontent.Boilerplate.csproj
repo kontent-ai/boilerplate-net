@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Kentico.Kontent.AspNetCore" Version="0.0.1" />
     <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1" />
     <PackageReference Include="Kentico.Kontent.Delivery.Caching" Version="13.0.1" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />
@@ -33,10 +34,6 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Kentico.Kontent.AspNetCore\Kentico.Kontent.AspNetCore.csproj" />
   </ItemGroup>
 
   <Target Name="GenerateModels" BeforeTargets="BeforeBuild;BeforeRebuild">
