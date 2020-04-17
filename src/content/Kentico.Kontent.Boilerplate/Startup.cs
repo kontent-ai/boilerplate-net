@@ -9,8 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Kentico.Kontent.Boilerplate.Middleware;
 using Kentico.Kontent.Delivery.Caching.Extensions;
+using Kentico.Kontent.AspNetCore.Middleware.Webhook;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -63,8 +63,7 @@ namespace Kentico.Kontent.Boilerplate
                 app.UseHsts();
             }
 
-            // Add IIS URL Rewrite list
-            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
+            // Add IIS URL Rewrite list, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
             var options = new RewriteOptions().AddIISUrlRewrite(env.ContentRootFileProvider, "IISUrlRewrite.xml");
             app.UseRewriter(options);
 
@@ -73,10 +72,7 @@ namespace Kentico.Kontent.Boilerplate
             app.UseStaticFiles();
 
             // Register webhook-based cache invalidation controller
-            app.UseWhen(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), appBuilder =>
-            {
-                appBuilder.UseMiddleware<SignatureMiddleware>();
-            });
+            app.UseWebhookSignatureValidator(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), Configuration.GetSection(nameof(WebhookOptions)));
 
             app.UseEndpoints(endpoints =>
             {

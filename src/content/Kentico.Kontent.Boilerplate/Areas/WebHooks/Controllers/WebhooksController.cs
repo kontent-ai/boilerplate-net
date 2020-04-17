@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Kentico.Kontent.Boilerplate.Areas.WebHooks.Models;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Caching;
+using Kentico.Kontent.AspNetCore.Webhooks.Models;
 
 namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
 {

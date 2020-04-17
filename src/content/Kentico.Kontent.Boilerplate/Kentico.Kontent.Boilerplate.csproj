@@ -18,6 +18,7 @@
     <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
     <PackageTags>kentico;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
     <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Kentico.Kontent.AspNetCore" Version="0.0.1" />
     <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1" />
     <PackageReference Include="Kentico.Kontent.Delivery.Caching" Version="13.0.1" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Kentico.Kontent.AspNetCore.Webhooks.Models;
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers;
-using Kentico.Kontent.Boilerplate.Areas.WebHooks.Models;
 using Kentico.Kontent.Delivery.Caching;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
