@@ -7,17 +7,18 @@
  |:-------------:| :-------------:|  :-------------:|  
 | [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate) | [`netcoreapp3.1`](https://www.microsoft.com/net/download/core) | 
 
-This boilerplate includes a set of features and best practices to kick off your website development with Kentico Kontent smoothly.
+This boilerplate lets you easily scaffold a web project for development with Kentico Kontent and give you a head start in a successful web project. It includes a set of pre-configured features and demonstrates best practices in order to kick off your website development with Kontent smoothly.
 
 ## What's included
 [<img align="right" src="/img/template_thumbnail.png" alt="Boilerplate screenshot" />](/img/template.png)
 - [Kentico Delivery SDK](https://github.com/Kentico/delivery-sdk-net)
-  - [Sample generated strongly-typed models](#how-to-generate-strongly-typed-models-for-content-types)  
   - [Sample link resolver](#how-to-resolve-links)
+- [Pre-build event for model generating](#how-to-generate-strongly-typed-models-for-content-types)  
+- [Webhook-enabed caching](#how-to-set-up-webhook-enabled-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
 - [Adjustable images](#how-to-resize-images-based-on-window-width)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
-- URL [Rewriting examples](#how-to-adjust-url-rewriting)
+- [URL Rewriting examples](#how-to-adjust-url-rewriting)
   - 301 URL Rewriting
   - www -> non-www redirection
 - Configs for Dev and Production environment
@@ -32,40 +33,30 @@ This boilerplate includes a set of features and best practices to kick off your 
 
 1. Run `dotnet new --install "Kentico.Kontent.Boilerplate::*"` to install the boilerplate to your machine
 2. Run `dotnet new kentico-kontent-mvc --name "MyWebsite" [-pid|project-id "<projectid>"] [-d|domain "<domain_name>"] [--output "<path>"]` to init a website from the template
+   - You can change the project ID later at any time in `appsettings.json`
 3. Open in the IDE of your choice and Run
 
 _Note: You can [install the tempalte from the sourcecode](../../wiki/Installation-from-source) too._
 
-
 ## How Tos
 
-
-### How to change Kentico Kontent Project ID and Delivery Preview API key
-
-Kentico Kontent Project ID is stored inside `appsettings.json` file. This setting is automatically loaded [using Options and configuration objects](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration). You can also provide additional environment-specific configuration in `appsettings.production.json` and `appsettings.development.json` files.
-
-You can also set the Project ID during the template instantiation by applying the `-pid|project-id` parameter.
-
-For security reasons, Delivery Preview API key should be stored outside of the project tree. It's recommended to use [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) to store sensitive data.
-
 ### How to generate Strongly Typed Models for Content Types
+By convention, all [strongly-typed Content Type models](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models) are generated and stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) to enable further customization without losing the generated code.
 
-With the new Delivery SDK, you can [take advantage](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)) of code-first approach. To do that you have to instruct the SDK to use strongly-typed models. These models can be generated automatically by [model generator utility](https://github.com/Kentico/kontent-generators-net). By convention, all Content Type Models are stored within the `Models/ContentTypes` folder. All generated classes are marked as [`partial`](https://msdn.microsoft.com/en-us/library/wa80x488.aspx) which means that they can be extended in separate files. This should prevent losing custom code in case the models get regenerated. When generating models, be sure to set the `-n` command line parameter to `[project namespace].Models`.
+The generating is facilitated by a [.NET generator tool](https://github.com/Kentico/kontent-generators-net) as pre-build event. If you wish to customize the process, adjust the [`Tools/GenerateModels.ps1`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Tools/GenerateModels.ps1) script.
 
-If you want to use [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html), make sure you generate also a custom type provider (add the `--withtypeprovider` parameter when running the generator utility).
+For instance, to set a different namespace, set the `-n` command line parameter to `[project namespace].Models`. Or, to enable usage of [Display Templates (MVC)](http://www.growingwiththeweb.com/2012/12/aspnet-mvc-display-and-editor-templates.html) for rich-text elements, set `--structuredmodel true`.
 
-You can regenerate the models using the included PowerShell script that utilizes the model generator utility. The script is located at [`Tools/GenerateModels.ps1`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Tools/GenerateModels.ps1).
+You can regenerate the models using the included PowerShell script that utilizes the model generator utility. The script is located at .
 
 ### How to resolve links
 Rich text elements in Kentico Kontent can contain links to other content items. It's up to a developer to decide how the links should be represented on a live site. Resolution logic can be adjusted in the [`CustomContentLinkUrlResolver`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Resolvers/CustomContentLinkUrlResolver.cs). See the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Resolving-Links-to-Content-Items) for detailed info.
 
 ### How to set up webhook-enabled caching
 
-All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Default/CachingDeliveryClient.cs) for 10 minutes in a [MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.memory.memorycache) singleton object. When content is stale (newer version exists) it is cached for 2 seconds. You can change the expiration times in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L47).
+All content retrieved from Kentico Kontent is by default [cached](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Caching-responses) for 24 minutes. When content is stale (a newer version exists) it is cached for only 2 seconds. You can change the expiration times via the `DeliveryCacheOptions` in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L40-L44).
 
-If displaying outdated content for a limited time is not an option, you need to use another caching strategy and invalidate cached content when a webhook notification about content change is received. To enable this caching strategy just switch to another [caching client](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Caching/Webhooks/CachingDeliveryClient.cs) by using `IServiceCollection.AddWebhookInvalidatedCachingClient` extension in [Startup](https://github.com/Kentico/kontent-boilerplate-net/blob/6fb2b26deecb858f3853d84e29121e3f17b3a291/src/content/Kentico.Kontent.Boilerplate/Startup.cs#L53).
-
-Also, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-apps/integrate/using-webhooks-for-automatic-updates#a-creating-a-webhook). When entering a webhook URL, append a `/Webhooks/Webhooks` path to a publicly available URL address of the application, e.g. `https://myapp.azurewebsites.net/Webhooks/Webhooks`. Finally, copy the API secret and put it into the app settings (usually the appsettings.json) as the `KenticoKontentWebhookSecret` environment variable.
+If you want to invalidate cache items as soon as they're updated in Kontent, you need to [create a webhook](https://docs.kontent.ai/tutorials/develop-apps/integrate/using-webhooks-for-automatic-updates#a-creating-a-webhook) and point it to the `/Webhooks/Webhooks` relative path of your application. The URL of the app needs to be publicly accessible, e.g. `https://myboilerplate.azurewebsites.net/Webhooks/Webhooks`. Finally, copy the API secret and store it as `KenticoKontentWebhookSecret` in your `Configuration` object, typically in the [Secret Manager](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) or [Azure Key Vault](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration)
 
 ![New webhook configuration](https://i.imgur.com/TjJ7n5H.png)
 
