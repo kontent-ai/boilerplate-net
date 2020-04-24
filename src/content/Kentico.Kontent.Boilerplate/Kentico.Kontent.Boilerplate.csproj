@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kentico.Kontent.AspNetCore" Version="0.0.1" />
+    <PackageReference Include="Kentico.Kontent.AspNetCore" Version="0.0.4" />
     <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1" />
     <PackageReference Include="Kentico.Kontent.Delivery.Caching" Version="13.0.1" />
     <PackageReference Include="SimpleMvcSitemap" Version="3.1.0" />

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Kentico.Kontent.Delivery.Caching.Extensions;
 using Kentico.Kontent.AspNetCore.Middleware.Webhook;
-using Kentico.Kontent.Boilerplate.TagHelpers;
+using Kentico.Kontent.AspNetCore.ImageTransformation;
 
 namespace Kentico.Kontent.Boilerplate
 {
