@@ -29,7 +29,7 @@ namespace Kentico.Kontent.Boilerplate
             // Adds services required for using options.
             services.AddOptions();
 
-            // Register the IConfiguration instance which ProjectOptions binds against.
+            // Register the ImageTransformationOptions required by Kentico Kontent tag helpers
             services.Configure<ImageTransformationOptions>(Configuration.GetSection(nameof(ImageTransformationOptions)));
 
             services.AddSingleton<CustomTypeProvider>();
