@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Kentico.Kontent.Delivery.Caching.Extensions;
 using Kentico.Kontent.AspNetCore.Middleware.Webhook;
+using Kentico.Kontent.Boilerplate.TagHelpers;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -29,7 +30,7 @@ namespace Kentico.Kontent.Boilerplate
             services.AddOptions();
 
             // Register the IConfiguration instance which ProjectOptions binds against.
-            services.Configure<ProjectOptions>(Configuration);
+            services.Configure<ImageTransformationOptions>(Configuration.GetSection(nameof(ImageTransformationOptions)));
 
             services.AddSingleton<CustomTypeProvider>();
             services.AddSingleton<CustomContentLinkUrlResolver>();

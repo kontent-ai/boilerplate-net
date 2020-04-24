@@ -18,7 +18,7 @@ namespace Kentico.Kontent.Boilerplate.TagHelpers
         /// <summary>
         /// Application settings.
         /// </summary>
-        public IOptions<ProjectOptions> ProjectOptions { get; set; }
+        public IOptions<ImageTransformationOptions> ProjectOptions { get; set; }
 
         [HtmlAttributeName("asset")]
         public Asset Asset { get; set; }
@@ -29,7 +29,7 @@ namespace Kentico.Kontent.Boilerplate.TagHelpers
         [HtmlAttributeName("default-width")]
         public int DefaultWidth { get; set; }
 
-        public AssetTagHelper(IOptions<ProjectOptions> projectOptions)
+        public AssetTagHelper(IOptions<ImageTransformationOptions> projectOptions)
         {
             ProjectOptions = projectOptions;
         }
