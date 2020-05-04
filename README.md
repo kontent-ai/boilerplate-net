@@ -64,8 +64,8 @@ If you want to invalidate cache items as soon as they're updated in Kontent, you
 
 **Note**: Speed of the Delivery/Preview API service is already tuned up because the service uses a geo-distributed CDN network for most of the types of requests. Therefore, the main advantage of caching in Kentico Kontent applications is not speed but lowering the amount of requests needed (See [pricing](https://kontent.ai/pricing) for details).
 
-### How to resize images based on window width
-The boilerplate contains a sample implementation of the [`HtmlHelperExtensions`](https://github.com/Kentico/kontent-boilerplate-net/blob/responsive-images/src/content/Kentico.Kontent.Boilerplate/Helpers/Extensions/HtmlHelperExtensions.cs). Using the `AssetImage()` extension method, you can easily create an `img` tag with `srcset` and `sizes` attributes.
+### How to render responsive images
+The boilerplate contains a sample implementation of the `img-asset` tag helper from the [Kentico.Kontent.AspNetCore](https://www.nuget.org/packages/Kentico.Kontent.AspNetCore) NuGet package. Using the `img-asset` tag helper, you can easily create an `img` tag with `srcset` and `sizes` attributes.
 
 ### How to adjust the sitemap.xml
 The boilerplate contains a sample implementation of the [`SiteMapController`](https://github.com/Kentico/kontent-boilerplate-net/blob/master/src/content/Kentico.Kontent.Boilerplate/Controllers/SiteMapController.cs). Make sure you specify desired content types in the `Index()` action method. Also, you can adjust the URL resolution logic in the `GetPageUrl()` method.
