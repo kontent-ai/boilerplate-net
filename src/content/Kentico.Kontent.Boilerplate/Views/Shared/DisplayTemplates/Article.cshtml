@@ -1,5 +1,4 @@
-﻿@using Kentico.Kontent.Boilerplate.Helpers.Extensions
-@model Article
+﻿@model Article
 
 @{
     Layout = null;
@@ -12,9 +11,10 @@
 </div>
 <div class="row">
     <div class="col-sm-4">
-        @Html.AssetImage(@Model.TeaserImage.First(), title: @Model.TeaserImage.First().Name, cssClass: "img-responsive", sizes: new ResponsiveImageSizes(300)
-            .WithMediaCondition(new MediaCondition { MinWidth = 769, ImageWidth = 300 })
-            .WithMediaCondition(new MediaCondition { MinWidth = 330, MaxWidth = 768, ImageWidth = 689 }))
+        <img-asset asset="@Model.TeaserImage.First()" class="img-responsive" default-width="300">
+            <media-condition min-width="769" image-width="300" />
+            <media-condition min-width="330" max-width="768" image-width="689" />
+        </img-asset>
     </div>
     <div class="col-sm-8">
         @Model.Summary

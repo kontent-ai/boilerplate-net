@@ -13,11 +13,11 @@ namespace Kentico.Kontent.Boilerplate.Models
     public partial class HostedVideo
     {
         public const string Codename = "hosted_video";
-        public const string VideoIdCodename = "video_id";
         public const string VideoHostCodename = "video_host";
+        public const string VideoIdCodename = "video_id";
 
-        public string VideoId { get; set; }
-        public IEnumerable<MultipleChoiceOption> VideoHost { get; set; }
         public ContentItemSystemAttributes System { get; set; }
+        public IEnumerable<MultipleChoiceOption> VideoHost { get; set; }
+        public string VideoId { get; set; }
     }
 }

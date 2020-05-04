@@ -1,5 +1,4 @@
 ﻿using System;
-using Kentico.Kontent.Boilerplate.Helpers.Extensions;
 using Kentico.Kontent.Boilerplate.Models;
 using Kentico.Kontent.Boilerplate.Resolvers;
 using Kentico.Kontent.Delivery.Caching;
@@ -9,8 +8,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Kentico.Kontent.Boilerplate.Middleware;
 using Kentico.Kontent.Delivery.Caching.Extensions;
+using Kentico.Kontent.AspNetCore.Middleware.Webhook;
+using Kentico.Kontent.AspNetCore.ImageTransformation;
 using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.Boilerplate
@@ -30,8 +30,8 @@ namespace Kentico.Kontent.Boilerplate
             // Adds services required for using options.
             services.AddOptions();
 
-            // Register the IConfiguration instance which ProjectOptions binds against.
-            services.Configure<ProjectOptions>(Configuration);
+            // Register the ImageTransformationOptions required by Kentico Kontent tag helpers
+            services.Configure<ImageTransformationOptions>(Configuration.GetSection(nameof(ImageTransformationOptions)));
 
             services.AddSingleton<ITypeProvider, CustomTypeProvider>();
             services.AddSingleton<IContentLinkUrlResolver, CustomContentLinkUrlResolver>();
@@ -43,8 +43,6 @@ namespace Kentico.Kontent.Boilerplate
                 StaleContentExpiration = TimeSpan.FromSeconds(2),
                 DefaultExpiration = TimeSpan.FromMinutes(24)
             });
-
-            HtmlHelperExtensions.ProjectOptions = Configuration.Get<ProjectOptions>();
 
             services.AddControllersWithViews();
         }
@@ -64,8 +62,7 @@ namespace Kentico.Kontent.Boilerplate
                 app.UseHsts();
             }
 
-            // Add IIS URL Rewrite list
-            // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
+            // Add IIS URL Rewrite list, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/url-rewriting
             var options = new RewriteOptions().AddIISUrlRewrite(env.ContentRootFileProvider, "IISUrlRewrite.xml");
             app.UseRewriter(options);
 
@@ -74,10 +71,7 @@ namespace Kentico.Kontent.Boilerplate
             app.UseStaticFiles();
 
             // Register webhook-based cache invalidation controller
-            app.UseWhen(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), appBuilder =>
-            {
-                appBuilder.UseMiddleware<SignatureMiddleware>();
-            });
+            app.UseWebhookSignatureValidator(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), Configuration.GetSection(nameof(WebhookOptions)));
 
             app.UseEndpoints(endpoints =>
             {

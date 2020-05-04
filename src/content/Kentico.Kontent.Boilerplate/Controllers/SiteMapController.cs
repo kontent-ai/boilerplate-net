@@ -11,7 +11,7 @@ namespace Kentico.Kontent.Boilerplate.Controllers
 {
     public class SiteMapController : BaseController<SiteMapController>
     {
-        public SiteMapController(IDeliveryClient deliveryClient, ILogger<SiteMapController> logger): base(deliveryClient, logger)
+        public SiteMapController(IDeliveryClient deliveryClient, ILogger<SiteMapController> logger) : base(deliveryClient, logger)
         {
         }
 
@@ -27,9 +27,9 @@ namespace Kentico.Kontent.Boilerplate.Controllers
             var response = await DeliveryClient.GetItemsAsync(parameters);
 
             var nodes = response.Items.Select(item => new SitemapNode(GetPageUrl(item.System))
-                {
-                    LastModificationDate = item.System.LastModified
-                })
+            {
+                LastModificationDate = item.System.LastModified
+            })
                 .ToList();
 
             return new SitemapProvider().CreateSitemap(new SitemapModel(nodes));
@@ -40,7 +40,7 @@ namespace Kentico.Kontent.Boilerplate.Controllers
             // TODO: The URL generation logic should be adjusted to match your website
             var url = string.Empty;
 
-            if(system.SitemapLocation.Any())
+            if (system.SitemapLocation.Any())
             {
                 url = $"/{system.SitemapLocation[0]}";
             }
