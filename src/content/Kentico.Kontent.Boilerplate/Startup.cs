@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Kentico.Kontent.Boilerplate.Middleware;
 using Kentico.Kontent.Delivery.Caching.Extensions;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -32,8 +33,8 @@ namespace Kentico.Kontent.Boilerplate
             // Register the IConfiguration instance which ProjectOptions binds against.
             services.Configure<ProjectOptions>(Configuration);
 
-            services.AddSingleton<CustomTypeProvider>();
-            services.AddSingleton<CustomContentLinkUrlResolver>();
+            services.AddSingleton<ITypeProvider, CustomTypeProvider>();
+            services.AddSingleton<IContentLinkUrlResolver, CustomContentLinkUrlResolver>();
             services.AddDeliveryClient(Configuration);
 
             // Use cached client decorator
