@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Kentico.Kontent.Delivery.Caching.Extensions;
-using Kentico.Kontent.AspNetCore.Middleware.Webhook;
 using Kentico.Kontent.AspNetCore.ImageTransformation;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Delivery.Extensions;
+using Kentico.Kontent.AspNetCore.Webhooks;
 
 namespace Kentico.Kontent.Boilerplate
 {
@@ -41,7 +42,8 @@ namespace Kentico.Kontent.Boilerplate
             services.AddDeliveryClientCache(new DeliveryCacheOptions()
             {
                 StaleContentExpiration = TimeSpan.FromSeconds(2),
-                DefaultExpiration = TimeSpan.FromMinutes(24)
+                DefaultExpiration = TimeSpan.FromMinutes(24),
+                CacheType = CacheTypeEnum.Memory
             });
 
             services.AddControllersWithViews();

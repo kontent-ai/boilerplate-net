@@ -50,8 +50,8 @@ namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
                 Data = new Data { Items = items, Taxonomies = taxonomies },
                 Message = new Message { Type = artefactType, Operation = operation }
             };
-            
-            var controller = new WebhooksController(new DeliveryCacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new DeliveryCacheOptions())));
+
+            var controller = new WebhooksController(new MemoryCacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new DeliveryCacheOptions())));
             var result = (StatusCodeResult)await Task.Run(() => controller.Index(model));
 
             Assert.InRange(result.StatusCode, 200, 299);

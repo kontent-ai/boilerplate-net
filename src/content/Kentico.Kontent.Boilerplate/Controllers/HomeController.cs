@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-
 using Kentico.Kontent.Boilerplate.Models;
-using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Delivery.Urls.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +11,7 @@ namespace Kentico.Kontent.Boilerplate.Controllers
     {
         public HomeController(IDeliveryClient deliveryClient, ILogger<HomeController> logger) : base(deliveryClient, logger)
         {
-            
+
         }
 
         public async Task<ViewResult> Index()

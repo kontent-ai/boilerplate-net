@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Kentico.Kontent.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Kentico.Kontent.Boilerplate.Models;
 using SimpleMvcSitemap;
 using Microsoft.Extensions.Logging;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Delivery.Urls.QueryParameters;
+using Kentico.Kontent.Delivery.Urls.QueryParameters.Filters;
 
 namespace Kentico.Kontent.Boilerplate.Controllers
 {
@@ -24,18 +26,17 @@ namespace Kentico.Kontent.Boilerplate.Controllers
                 new InFilter("system.type", "article", "cafe"),
             };
 
-            var response = await DeliveryClient.GetItemsAsync(parameters);
+            var response = await DeliveryClient.GetItemsAsync<object>(parameters);
 
-            var nodes = response.Items.Select(item => new SitemapNode(GetPageUrl(item.System))
+            var nodes = response.Items.Cast<ISitemapItem>().Select(item => new SitemapNode(GetPageUrl(item.System))
             {
                 LastModificationDate = item.System.LastModified
-            })
-                .ToList();
+            }).ToList();
 
             return new SitemapProvider().CreateSitemap(new SitemapModel(nodes));
         }
 
-        private static string GetPageUrl(ContentItemSystemAttributes system)
+        private static string GetPageUrl(IContentItemSystemAttributes system)
         {
             // TODO: The URL generation logic should be adjusted to match your website
             var url = string.Empty;

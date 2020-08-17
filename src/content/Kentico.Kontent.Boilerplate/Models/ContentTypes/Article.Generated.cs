@@ -39,22 +39,22 @@ namespace Kentico.Kontent.Boilerplate.Models
         public string MetadataMetaDescription { get; set; }
         public string MetadataMetaTitle { get; set; }
         public string MetadataOgDescription { get; set; }
-        public IEnumerable<Asset> MetadataOgImage { get; set; }
+        public IEnumerable<IAsset> MetadataOgImage { get; set; }
         public string MetadataOgTitle { get; set; }
         public string MetadataTwitterCreator { get; set; }
         public string MetadataTwitterDescription { get; set; }
-        public IEnumerable<Asset> MetadataTwitterImage { get; set; }
+        public IEnumerable<IAsset> MetadataTwitterImage { get; set; }
         public string MetadataTwitterSite { get; set; }
         public string MetadataTwitterTitle { get; set; }
         public string MetaDescription { get; set; }
         public string MetaKeywords { get; set; }
-        public IEnumerable<TaxonomyTerm> Personas { get; set; }
+        public IEnumerable<ITaxonomyTerm> Personas { get; set; }
         public DateTime? PostDate { get; set; }
         public IEnumerable<object> RelatedArticles { get; set; }
-        public IEnumerable<TaxonomyTerm> Sitemap { get; set; }
+        public IEnumerable<ITaxonomyTerm> Sitemap { get; set; }
         public string Summary { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
-        public IEnumerable<Asset> TeaserImage { get; set; }
+        public IContentItemSystemAttributes System { get; set; }
+        public IEnumerable<IAsset> TeaserImage { get; set; }
         public string Title { get; set; }
         public string UrlPattern { get; set; }
     }
