@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
+using FakeItEasy;
 using Kentico.Kontent.AspNetCore.Webhooks.Models;
 using Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers;
-using Kentico.Kontent.Delivery.Caching;
+using Kentico.Kontent.Delivery.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
@@ -51,8 +50,9 @@ namespace Kentico.Kontent.Boilerplate.Tests.Areas.WebHooks.Controllers
                 Message = new Message { Type = artefactType, Operation = operation }
             };
 
-            var controller = new WebhooksController(new MemoryCacheManager(new MemoryCache(Options.Create(new MemoryCacheOptions())), Options.Create(new DeliveryCacheOptions())));
-            var result = (StatusCodeResult)await Task.Run(() => controller.Index(model));
+            var cacheManger = A.Fake<IDeliveryCacheManager>();
+            var controller = new WebhooksController(cacheManger);
+            var result = (StatusCodeResult)await controller.Index(model);
 
             Assert.InRange(result.StatusCode, 200, 299);
         }

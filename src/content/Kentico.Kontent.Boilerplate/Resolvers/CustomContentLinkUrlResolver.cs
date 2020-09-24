@@ -14,7 +14,7 @@ namespace Kentico.Kontent.Boilerplate.Resolvers
         /// </summary>
         /// <param name="link">The link.</param>
         /// <returns>A relative URL to the page where the content is displayed</returns>
-        public Task<string> ResolveLinkUrl(IContentLink link)
+        public Task<string> ResolveLinkUrlAsync(IContentLink link)
         {
             return Task.FromResult($"/{link.UrlSlug}");
         }
@@ -23,7 +23,7 @@ namespace Kentico.Kontent.Boilerplate.Resolvers
         /// Resolves the broken link URL.
         /// </summary>
         /// <returns>A relative URL to the site's 404 page</returns>
-        Task<string> IContentLinkUrlResolver.ResolveBrokenLinkUrl()
+        public Task<string> ResolveBrokenLinkUrlAsync()
         {
             // Resolves URLs to unavailable content items
             return Task.FromResult("/404");

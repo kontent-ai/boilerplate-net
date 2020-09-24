@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Caching;
 using Kentico.Kontent.AspNetCore.Webhooks.Models;
+using System.Threading.Tasks;
 
 namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
 {
@@ -19,7 +20,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index([FromBody] WebhookModel model)
+        public async Task<IActionResult> Index([FromBody] WebhookModel model)
         {
             if (model != null)
             {
@@ -53,7 +54,7 @@ namespace Kentico.Kontent.Boilerplate.Areas.WebHooks.Controllers
 
                 foreach (var dependency in dependencies)
                 {
-                    _cacheManager.InvalidateDependencyAsync(dependency);
+                    await _cacheManager.InvalidateDependencyAsync(dependency);
                 }
             }
 
