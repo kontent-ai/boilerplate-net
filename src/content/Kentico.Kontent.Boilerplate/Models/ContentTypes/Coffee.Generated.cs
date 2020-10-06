@@ -40,25 +40,25 @@ namespace Kentico.Kontent.Boilerplate.Models
         public string Altitude { get; set; }
         public string Country { get; set; }
         public string Farm { get; set; }
-        public IEnumerable<Asset> Image { get; set; }
+        public IEnumerable<IAsset> Image { get; set; }
         public string LongDescription { get; set; }
         public string MetadataMetaDescription { get; set; }
         public string MetadataMetaTitle { get; set; }
         public string MetadataOgDescription { get; set; }
-        public IEnumerable<Asset> MetadataOgImage { get; set; }
+        public IEnumerable<IAsset> MetadataOgImage { get; set; }
         public string MetadataOgTitle { get; set; }
         public string MetadataTwitterCreator { get; set; }
         public string MetadataTwitterDescription { get; set; }
-        public IEnumerable<Asset> MetadataTwitterImage { get; set; }
+        public IEnumerable<IAsset> MetadataTwitterImage { get; set; }
         public string MetadataTwitterSite { get; set; }
         public string MetadataTwitterTitle { get; set; }
         public decimal? Price { get; set; }
-        public IEnumerable<TaxonomyTerm> Processing { get; set; }
+        public IEnumerable<ITaxonomyTerm> Processing { get; set; }
         public string ProductName { get; set; }
-        public IEnumerable<TaxonomyTerm> ProductStatus { get; set; }
+        public IEnumerable<ITaxonomyTerm> ProductStatus { get; set; }
         public string ShortDescription { get; set; }
-        public IEnumerable<TaxonomyTerm> Sitemap { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
+        public IEnumerable<ITaxonomyTerm> Sitemap { get; set; }
+        public IContentItemSystemAttributes System { get; set; }
         public string UrlPattern { get; set; }
         public string Variety { get; set; }
     }

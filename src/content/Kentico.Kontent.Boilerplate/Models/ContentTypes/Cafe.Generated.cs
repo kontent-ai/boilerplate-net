@@ -27,11 +27,11 @@ namespace Kentico.Kontent.Boilerplate.Models
         public string Country { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public IEnumerable<Asset> Photo { get; set; }
-        public IEnumerable<TaxonomyTerm> Sitemap { get; set; }
+        public IEnumerable<IAsset> Photo { get; set; }
+        public IEnumerable<ITaxonomyTerm> Sitemap { get; set; }
         public string State { get; set; }
         public string Street { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
+        public IContentItemSystemAttributes System { get; set; }
         public string ZipCode { get; set; }
     }
 }

@@ -1,11 +1,12 @@
-﻿using Kentico.Kontent.Delivery.Abstractions;
+﻿using System.Threading.Tasks;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.Boilerplate.Resolvers
 {
     /// <summary>
     /// Sample implementation to resolve links to other content items in Rich Text
     /// </summary>
-    /// <seealso cref="Kentico.Kontent.Delivery.IContentLinkUrlResolver" />
+    /// <seealso cref="IContentLinkUrlResolver" />
     public class CustomContentLinkUrlResolver : IContentLinkUrlResolver
     {
         /// <summary>
@@ -13,19 +14,19 @@ namespace Kentico.Kontent.Boilerplate.Resolvers
         /// </summary>
         /// <param name="link">The link.</param>
         /// <returns>A relative URL to the page where the content is displayed</returns>
-        public string ResolveLinkUrl(ContentLink link)
+        public Task<string> ResolveLinkUrlAsync(IContentLink link)
         {
-            return $"/{link.UrlSlug}";
+            return Task.FromResult($"/{link.UrlSlug}");
         }
 
         /// <summary>
         /// Resolves the broken link URL.
         /// </summary>
         /// <returns>A relative URL to the site's 404 page</returns>
-        public string ResolveBrokenLinkUrl()
+        public Task<string> ResolveBrokenLinkUrlAsync()
         {
             // Resolves URLs to unavailable content items
-            return "/404";
+            return Task.FromResult("/404");
         }
     }
 }

@@ -4,7 +4,7 @@ using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.Boilerplate.Models
 {
-    public partial class Cafe
+    public partial class Cafe : ISitemapItem
     {
     }
 }
