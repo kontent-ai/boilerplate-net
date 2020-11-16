@@ -5,7 +5,7 @@
 
  | Package | Downloads | Compatibility | 
  |:-------------:| :-------------:|  :-------------:|  
-| [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate) | [`netcoreapp3.1`](https://www.microsoft.com/net/download/core) | 
+| [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.Boilerplate.svg)](https://www.nuget.org/packages/Kentico.Kontent.Boilerplate) | [`net5.0`](https://dotnet.microsoft.com/download/dotnet/5.0) | 
 
 This boilerplate lets you easily scaffold a web project for development with Kentico Kontent and give you a head start in a successful web project. It includes a set of pre-configured features and demonstrates best practices in order to kick off your website development with Kontent smoothly.
 
@@ -24,7 +24,7 @@ This boilerplate lets you easily scaffold a web project for development with Ken
 - Configs for Dev and Production environment
 - robots.txt
 - Logging
-- Unit tests ([xUnit](https://xunit.github.io))
+- Unit tests ([xUnit](https://xunit.net/))
 
 ## Getting started
 
