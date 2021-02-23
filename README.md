@@ -85,4 +85,3 @@ You can adjust the domain name in the default rewriting rules during the templat
 
 Check out the [contributing](CONTRIBUTING.md) page to see the best places to file issues, start discussions, and begin contributing.
 
-![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/kontent-boilerplate-net?pixel)
