@@ -1,5 +1,5 @@
 # Kentico Kontent Boilerplate for ASP.NET Core MVC
-[![Build status](https://ci.appveyor.com/api/projects/status/1s02tbk1tml2wdmj/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-boilerplate-net/branch/master)
+[![Build & Test](https://github.com/Kentico/kontent-boilerplate-net/actions/workflows/integrate.yml/badge.svg)](https://github.com/Kentico/kontent-boilerplate-net/actions/workflows/integrate.yml)
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
 
 
