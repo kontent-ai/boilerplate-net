@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Kentico.Kontent.Boilerplate.Models;
+using Kentico.Kontent.Boilerplate.Models.ContentTypes;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Urls.QueryParameters;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Kentico.Kontent.Boilerplate.Models;
+using Kentico.Kontent.Boilerplate.Models.ContentTypes;
 using Kentico.Kontent.Boilerplate.Resolvers;
 using Kentico.Kontent.Delivery.Caching;
 using Microsoft.AspNetCore.Builder;
