@@ -3,4 +3,8 @@ coverage:
     patch:
       default:
         target: auto
-        threshold: 0%        
+        threshold: 0%
+    patch: false
+
+ignore:
+  - "tests/"
