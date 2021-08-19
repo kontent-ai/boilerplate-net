@@ -5,7 +5,6 @@ namespace Kentico.Kontent.Boilerplate.Tests.Controllers
 {
     public class ErrorControllerTests
     {
-        /*
         [Theory]
         [InlineData(0, "~/Views/Error/GeneralError.cshtml")]
         [InlineData(404, "~/Views/Error/NotFound.cshtml")]
@@ -18,6 +17,5 @@ namespace Kentico.Kontent.Boilerplate.Tests.Controllers
 
             Assert.Equal(errorPagePath, result.ViewName);
         }
-        */
     }
 }
