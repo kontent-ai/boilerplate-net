@@ -2,8 +2,8 @@ coverage:
   status:
     patch:
       default:
-        against: parent
-        target: 30%
+        target: 0%
+        threshold: 0%  
 
 ignore:
   - "tests/"
