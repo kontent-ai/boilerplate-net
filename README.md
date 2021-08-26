@@ -37,7 +37,7 @@ This boilerplate lets you easily scaffold a web project for development with Ken
    - You can change the project ID later at any time in `appsettings.json`
 3. Open in the IDE of your choice and Run
 
-_Note: You can [install the tempalte from the sourcecode](../../wiki/Installation-from-source) too._
+_Note: You can [install the template from the sourcecode](../../wiki/Installation-from-source) too._
 
 ## How Tos
 
