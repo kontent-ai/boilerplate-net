@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace Kentico.Kontent.Boilerplate.Models
+namespace Kentico.Kontent.Boilerplate.Models.ContentTypes
 {
     public class CustomTypeProvider : ITypeProvider
     {
