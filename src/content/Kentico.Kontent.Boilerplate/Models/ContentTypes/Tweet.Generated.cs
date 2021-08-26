@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace Kentico.Kontent.Boilerplate.Models
+namespace Kentico.Kontent.Boilerplate.Models.ContentTypes
 {
     public partial class Tweet
     {
