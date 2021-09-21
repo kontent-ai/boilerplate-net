@@ -31,7 +31,7 @@ namespace Kentico.Kontent.Boilerplate
             // Adds services required for using options.
             services.AddOptions();
 
-            // Register the ImageTransformationOptions required by Kentico Kontent tag helpers
+            // Register the ImageTransformationOptions required by Kontent tag helpers
             services.Configure<ImageTransformationOptions>(Configuration.GetSection(nameof(ImageTransformationOptions)));
 
             services.AddSingleton<ITypeProvider, CustomTypeProvider>();

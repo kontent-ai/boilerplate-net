@@ -3,9 +3,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>Kentico.Kontent.Boilerplate</UserSecretsId>
     <Authors>Kentico Software</Authors>
-    <Product>Kentico Kontent</Product>
-    <Copyright>© 2016 Kentico Software. All rights reserved.</Copyright>
-    <Description>Kentico Kontent .NET MVC Boilerplate</Description>
+    <Product>Kontent by Kentico</Product>
+    <Copyright>© 2021 Kentico Software. All rights reserved.</Copyright>
+    <Description>Kontent .NET MVC Boilerplate</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IsPackable>true</IsPackable>
     <PackageType>Template</PackageType>

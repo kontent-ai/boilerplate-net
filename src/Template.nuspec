@@ -4,7 +4,7 @@
     <id>Kentico.Kontent.Boilerplate</id>
     <version>1.0.0</version>
     <authors>Kentico Software</authors>
-    <description>Kentico Kontent .NET MVC Boilerplate</description>
+    <description>Kontent .NET MVC Boilerplate</description>
     <language>en-US</language>
     <projectUrl>https://github.com/Kentico/kontent-boilerplate-net</projectUrl>
     <license type="expression">MIT</license>
