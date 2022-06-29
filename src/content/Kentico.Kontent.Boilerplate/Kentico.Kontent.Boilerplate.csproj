@@ -32,6 +32,10 @@
     <PackageReference Include="SimpleMvcSitemap" Version="4.0.0" />
   </ItemGroup>
 
+   <ItemGroup>
+    <AssemblyAttribute Include="Kentico.Kontent.Delivery.DeliverySourceTrackingHeader" />
+  </ItemGroup>
+
   <Target Name="GenerateModels" BeforeTargets="BeforeBuild;BeforeRebuild">
     <PropertyGroup>
       <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
