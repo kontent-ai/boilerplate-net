@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>Kentico.Kontent.Boilerplate</id>
-    <version>1.0.0</version>
-    <authors>Kentico Software</authors>
-    <description>Kentico Kontent .NET MVC Boilerplate</description>
+    <id>Kontent.Ai.Boilerplate</id>
+    <version>2.0.0</version>
+    <Authors>Kontent s.r.o.</Authors>
+    <description>Kontent.ai .NET MVC Boilerplate</description>
     <language>en-US</language>
-    <projectUrl>https://github.com/Kentico/kontent-boilerplate-net</projectUrl>
+    <projectUrl>https://github.com/kontent-ai/kontent-boilerplate-net</projectUrl>
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <icon>kk-logo-nuget.png</icon>
+    <icon>kai-logo-symbol-color-rgb.png</icon>
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>
   </metadata>
   <files>
     <file src="content/**" exclude="**/node_modules/**;**/bin/**;**/obj/**;**/.vs/**;**/.vscode/**;**/ClientApp/dist/**;**/wwwroot/dist/**;content/Directory.Build.*" />
-    <file src="../img/kk-logo-nuget.png" />
+    <file src="../img/kai-logo-symbol-color-rgb.png" />
   </files>
 </package>
