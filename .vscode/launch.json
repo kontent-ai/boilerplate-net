@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/content/Kontent.Ai.Boilerplate/bin/Debug/net5.0/Kontent.Ai.Boilerplate.dll",
+            "program": "${workspaceFolder}/src/content/Kontent.Ai.Boilerplate/bin/Debug/net6.0/Kontent.Ai.Boilerplate.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/content/Kontent.Ai.Boilerplate",
             "stopAtEntry": false,
