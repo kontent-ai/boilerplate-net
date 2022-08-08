@@ -9,7 +9,7 @@
 | :---------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------: |
 | [![NuGet](https://img.shields.io/nuget/v/Kontent.Ai.Boilerplate.svg)](https://www.nuget.org/packages/Kontent.Ai.Boilerplate/) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.Boilerplate.svg)](https://www.nuget.org/packages/Kontent.Ai.Boilerplate) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) |
 
-This boilerplate lets you easily scaffold a web project for development with Kontent.ai and give you a head start in a successful web project. It includes a set of pre-configured features and demonstrates best practices in order to kick off your website development with Kontent smoothly.
+This boilerplate lets you easily scaffold a web project for development with Kontent.ai and give you a head start in a successful web project. It includes a set of pre-configured features and demonstrates best practices in order to kick off your website development with Kontent.ai smoothly.
 
 ## What's included
 
