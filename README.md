@@ -20,7 +20,7 @@ This boilerplate lets you easily scaffold a web project for development with Kon
 - [Pre-build event for model generating](#how-to-generate-strongly-typed-models-for-content-types)
 - [Webhook-enabed caching](#how-to-set-up-webhook-enabled-caching)
 - [HTTP Status codes handling (404, 500, ...)](#how-to-handle-404-errors-or-any-other-error)
-- [Adjustable images](#how-to-resize-images-based-on-window-width)
+- [Adjustable images](#how-to-render-responsive-images)
 - [Sitemap.xml](#how-to-adjust-the-sitemapxml) generator
 - [URL Rewriting examples](#how-to-adjust-url-rewriting)
   - 301 URL Rewriting
