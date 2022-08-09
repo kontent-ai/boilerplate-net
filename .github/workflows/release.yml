@@ -37,5 +37,3 @@ jobs:
       run: dotnet nuget push .\artifacts\*.nupkg -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY --skip-duplicate
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
