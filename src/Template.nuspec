@@ -3,7 +3,7 @@
   <metadata>
     <id>Kontent.Ai.Boilerplate</id>
     <version>2.0.0</version>
-    <Authors>Kontent s.r.o.</Authors>
+    <authors>Kontent s.r.o.</authors>
     <description>Kontent.ai .NET MVC Boilerplate</description>
     <language>en-US</language>
     <projectUrl>https://github.com/kontent-ai/kontent-boilerplate-net</projectUrl>
