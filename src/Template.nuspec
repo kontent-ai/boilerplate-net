@@ -10,6 +10,7 @@
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <icon>kai-logo-symbol-color-rgb.png</icon>
+    <readme>README.md</readme>
     <packageTypes>
       <packageType name="Template" />
     </packageTypes>
@@ -17,5 +18,6 @@
   <files>
     <file src="content/**" exclude="**/node_modules/**;**/bin/**;**/obj/**;**/.vs/**;**/.vscode/**;**/ClientApp/dist/**;**/wwwroot/dist/**;content/Directory.Build.*" />
     <file src="../img/kai-logo-symbol-color-rgb.png" />
+    <file src="../README.md" />
   </files>
 </package>
