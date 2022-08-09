@@ -17,5 +17,6 @@
   <files>
     <file src="content/**" exclude="**/node_modules/**;**/bin/**;**/obj/**;**/.vs/**;**/.vscode/**;**/ClientApp/dist/**;**/wwwroot/dist/**;content/Directory.Build.*" />
     <file src="../img/kai-logo-symbol-color-rgb.png" />
+    <file src="../README.md" />
   </files>
 </package>
