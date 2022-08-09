@@ -1,14 +1,14 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Kentico Software",
+  "author": "Kontent s.r.o.",
   "classifications": [ "Boilerplate" ],
-  "name": "ASP.NET Core MVC with Kentico Kontent",
+  "name": "ASP.NET Core MVC with Kontent.AI",
   "tags": {
     "language": "C#"
   },
-  "identity": "Kentico.Kontent.Boilerplate",
-  "shortName": "kentico-kontent-mvc",
-  "sourceName": "Kentico.Kontent.Boilerplate",
+  "identity": "Kontent.Ai.Boilerplate",
+  "shortName": "kontent-ai-mvc",
+  "sourceName": "Kontent.Ai.Boilerplate",
   "symbols": {
     "domain": {
         "type": "parameter",

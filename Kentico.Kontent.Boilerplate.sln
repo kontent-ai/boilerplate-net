@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F01F5C1A-88F6-4317-BEEC-B36CE7CBF326}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.Boilerplate", "src\content\Kentico.Kontent.Boilerplate\Kentico.Kontent.Boilerplate.csproj", "{9E34703A-016B-4879-85F7-A3F2D3E30C6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kontent.Ai.Boilerplate", "src\content\Kontent.Ai.Boilerplate\Kontent.Ai.Boilerplate.csproj", "{9E34703A-016B-4879-85F7-A3F2D3E30C6E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.Boilerplate.Tests", "test\Kentico.Kontent.Boilerplate.Tests\Kentico.Kontent.Boilerplate.Tests.csproj", "{0CD94DDF-E146-4A53-B1E9-3DEDB9671D88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kontent.Ai.Boilerplate.Tests", "test\Kontent.Ai.Boilerplate.Tests\Kontent.Ai.Boilerplate.Tests.csproj", "{0CD94DDF-E146-4A53-B1E9-3DEDB9671D88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

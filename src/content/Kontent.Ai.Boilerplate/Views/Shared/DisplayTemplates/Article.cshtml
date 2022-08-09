@@ -1,0 +1,23 @@
+﻿@model Kontent.Ai.Boilerplate.Models.ContentTypes.Article
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <h4>@Model.Title</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <img-asset asset="@Model.TeaserImage.First()" class="img-responsive" default-width="300">
+            <media-condition min-width="769" image-width="300" />
+            <media-condition min-width="330" max-width="768" image-width="689" />
+        </img-asset>
+    </div>
+    <div class="col-sm-8">
+        @Model.Summary
+        <p><a class="btn btn-sm btn-primary" href="#" role="button">Read more</a></p>
+    </div>
+</div>

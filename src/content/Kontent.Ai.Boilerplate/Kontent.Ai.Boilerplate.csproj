@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>Kontent.Ai.Boilerplate</UserSecretsId>
+    <PackageId>Kontent.Ai.Boilerplate</PackageId>
+    <Authors>Kontent s.r.o.</Authors>
+    <Company>Kontent s.r.o.</Company>
+    <Product>Kontent.ai</Product>
+    <Copyright>© 2022 Kontent s.r.o. All rights reserved.</Copyright>
+    <Description>Kontent.ai .NET MVC Boilerplate</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IsPackable>true</IsPackable>
+    <PackageType>Template</PackageType>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageProjectUrl>https://github.com/kontent-ai/kontent-boilerplate-net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kontent-ai/kontent-boilerplate-net.git</RepositoryUrl>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
+    <PackageTags>kontent-ai;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
+    <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="IISUrlRewrite.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kontent.Ai.AspNetCore" Version="0.13.1" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="17.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.Caching" Version="17.0.0" />
+    <PackageReference Include="SimpleMvcSitemap" Version="4.0.0" />
+    <None Include="../../../README.md" Pack="true" PackagePath=""/>
+    <None Include="../../../img/kai-logo-symbol-color-rgb.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+   <ItemGroup>
+    <AssemblyAttribute Include="Kontent.Ai.Delivery.DeliverySourceTrackingHeader" />
+  </ItemGroup>
+
+  <Target Name="GenerateModels" BeforeTargets="BeforeBuild;BeforeRebuild">
+    <PropertyGroup>
+      <PowerShellExe Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+      <ScriptLocationWin Condition=" '$(ScriptLocation)'=='' ">$(ProjectDir)\Tools\GenerateModels.ps1</ScriptLocationWin>
+      <ScriptLocationUnix Condition=" '$(ScriptLocation)'=='' ">$(ProjectDir)\Tools\GenerateModels.sh</ScriptLocationUnix>
+    </PropertyGroup>
+    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="&quot;$(PowerShellExe)&quot; -NonInteractive -executionpolicy Unrestricted -command &quot;&amp; { &quot;$(ScriptLocationWin)&quot; } &quot;">
+    </Exec>
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="sh $(ScriptLocationUnix)">
+    </Exec>
+    <ItemGroup>
+      <Compile Remove="Models\**\*.cs" />
+      <Compile Include="Models\**\*.cs" />
+      <FileWrites Remove="Models\**\*.cs" />
+      <FileWrites Update="Models\**\*.cs" />
+    </ItemGroup>
+  </Target>
+</Project>
