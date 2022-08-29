@@ -13,6 +13,7 @@ using Kontent.Ai.AspNetCore.ImageTransformation;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Extensions;
 using Kontent.Ai.AspNetCore.Webhooks;
+using Kontent.Ai.Boilerplate.CacheInvalidation;
 
 namespace Kontent.Ai.Boilerplate
 {
@@ -37,7 +38,7 @@ namespace Kontent.Ai.Boilerplate
             services.AddSingleton<ITypeProvider, CustomTypeProvider>();
             services.AddSingleton<IContentLinkUrlResolver, CustomContentLinkUrlResolver>();
             services.AddDeliveryClient(Configuration);
-
+            services.AddHostedService<CacheInvalidationService>();
             // Use cached client decorator
             services.AddDeliveryClientCache(new DeliveryCacheOptions()
             {
@@ -74,7 +75,7 @@ namespace Kontent.Ai.Boilerplate
 
             // Register webhook-based cache invalidation controller
             app.UseWebhookSignatureValidator(context => context.Request.Path.StartsWithSegments("/webhooks/webhooks", StringComparison.OrdinalIgnoreCase), Configuration.GetSection(nameof(WebhookOptions)));
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
