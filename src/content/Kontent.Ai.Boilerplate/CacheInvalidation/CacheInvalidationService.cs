@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Kontent.Ai.Delivery.Abstractions;
-using Kontent.Ai.Delivery.Caching;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +23,8 @@ internal class CacheInvalidationService : IHostedService
         _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _client = new HttpClient();
-        _continuationToken = CheckChangeFeed().Result.Item2;
+        _continuationToken = CacheInvalidationServiceHelper
+            .CheckChangeFeed(client: _client, options: options, continuationToken: _continuationToken).Result.Item2;
     }
 
 
@@ -46,49 +43,19 @@ internal class CacheInvalidationService : IHostedService
         return Task.CompletedTask;
     }
 
-    private async Task<Tuple<IEnumerable<ChangeFeedResponseItem>?, string?>> CheckChangeFeed()
-    {
-        var changeFeedResponse = await _client.SendAsync(
-            new HttpRequestMessage(method: HttpMethod.Get,
-                    requestUri:
-                    $"{_options.Value.ProductionEndpoint}/{_options.Value.ProjectId}/change-feed")
-                { Headers = { { HeaderNames.Continuation, _continuationToken } } });
-        var changeFeedItems = changeFeedResponse.StatusCode == HttpStatusCode.OK
-            ? await JsonSerializer.DeserializeAsync<IEnumerable<ChangeFeedResponseItem>>(
-                await changeFeedResponse.Content.ReadAsStreamAsync())
-            : null;
 
-        return new Tuple<IEnumerable<ChangeFeedResponseItem>?, string?>(changeFeedItems,
-            changeFeedResponse.Headers.GetValues(HeaderNames.Continuation).FirstOrDefault());
-    }
-    
     private async void TryCacheInvalidation(object? state)
     {
         IEnumerable<ChangeFeedResponseItem>? changeFeed;
         do
         {
-            (changeFeed, var continuationToken) = await CheckChangeFeed();
+            (changeFeed, var continuationToken) = await CacheInvalidationServiceHelper.CheckChangeFeed(client: _client,
+                options: _options, continuationToken: _continuationToken);
             if (continuationToken != null && continuationToken != _continuationToken)
                 _continuationToken = continuationToken;
-            if (changeFeed != null)  await InvalidateCache(itemsChanged: changeFeed);
+            if (changeFeed != null)
+                await CacheInvalidationServiceHelper.InvalidateCache(itemsChanged: changeFeed,
+                    cacheManager: _cacheManager);
         } while (changeFeed != null);
-    }
-
-    private async Task InvalidateCache(IEnumerable<ChangeFeedResponseItem> itemsChanged)
-    {
-        var dependencies = new HashSet<string>();
-        {
-            foreach (var item in itemsChanged)
-            {
-                dependencies.Add(CacheHelpers.GetItemDependencyKey(item.Codename));
-            }
-
-            dependencies.Add(CacheHelpers.GetItemsDependencyKey());
-        }
-
-        foreach (var dependency in dependencies)
-        {
-            await _cacheManager.InvalidateDependencyAsync(dependency);
-        }
     }
 }
