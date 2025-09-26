@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>Kontent.Ai.Boilerplate</UserSecretsId>
     <PackageId>Kontent.Ai.Boilerplate</PackageId>
     <Authors>Kontent s.r.o.</Authors>
@@ -22,6 +22,7 @@
     <PackageTags>kontent-ai;mvc;aspnet;aspnetmvc;dotnetcore;dotnet;aspnetcore</PackageTags>
     <NuspecFile>$(MSBuildThisFileDirectory)..\..\Template.nuspec</NuspecFile>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,10 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.AspNetCore" Version="0.13.1" />
-    <PackageReference Include="Kontent.Ai.Delivery" Version="17.0.0" />
-    <PackageReference Include="Kontent.Ai.Delivery.Caching" Version="17.0.0" />
-    <PackageReference Include="SimpleMvcSitemap" Version="4.0.0" />
+    <PackageReference Include="Kontent.Ai.AspNetCore" Version="0.14.1" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="18.3.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.Caching" Version="18.3.0" />
+    <PackageReference Include="SimpleMvcSitemap" Version="4.0.1" />
     <None Include="../../../README.md" Pack="true" PackagePath=""/>
     <None Include="../../../img/kai-logo-symbol-color-rgb.png" Pack="true" PackagePath=""/>
   </ItemGroup>
