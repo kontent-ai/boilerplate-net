@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Kontent.Ai.Delivery.Abstractions;
@@ -10,55 +9,38 @@ using System.Threading.Tasks;
 namespace Kontent.Ai.Boilerplate.Areas.WebHooks.Controllers
 {
     [Area("WebHooks")]
-    public class WebhooksController : Controller
+    public class WebhooksController(IDeliveryCacheManager cacheManager) : Controller
     {
-        private readonly IDeliveryCacheManager _cacheManager;
-
-        public WebhooksController(IDeliveryCacheManager cacheManager)
-        {
-            _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
-        }
+        private readonly IDeliveryCacheManager _cacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
 
         [HttpPost]
-        public async Task<IActionResult> Index([FromBody] DeliveryWebhookModel model)
+        public async Task<IActionResult> Index([FromBody] WebhookNotification? webhook)
         {
-            if (model != null)
+            if (webhook is null)
             {
-                var dependencies = new HashSet<string>();
-                if (model.Data.Items?.Any() == true)
-                {
-                    foreach (var item in model.Data.Items ?? Enumerable.Empty<DeliveryWebhookItem>())
-                    {
-                        dependencies.Add(CacheHelpers.GetItemDependencyKey(item.Codename));
-                    }
-
-                    dependencies.Add(CacheHelpers.GetItemsDependencyKey());
-                }
-
-                if (model.Data.Taxonomies?.Any() == true)
-                {
-                    foreach (var taxonomy in model.Data.Taxonomies ?? Enumerable.Empty<Taxonomy>())
-                    {
-                        dependencies.Add(CacheHelpers.GetTaxonomyDependencyKey(taxonomy.Codename));
-                    }
-
-                    dependencies.Add(CacheHelpers.GetTaxonomiesDependencyKey());
-                    dependencies.Add(CacheHelpers.GetItemsDependencyKey());
-                    dependencies.Add(CacheHelpers.GetTypesDependencyKey());
-                }
-
-                if (model.Message.Type == "content_type")
-                {
-                    dependencies.Add(CacheHelpers.GetTypesDependencyKey());
-                }
-
-                foreach (var dependency in dependencies)
-                {
-                    await _cacheManager.InvalidateDependencyAsync(dependency);
-                }
+                return Ok();
             }
+
+            var tasks = (webhook.Notifications ?? Enumerable.Empty<WebhookModel>())
+                .Select(GetDependencyKey)
+                .Where(key => key is not null)
+                .Distinct(StringComparer.Ordinal)
+                .Select(key => _cacheManager.InvalidateDependencyAsync(key!));
+
+            await Task.WhenAll(tasks);
 
             return Ok();
         }
+
+        private static string? GetDependencyKey(WebhookModel notification) =>
+            notification switch
+            {
+                { Message.ObjectType: "content_item", Data.System.Codename: var code } => CacheHelpers.GetItemDependencyKey(code),
+                { Message.ObjectType: "taxonomy", Data.System.Codename: var code } => CacheHelpers.GetTaxonomyDependencyKey(code),
+                { Message.ObjectType: "language" } => CacheHelpers.GetLanguagesDependencyKey(),
+                { Message.ObjectType: "content_type" } => CacheHelpers.GetTypesDependencyKey(),
+                // there's no cache helper in the SDK for asset notifications yet
+                _ => null
+            };
     }
 }

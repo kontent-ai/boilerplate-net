@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FakeItEasy;
 using Kontent.Ai.AspNetCore.Webhooks.Models;
 using Kontent.Ai.Boilerplate.Areas.WebHooks.Controllers;
@@ -8,51 +9,48 @@ using Xunit;
 
 namespace Kontent.Ai.Boilerplate.Tests.Areas.WebHooks.Controllers
 {
-    public enum PayloadType
-    {
-        Items,
-        Taxonomies
-    }
-
     public class WebhookControllerTests
     {
         [Theory]
-        [InlineData(PayloadType.Items, "content_item", "article", "upsert")]
-        [InlineData(PayloadType.Items, "content_item_variant", "article", "upsert")]
-        [InlineData(PayloadType.Items, "content_type", "article", "upsert")]
-        [InlineData(PayloadType.Taxonomies, "taxonomy", "personas", "upsert")]
-        [InlineData(PayloadType.Items, "lorem_ipsum", "dolor_sit_amet", "upsert")]
-        [InlineData(PayloadType.Taxonomies, "lorem_ipsum", "dolor_sit_amet", "upsert")]
-        [InlineData(PayloadType.Items, "content_item", "article", "lorem_ipsum")]
-        [InlineData(PayloadType.Items, "content_item_variant", "article", "lorem_ipsum")]
-        [InlineData(PayloadType.Items, "content_type", "article", "lorem_ipsum")]
-        [InlineData(PayloadType.Taxonomies, "taxonomy", "personas", "lorem_ipsum")]
-        [InlineData(PayloadType.Items, "lorem_ipsum", "dolor_sit_amet", "lorem_ipsum")]
-        [InlineData(PayloadType.Taxonomies, "lorem_ipsum", "dolor_sit_amet", "lorem_ipsum")]
-        public async Task ReturnsOkWheneverPossible(PayloadType payloadType, string artefactType, string dataType, string operation)
+        [InlineData("content_item", "article", "upsert")]
+        [InlineData("content_item_variant", "article", "upsert")]
+        [InlineData("content_type", "article", "upsert")]
+        [InlineData("taxonomy", "personas", "upsert")]
+        [InlineData("lorem_ipsum", "dolor_sit_amet", "upsert")]
+        [InlineData("content_item", "article", "lorem_ipsum")]
+        [InlineData("content_item_variant", "article", "lorem_ipsum")]
+        [InlineData("content_type", "article", "lorem_ipsum")]
+        [InlineData("taxonomy", "personas", "lorem_ipsum")]
+        [InlineData("lorem_ipsum", "dolor_sit_amet", "lorem_ipsum")]
+        public async Task ReturnsOkWheneverPossible(string objectType, string codename, string action)
         {
-            DeliveryWebhookItem[] items = null;
-            Taxonomy[] taxonomies = null;
-
-            switch (payloadType)
+            var webhook = new WebhookNotification
             {
-                case PayloadType.Items:
-                    items = new[] { new DeliveryWebhookItem { Codename = "Test", Type = dataType } };
-                    break;
-                case PayloadType.Taxonomies:
-                    taxonomies = new[] { new Taxonomy { Codename = "Test" } };
-                    break;
-            }
-
-            var model = new DeliveryWebhookModel 
-            {
-                Data = new DeliveryWebhookData { Items = items, Taxonomies = taxonomies },
-                Message = new Message { Type = artefactType, Operation = operation }
+                Notifications =
+                [
+                    new WebhookModel
+                    {
+                        Data = new WebhookData
+                        {
+                            System = new WebhookItem
+                            {
+                                Codename = codename
+                            }
+                        },
+                        Message = new WebhookMessage
+                        {
+                            ObjectType = objectType,
+                            Action = action,
+                            DeliverySlot = "published",
+                            EnvironmentId = Guid.NewGuid()
+                        }
+                    }
+                ]
             };
 
             var cacheManger = A.Fake<IDeliveryCacheManager>();
             var controller = new WebhooksController(cacheManger);
-            var result = (StatusCodeResult)await controller.Index(model);
+            var result = (StatusCodeResult)await controller.Index(webhook);
 
             Assert.InRange(result.StatusCode, 200, 299);
         }
